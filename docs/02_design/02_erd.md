@@ -24,11 +24,12 @@ erDiagram
     MEMBER ||--o{ POST_LIKE : "1:N 좋아요"
     POST ||--o{ POST_LIKE : "1:N 게시글 좋아요"
     MEMBER ||--o{ POST_SCRAP : "1:N 스크랩"
-    POST ||--o{ POST_SCRAP : "1:N 게시글 스크렙"
+    POST ||--o{ POST_SCRAP : "1:N 게시글 스크랩"
     POST }o--|| CATEGORY : "N:1 게시글 카테고리"
     MEMBER ||--o{ PAYMENT : "1:N 결제 이력"
     MEMBER ||--o{ FOLLOW : "1:N 팔로우"
-    MEMBER ||--o{ SUBSCRIPTION : "1:N VIP 정기 구독"
+    MEMBER ||--o{ SUBSCRIPTION : "1:N 내가 다른 사용자 구독"
+    MEMBER ||--o{ SUBSCRIPTION : "1:N 다른 사용자가 나를 구독"
 
     MEMBER {
         bigint id PK "회원 고유 식별자"
@@ -36,8 +37,8 @@ erDiagram
         varchar password "암호화된 비밀번호"
         varchar nickname "닉네임"
         varchar profile_image "프로필 이미지 S3 URL"
-        bigint theme_id FK "현재 적용 테마 id"
-        datetime updated_at"수정된 일시"
+        bigint theme_id FK "현재 적용 테마 id (가입 시 기본테마, NOT NULL)"
+        datetime updated_at "수정된 일시"
         datetime created_at "가입 일시"
     }
 
@@ -56,9 +57,9 @@ erDiagram
         int reply_count "댓글 수"
         int view_count "조회 수"
         boolean is_subscribe "구독 전용 여부(0이면 전체 모든 유저 공개, 1이면 구독자 전용)"
-        bigint category_id FK "카테고리 아이디"    
+        bigint category_id FK "카테고리 아이디"  
+        datetime updated_at "수정 일시"  
         datetime created_at "등록 일시"
-        datetime updated_at "수정 일시"
     }
 
     REPLY {
@@ -72,7 +73,7 @@ erDiagram
     POST_LIKE {
         bigint id PK "좋아요 고유 식별자"
         bigint member_id FK "좋아요 누른 회원 ID"
-        bigint post_id FK "게시글 게시글 ID"
+        bigint post_id FK "게시글 ID"
         datetime created_at "등록 일시"
     }
     
@@ -86,6 +87,7 @@ erDiagram
     PAYMENT {
         bigint id PK "결제 고유 식별자"
         bigint member_id FK "결제 회원 ID"
+        varchar payment_type "theme, subscription 등 결제 타입"
         varchar imp_uid "결제 승인 고유번호"
         varchar merchant_uid "상점 고유 주문번호 (UK)"
         bigint amount "결제 금액"
@@ -97,7 +99,7 @@ erDiagram
 
     SUBSCRIPTION {
         bigint id PK "구독 고유 식별자"
-        bigint member_id FK "내 회원 ID (UK)"
+        bigint member_id FK "내 회원 ID"
         bigint target_id FK "구독할 상대의 ID"
         varchar customer_uid "정기결제 빌링키"
         varchar plan_name "구독 플랜명 (VIP_MONTHLY) (없앨수도 있음)"
@@ -110,16 +112,19 @@ erDiagram
     
     CATEGORY {
 		    bigint id PK "카테고리 고유 식별자"
-		    varchar category_name "카테고리 이름"  
+		    varchar category_name "카테고리 이름 (UK)" 
     }
     
     THEME {
 		    bigint id PK "테마 고유 식별자"
 		    varchar theme_name "테마 이름"
 		    varchar description "테마 설명"
-		    bigint price "테마 가격"
+		    bigint price "테마 가격, 기본 테마는 0원"
 		    varchar thumbnail_url "테마 미리보기 이미지 url"
-		    varchar asset_url "테마 리소스 url"
+		    varchar theme_code "프론트에서 사용할 테마 키 (UK)"
+		    varchar status "상점 노출, on_sale/hidden 등 상태"
+		    boolean is_default "기본 테마 1개만 true"
+		    datetime updated_at "테마 수정 일시"
 		    datetime created_at "테마 등록 일시"
     }
     
@@ -127,7 +132,7 @@ erDiagram
 		    bigint id PK "구매한 테마 고유 식별자"
 		    bigint member_id FK "회원 ID"
 		    bigint theme_id FK "테마 ID"
-		    bigint payment_id FK "테마 결제 ID"
+		    bigint payment_id FK "테마 결제 ID (NULL 허용)"
 		    datetime created_at "구매한 일시"
 	}
     
@@ -139,13 +144,17 @@ erDiagram
     }
     
     PROFILE {
-		    bigint id PK "프로필 고유 식별자"
-		    bigint member_id FK "멤버 아이디"
+		    bigint member_id PK, FK "회원 기본 키"
 		    bigint follower "팔로워 수"
 		    bigint following "팔로잉 수"
 		    int post_count "게시글 수"
     }
 ```
+%% POST_LIKE UK(member_id, post_id)
+%% FOLLOW UK(from_id, to_id), CHECK(from_id <> to_id)
+%% SUBSCRIPTION UK(member_id, target_id), CHECK(member_id <> target_id)
+%% THEME_PURCHASE UK(member_id, theme_id)
+%% THEME is_default 는 true 행 1개만
 
 ---
 
@@ -156,12 +165,12 @@ erDiagram
 | 컬럼명 | 데이터 타입 | 제약 조건 | 설명 |
 | --- | --- | --- | --- |
 | id | BIGINT | PK, NOT NULL, AUTO_INCREMENT | 회원 고유 식별자 |
-| email | VARCHAR(100) | UNIQUE, NOT NULL, | 로그인 아이디 (이메일) |
+| email | VARCHAR(100) | UNIQUE, NOT NULL | 로그인 아이디 (이메일) |
 | password | VARCHAR(255) | NOT NULL | BCrypt 암호화된 비밀번호 |
 | nickname | VARCHAR(50) | NOT NULL | 화면 표시용 닉네임 |
 | profile_image | VARCHAR(255) | NULL | AWS S3 프로필 사진 URL |
-| theme_id | BIGINT | FK(theme.id), DEFAUL NULL | 현재 적용 중인 테마 ID, THEME.id 참조 |
-| updated_at | DATETIME | NOT NULL, DEFAULT CURRENT_TIMESTAMP | 회원 정보 수정 일시 |
+| theme_id | BIGINT | FK (theme.id), NOT NULL | 현재 적용 테마 ID. 가입 시 기본 테마(`theme.is_default = TRUE`) |
+| updated_at | DATETIME | NOT NULL, DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP | 회원 정보 수정 일시 |
 | created_at | DATETIME | NOT NULL, DEFAULT CURRENT_TIMESTAMP | 계정 생성 일시 |
 
 ### 1.2.2 member_detail (회원 상세 - 1:1 수직 분할)
@@ -170,52 +179,54 @@ erDiagram
 | --- | --- | --- | --- |
 | member_id | BIGINT | PK, FK (member.id ON DELETE CASCADE), NOT NULL | 회원 식별자 |
 | introduction | TEXT | NULL | 소개 글 |
-| marketing_agreed | VARCHAR(1) | DEFAULT 'N' | 마케팅 정보 수신 동의 여부 (Y/N) |
+| marketing_agreed | CHAR(1) | NOT NULL, DEFAULT 'N' | 마케팅 정보 수신 동의 여부 (Y/N) |
 
 ### 1.2.3 post (게시글)
 
 | 컬럼명 | 데이터 타입 | 제약 조건 | 설명 |
 | --- | --- | --- | --- |
-| id | BIGINT | PK, NOT NULL, AUTO_INCREMENT | 피드 게시글 고유 식별자 |
-| member_id | BIGINT | FK, NOT NULL | 작성자 회원 식별자 |
-| category_id | INT | FK (category.id), NOT NULL | 게시글 카테고리 식별자 |
-| content | TEXT | NOT NULL | 피드 본문 내용 |
-| image_url | VARCHAR(255) | NULL | 피드 첨부 이미지 S3 URL |
-| like_count | INT | DEFAULT 0 | 좋아요 누적 카운트 |
-| reply_count | INT | DEFAULT 0 | 댓글 수 |
-| view_count | INT | DEFAULT 0 | 게시글 조회 수 |
-| is_subscribe | BOOLEAN | DEFAULT FALSE | 구독 전용 여부 (FALSE: 전체 공개, TRUE: 구독자 전용) |
-| created_at | DATETIME | DEFAULT CURRENT_TIMESTAMP | 피드 최초 작성 일시 |
-| updated_at | DATETIME | DEFAULT CURRENT_TIMESTAMP ON UPDATE | 피드 최종 수정 일시 |
+| id | BIGINT | PK, NOT NULL, AUTO_INCREMENT | 게시글 고유 식별자 |
+| member_id | BIGINT | FK (member.id), NOT NULL | 작성자 회원 식별자 |
+| category_id | BIGINT | FK (category.id), NOT NULL | 게시글 카테고리 식별자 |
+| content | TEXT | NOT NULL | 본문 내용 |
+| image_url | VARCHAR(255) | NULL | 첨부 이미지 S3 URL |
+| like_count | INT | NOT NULL, DEFAULT 0 | 좋아요 누적 카운트 |
+| reply_count | INT | NOT NULL, DEFAULT 0 | 댓글 수 |
+| view_count | INT | NOT NULL, DEFAULT 0 | 게시글 조회 수 |
+| is_subscribe | BOOLEAN | NOT NULL, DEFAULT FALSE | 구독 전용 여부 (FALSE: 전체 공개, TRUE: 구독자 전용) |
+| updated_at | DATETIME | NOT NULL, DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP | 최종 수정 일시 |
+| created_at | DATETIME | NOT NULL, DEFAULT CURRENT_TIMESTAMP | 최초 작성 일시 |
 
 ### 1.2.4 reply (게시글 댓글)
 
 | 컬럼명 | 데이터 타입 | 제약 조건 | 설명 |
 | --- | --- | --- | --- |
 | id | BIGINT | PK, NOT NULL, AUTO_INCREMENT | 댓글 고유 식별자 |
-| post_id | BIGINT | FK(post.id), NOT NULL, | 댓글이 달린 게시글 식별자 |
-| member_id | BIGINT | FK(member.id), NOT NULL | 댓글 작성자 식별자 |
+| post_id | BIGINT | FK (post.id ON DELETE CASCADE), NOT NULL | 댓글이 달린 게시글 식별자 |
+| member_id | BIGINT | FK (member.id), NOT NULL | 댓글 작성자 식별자 |
 | content | TEXT | NOT NULL | 댓글 텍스트 내용 |
-| created_at | DATETIME | NOT NULL, CURRENT_TIMESTAMP | 댓글 등록 일시 |
+| created_at | DATETIME | NOT NULL, DEFAULT CURRENT_TIMESTAMP | 댓글 등록 일시 |
 
 ### 1.2.5 post_like (게시글 좋아요 - N:M 매핑)
 
 | 컬럼명 | 데이터 타입 | 제약 조건 | 설명 |
 | --- | --- | --- | --- |
 | id | BIGINT | PK, NOT NULL, AUTO_INCREMENT | 좋아요 식별자 |
-| member_id | BIGINT | FK (member.id ), NOT NULL, | 좋아요를 누른 회원 ID |
-| post_id | BIGINT | FK(post.id), NOT NULL | 대상 게시글 게시글 ID |
+| member_id | BIGINT | FK (member.id ON DELETE CASCADE), NOT NULL | 좋아요를 누른 회원 ID |
+| post_id | BIGINT | FK (post.id ON DELETE CASCADE), NOT NULL | 대상 게시글 ID |
 | created_at | DATETIME | NOT NULL, DEFAULT CURRENT_TIMESTAMP | 좋아요 등록 일시 |
+
 - 고유 제약조건: UNIQUE KEY `uk_member_post_like` (`member_id`, `post_id`)
 
-### 1.2.6 post_scrap (피드 스크랩 - N:M 매핑)
+### 1.2.6 post_scrap (게시글 스크랩 - N:M 매핑)
 
 | 컬럼명 | 데이터 타입 | 제약 조건 | 설명 |
 | --- | --- | --- | --- |
-| id | BIGINT | PK, AUTO_INCREMENT | 스크랩 고유 식별자 |
+| id | BIGINT | PK, NOT NULL, AUTO_INCREMENT | 스크랩 고유 식별자 |
 | member_id | BIGINT | FK (member.id ON DELETE CASCADE), NOT NULL | 스크랩한 회원 ID |
 | post_id | BIGINT | FK (post.id ON DELETE CASCADE), NOT NULL | 스크랩 대상 게시글 ID |
-| created_at | DATETIME | NOT NULL DEFAULT CURRENT_TIMESTAMP | 스크랩 등록 일시 |
+| created_at | DATETIME | NOT NULL, DEFAULT CURRENT_TIMESTAMP | 스크랩 등록 일시 |
+
 - 고유 제약조건: UNIQUE KEY `uk_member_post_scrap` (`member_id`, `post_id`)
 
 ### 1.2.7 payment (결제 이력)
@@ -223,14 +234,15 @@ erDiagram
 | 컬럼명 | 데이터 타입 | 제약 조건 | 설명 |
 | --- | --- | --- | --- |
 | id | BIGINT | PK, NOT NULL, AUTO_INCREMENT | 결제 내역 고유 식별자 |
-| member_id | BIGINT | FK (member.id ON DELETE CASCADE), NOT NULL | 결제 회원 ID |
+| member_id | BIGINT | FK (member.id), NOT NULL | 결제 회원 ID |
+| payment_type | VARCHAR(20) | NOT NULL | 결제 구분 (`THEME`, `SUBSCRIPTION`) |
 | imp_uid | VARCHAR(100) | NULL | 결제 승인 고유 번호 |
-| merchant_uid | VARCHAR(100) | UNIQUE, NOT NULL  | 자체 생성 주문 식별자 |
-| amount | INT | NOT NULL | 결제 금액 |
-| status | VARCHAR(20) | DAFAULT ‘READY’ | 결제 상태 (READY, PAID, FAILED, CANCELLED) |
-| pay_method | VARCHAR(30) | NOT NULL | 결제 수단 (card, trans 등) |
-| paid_at | DATETIME | NULL | 실제 결제 완료 시각 |
-| created_at | DATETIME | DEFAULT CURRENT_TIMESTAMP | 결제 요청 시각 |
+| merchant_uid | VARCHAR(100) | UNIQUE, NOT NULL | 상점 주문번호 |
+| amount | BIGINT | NOT NULL | 결제 금액 |
+| status | VARCHAR(20) | NOT NULL, DEFAULT 'READY' | 결제 상태 (`READY`, `PAID`, `FAILED`, `CANCELLED`) |
+| pay_method | VARCHAR(30) | NULL | 결제 수단 (`card`, `trans` 등). 요청 전에는 NULL 가능 |
+| paid_at | DATETIME | NULL | 실제 결제 완료 시각 (`PAID`일 때만) |
+| created_at | DATETIME | NOT NULL, DEFAULT CURRENT_TIMESTAMP | 결제 요청 시각 |
 
 ### 1.2.8 subscription (사용자 정기 구독)
 
@@ -240,60 +252,69 @@ erDiagram
 | member_id | BIGINT | FK (member.id ON DELETE CASCADE), NOT NULL | 구독하는 회원 ID |
 | target_id | BIGINT | FK (member.id ON DELETE CASCADE), NOT NULL | 구독 대상 회원 ID |
 | customer_uid | VARCHAR(100) | NOT NULL | 정기 결제 카드 빌링키 |
-| plan_name | VARCHAR(50) | NOT NULL | 구독 플랜 이름 |
-| price | INT | NOT NULL | 매월 정기 결제 금액 |
-| status | VARCHAR(20) | NOT NULL, DEFAULT 'ACTIVE' | 구독 상태 (ACTIVE, PAUSED, CANCELLED) |
+| plan_name | VARCHAR(50) | NULL | 구독 플랜 이름 (`VIP_MONTHLY` 등). 단일이면 생략 가능 |
+| price | BIGINT | NOT NULL | 매월 정기 결제 금액 |
+| status | VARCHAR(20) | NOT NULL, DEFAULT 'ACTIVE' | 구독 상태 (`ACTIVE`, `PAUSED`, `CANCELLED`) |
 | next_billing_at | DATETIME | NOT NULL | 다음 자동 결제 예정일 |
-| started_at | DATETIME | DEFAULT CURRENT_TIMESTAMP | 구독 시작일 |
-| ended_at | DATETIME | NULL  | 구독 종료일 |
+| started_at | DATETIME | NOT NULL, DEFAULT CURRENT_TIMESTAMP | 구독 시작일 |
+| ended_at | DATETIME | NULL | 구독 종료일 |
+
+- 고유 제약조건: UNIQUE KEY `uk_subscription_member_target` (`member_id`, `target_id`)
+- CHECK (`member_id` <> `target_id`)
 
 ### 1.2.9 category (게시글 카테고리)
 
 | 컬럼명 | 데이터 타입 | 제약 조건 | 설명 |
 | --- | --- | --- | --- |
-| id | BIGINT | PK, AUTO_INCREMENT | 카테고리 고유 식별자 |
+| id | BIGINT | PK, NOT NULL, AUTO_INCREMENT | 카테고리 고유 식별자 |
 | category_name | VARCHAR(50) | UNIQUE, NOT NULL | 카테고리 이름 |
 
 ### 1.2.10 theme (사이트 등록 테마)
 
 | 컬럼명 | 데이터 타입 | 제약 조건 | 설명 |
 | --- | --- | --- | --- |
-| id | INT | PK, AUTO_INCREMENT | 테마 고유 식별자 |
+| id | BIGINT | PK, NOT NULL, AUTO_INCREMENT | 테마 고유 식별자 |
 | theme_name | VARCHAR(100) | NOT NULL | 테마 이름 |
 | description | VARCHAR(255) | NULL | 테마 설명 |
-| price | INT | NOT NULL | 테마 가격 |
+| price | BIGINT | NOT NULL, DEFAULT 0 | 테마 가격. 기본 테마는 0원 |
 | thumbnail_url | VARCHAR(255) | NULL | 테마 미리보기 이미지 URL |
-| asset_url | VARCHAR(255) | NULL | 테마 리소스 URL |
-| created_at | DATETIME | DEFAULT CURRENT_TIMESTAMP | 테마 등록 일시 |
+| theme_code | VARCHAR(50) | UNIQUE, NOT NULL | 프론트 `data-theme` 키 (`calm`, `vivid` 등) |
+| status | VARCHAR(20) | NOT NULL, DEFAULT 'ON_SALE' | 상점 노출 (`ON_SALE`, `HIDDEN`) |
+| is_default | BOOLEAN | NOT NULL, DEFAULT FALSE | 가입 시 적용할 기본 테마. true인 행은 전체 1개만 |
+| updated_at | DATETIME | NOT NULL, DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP | 테마 수정 일시 |
+| created_at | DATETIME | NOT NULL, DEFAULT CURRENT_TIMESTAMP | 테마 등록 일시 |
 
-### 1.2.11 theme_purchase (구매한 테마)
+- `is_default = TRUE`인 행은 1개만 유지 (부분 UNIQUE 또는 애플리케이션에서 강제)
+
+### 1.2.11 theme_purchase (구매 및 보유중인 테마)
 
 | 컬럼명 | 데이터 타입 | 제약 조건 | 설명 |
 | --- | --- | --- | --- |
-| id | INT | PK, AUTO_INCREMENT | 구매한 테마 고유 식별자 |
+| id | BIGINT | PK, NOT NULL, AUTO_INCREMENT | 구매한 테마 고유 식별자 |
 | member_id | BIGINT | FK (member.id ON DELETE CASCADE), NOT NULL | 테마를 구매한 회원 ID |
-| theme_id | BIGINT | FK (theme.id ON DELETE CASCADE), NOT NULL, | 구매한 테마 ID |
-| payment_id | BIGINT | FK (payment.id), NOT NULL | 테마 결제 ID |
-| created_at | DATETIME | DEFAULT CURRENT_TIMESTAMP | 테마 구매 일시 |
+| theme_id | BIGINT | FK (theme.id), NOT NULL | 구매한 테마 ID |
+| payment_id | BIGINT | FK (payment.id), NULL | 유료 결제일 때만 채움. 0원/기본 테마는 NULL |
+| created_at | DATETIME | NOT NULL, DEFAULT CURRENT_TIMESTAMP | 테마 구매 일시 |
+
 - 고유 제약조건: UNIQUE KEY `uk_member_theme_purchase` (`member_id`, `theme_id`)
 
 ### 1.2.12 follow (회원 팔로우)
 
 | 컬럼명 | 데이터 타입 | 제약 조건 | 설명 |
 | --- | --- | --- | --- |
-| id | INT | PK, AUTO_INCREMENT | 팔로우 고유 식별자 |
-| from_id | INT | FK (member.id ON DELETE CASCADE), NOT NULL | 팔로우한 회원 ID |
-| to_id | INT | FK (member.id ON DELETE CASCADE), NOT NULL | 팔로우 대상 회원 ID |
-| created_at | DATETIME | DEFAULT CURRENT_TIMESTAMP | 팔로우한 일시 |
-- 고유 제약조건: UNIQUE KEY `uk_member_follow` (`from_id`, `to_id`)
+| id | BIGINT | PK, NOT NULL, AUTO_INCREMENT | 팔로우 고유 식별자 |
+| from_id | BIGINT | FK (member.id ON DELETE CASCADE), NOT NULL | 팔로우한 회원 ID |
+| to_id | BIGINT | FK (member.id ON DELETE CASCADE), NOT NULL | 팔로우 대상 회원 ID |
+| created_at | DATETIME | NOT NULL, DEFAULT CURRENT_TIMESTAMP | 팔로우한 일시 |
 
-### 1.2.13 profile (프로필)
+- 고유 제약조건: UNIQUE KEY `uk_member_follow` (`from_id`, `to_id`)
+- CHECK (`from_id` <> `to_id`)
+
+### 1.2.13 profile (프로필 통계 - 1:1)
 
 | 컬럼명 | 데이터 타입 | 제약 조건 | 설명 |
 | --- | --- | --- | --- |
-| id | INT | PK, AUTO_INCREMENT | 프로필 고유 식별자 |
-| member_id | INT | FK (member.id ON DELETE CASCADE), UNIQUE, NOT NULL | 회원 식별자 |
-| follower | INT | DEFAULT 0 | 팔로워 수 |
-| following | INT | DEFAULT 0 | 팔로잉 수 |
-| post_count | INT | DEFAULT 0 | 게시글 수 |
-
+| member_id | BIGINT | PK, FK (member.id ON DELETE CASCADE), NOT NULL | 회원 식별자. 별도 id 컬럼 없음 |
+| follower | BIGINT | NOT NULL, DEFAULT 0 | 팔로워 수 |
+| following | BIGINT | NOT NULL, DEFAULT 0 | 팔로잉 수 |
+| post_count | INT | NOT NULL, DEFAULT 0 | 게시글 수 |
