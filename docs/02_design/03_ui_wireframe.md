@@ -37,7 +37,7 @@
   - 로그인 실패 시 에러 메시지(아이디 또는 비밀번호 불일치) 노출
 
 ### 1.2.2 회원가입 화면 (`/signup`)
-![img_4.png](img_4.png) ![img_37.png](img_37.png) ![img_5.png](img_5.png)
+![img_4.png](img_4.png) ![img_9.png](img_9.png) ![img_5.png](img_5.png)
 - 출력 데이터 항목 (Output Data):
   - 회원가입 항목: 이메일 입력 필드, 비밀번호 입력 필드, 닉네임 입력 필드, 프로필 사진 업로드 필드
 
