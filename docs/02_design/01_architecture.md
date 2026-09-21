@@ -28,7 +28,7 @@ graph TD
     Client -->|이미지 스트리밍/조회| CloudFront
     CloudFront -->|미디어 파일 페치| S3_Media
 
-    Client -->|REST API 요청 (JSON / JWT)| EC2
+    Client -->|REST API 요청| EC2
     EC2 --> Docker_App
     Docker_App -->|MyBatis 쿼리| Docker_DB
     Docker_App -->|이미지 파일 직접 업로드| S3_Media
