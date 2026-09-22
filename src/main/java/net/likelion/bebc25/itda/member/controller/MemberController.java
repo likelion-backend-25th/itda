@@ -4,11 +4,13 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import net.likelion.bebc25.itda.domain.Member;
-import net.likelion.bebc25.itda.member.dto.MemberProfileResponse;
-import net.likelion.bebc25.itda.member.dto.MemberResponse;
-import net.likelion.bebc25.itda.member.dto.SignupRequest;
+import net.likelion.bebc25.itda.member.dto.*;
+import net.likelion.bebc25.itda.member.service.MemberService;
 import net.likelion.bebc25.itda.security.principal.CustomUserDetails;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,6 +21,22 @@ import java.net.URI;
 @RequestMapping("/api/v1/member")
 public class MemberController {
 
+    private final MemberService memberService;
+
+    public MemberController(MemberService memberService) {
+        this.memberService = memberService;
+    }
+
+    // 회원가입
+    @PostMapping
+    public ResponseEntity<Void> signup(
+            @RequestBody SignupRequest request
+    ) {
+        memberService.signup(request);
+
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
     // 마이 페이지
     @GetMapping("/me")
     public ResponseEntity<MemberProfileResponse> getMyProfile(
@@ -28,5 +46,4 @@ public class MemberController {
         Member member = userDetails.getMember();
         return ResponseEntity.ok(MemberProfileResponse.from(member));
     }
-
 }

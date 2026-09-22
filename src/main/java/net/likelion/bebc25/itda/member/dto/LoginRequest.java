@@ -1,6 +1,12 @@
 package net.likelion.bebc25.itda.member.dto;
 
-public record LoginRequest (
-        String email,
-        String password
-){}
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+@Getter
+@NoArgsConstructor
+public class LoginRequest {
+    String email;
+    String password;
+}
+
