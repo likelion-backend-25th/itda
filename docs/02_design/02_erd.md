@@ -182,7 +182,7 @@ erDiagram
 | --- | --- | --- | --- |
 | id | BIGINT | PK, NOT NULL, AUTO_INCREMENT | 회원 관심 카테고리 고유 식별자 |
 | member_id| BIGINT | FK(member.id), NOT NULL | 회원 ID |
-| category_id | BIGINT | FK(category.id), NOT NULL | 관심 카테고리 ID |
+| category_id | BIGINT | FK(common.id), NOT NULL | 관심 카테고리 ID |
 
 ### 1.2.3 post (게시글)
 
@@ -220,7 +220,7 @@ erDiagram
 | type    |  INT   | NOT NULL | 1이면 좋아요, 2이면 스크랩 |
 | created_at | DATETIME | NOT NULL, DEFAULT CURRENT_TIMESTAMP | 좋아요 등록 일시        |
 
-- 고유 제약조건: UNIQUE KEY `uk_member_post_like` (`member_id`, `post_id`)
+- 고유 제약조건: UNIQUE KEY `uk_member_post_like` (`member_id`, `post_id`,`type`)
 
 ### 1.2.6 payment (결제 이력)
 
@@ -246,8 +246,8 @@ erDiagram
 | member_id | BIGINT | FK (member.id ON DELETE CASCADE), NOT NULL | 구독하는 회원 ID |
 | target_id | BIGINT | FK (member.id ON DELETE CASCADE), NOT NULL | 구독 대상 회원 ID |
 | customer_uid | VARCHAR(100) | NOT NULL | 정기결제 빌링키(암호화 저장) |
-| price_id | INT | NOT NULL | 매월 정기 결제 금액 |
-| status_id | INT | NOT NULL, DEFAULT 'ACTIVE' | 구독 상태 (`ACTIVE`, `PAUSED`, `CANCELLED`) |
+| price_id | BIGINT | NOT NULL | 매월 정기 결제 금액 |
+| status_id | BIGINT | NOT NULL, DEFAULT 'ACTIVE' | 구독 상태 (`ACTIVE`, `PAUSED`, `CANCELLED`) |
 | next_billing_at | DATETIME | NOT NULL | 다음 자동 결제 예정일 |
 | started_at | DATETIME | NOT NULL, DEFAULT CURRENT_TIMESTAMP | 구독 시작일 |
 | ended_at | DATETIME | NULL | 구독 종료일 |
