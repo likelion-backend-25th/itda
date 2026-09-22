@@ -3,6 +3,24 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="net.likelion.bebc25.itda.mapper.MemberMapper">
+<mapper namespace="net.likelion.bebc25.itda.member.mapper.MemberMapper">
+
+    <select id="findByEmail" parameterType="String" resultType="net.likelion.bebc25.itda.domain.Member">
+        SELECT id, email, password, nickname, role, introduction, profile_image, theme_id, authmethod, month_income, created_at
+        FROM member
+        WHERE email = #{email}
+    </select>
+
+    <select id="findById" parameterType="Long" resultType="net.likelion.bebc25.itda.domain.Member">
+        SELECT id, email, password, nickname, role, introduction, profile_image, theme_id, authmethod, month_income, created_at
+        FROM member
+        WHERE id = #{id}
+    </select>
+
+    <!-- 신규 회원 등록 (소셜 로그인 자동 회원가입) -->
+    <insert id="save" parameterType="net.likelion.bebc25.itda.domain.Member" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO member (email, password, nickname, role, authmethod, created_at)
+        VALUES (#{email}, COALESCE(#{password}, ''), #{nickname}, #{role}, #{authmethod}, NOW())
+    </insert>
 
 </mapper>
