@@ -252,7 +252,6 @@ erDiagram
 | started_at | DATETIME | NOT NULL, DEFAULT CURRENT_TIMESTAMP | 구독 시작일 |
 | ended_at | DATETIME | NULL | 구독 종료일 |
 
-- 고유 제약조건: UNIQUE KEY `uk_subscription_member_target` (`member_id`, `target_id`)
 - CHECK (`member_id` <> `target_id`)
 
 ### 1.2.8 common_code (공통 코드)
