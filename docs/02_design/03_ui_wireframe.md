@@ -384,7 +384,7 @@
   - 검색 결과가 없을 경우 검색 결과 없음 안내 표시
 
 ### 1.2.25 관리자 페이지 - 테마 관리
-<img width="322" height="261" alt="image" src="https://github.com/user-attachments/assets/f95cc381-010e-41c2-acda-925bcd2433ef" />
+<img width="500" alt="" src="https://github.com/user-attachments/assets/f95cc381-010e-41c2-acda-925bcd2433ef" />
 <img src="../images/img_50.png" width="500" alt="">
 <img src="../images/img_51.png" width="500" alt="">
 
