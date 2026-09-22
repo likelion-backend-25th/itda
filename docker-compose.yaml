@@ -1,0 +1,37 @@
+services:
+  mybatis-sns-app:
+    image: dltmddjs98/itda-sns:latest
+    container_name: itda-sns-app
+    restart: always
+    ports:
+      - "80:8080"
+    env_file:
+      - .env
+    environment:
+      - DB_HOST=mysql
+      - TZ=Asia/Seoul
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+  mysql:
+    image: mysql:9.7
+    container_name: itda-sns-db
+    restart: always
+    ports:
+      - "3306:3306"
+    env_file:
+      - .env
+    environment:
+      - TZ=Asia/Seoul
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -u root -p$$MYSQL_ROOT_PASSWORD || exit 1"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 10s
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+volumes:
+  mysql-data:
