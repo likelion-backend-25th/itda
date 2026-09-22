@@ -235,7 +235,7 @@
 
 ### 1.2.16 마이페이지 - 회원 탈퇴
 <img src="../images/img_31.png" width="400" alt="">&nbsp;&nbsp;&nbsp;&nbsp;<img src="../images/img_38.png" width="400" alt="">
-<img src="../images/img_39.png" width="400" alt="">&nbsp;&nbsp;&nbsp;&nbsp;<img src="../images/img_41.png" width="400" alt="">
+<img src="../images/img_39.png" width="400" alt="">&nbsp;&nbsp;&nbsp;&nbsp;<img src="../images/img_49.png" width="400" alt="">
 
 - 출력 데이터 항목 (Output Data):
   - 상단 영역: 팝업 닫기(X) 버튼
