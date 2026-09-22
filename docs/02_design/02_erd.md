@@ -37,6 +37,7 @@ erDiagram
         varchar email "이메일 (UK)"
         varchar password "암호화된 비밀번호"
         varchar nickname "닉네임"
+        varchar role "ROLE_USER, ROLE_ADMIN"
         varchar introduction "소개글"
         varchar profile_image "프로필 이미지 S3 URL"
         bigint theme_id FK "현재 적용 테마 id (가입 시 기본테마, NOT NULL)"
@@ -160,19 +161,20 @@ erDiagram
 
 ### 1.2.1 member (회원 기본)
 
-| 컬럼명 | 데이터 타입       | 제약 조건                                                           | 설명 |
-| --- |--------------|-----------------------------------------------------------------| --- |
-| id | BIGINT       | PK, NOT NULL, AUTO_INCREMENT                                    | 회원 고유 식별자 |
-| email | VARCHAR(100) | UNIQUE, NOT NULL                                                | 로그인 아이디 (이메일) |
-| password | VARCHAR(255) | NOT NULL                                                        | BCrypt 암호화된 비밀번호 |
-| nickname | VARCHAR(50)  | NOT NULL, DEFAULT “철수”                                          | 화면 표시용 닉네임 |
+| 컬럼명           | 데이터 타입       | 제약 조건                                                           | 설명 |
+|---------------|--------------|-----------------------------------------------------------------| --- |
+| id            | BIGINT       | PK, NOT NULL, AUTO_INCREMENT                                    | 회원 고유 식별자 |
+| email         | VARCHAR(100) | UNIQUE, NOT NULL                                                | 로그인 아이디 (이메일) |
+| password      | VARCHAR(255) | NOT NULL                                                        | BCrypt 암호화된 비밀번호 |
+| nickname      | VARCHAR(50)  | NOT NULL, DEFAULT “철수”                                          | 화면 표시용 닉네임 |
+| role          | VARCHAR(20)  | NOT NULL, DEFAULT “ROLE_USER”                                   | 회원 권한 |
 | profile_image | VARCHAR(255) | NULL                                                            | AWS S3 프로필 사진 URL |
-| theme_id | BIGINT  | FK (theme.id), NOT NULL                                         | 현재 적용 테마 ID. 가입 시 기본 테마(`theme.is_default = TRUE`) |
-|introduction  | VARCHAR(255) | NULL                                                            | 소개글   |
-| authmethod    | VARCHAR(255)     | NOT NULL                                                        | 로그인 인증 방식(google/kakao/local)   |
-| month_income    | BIGINT     | NULL                                                            | 월간 정산 금액   |
-| updated_at | DATETIME     | NOT NULL, DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP | 회원 정보 수정 일시 |
-| created_at | DATETIME     | NOT NULL, DEFAULT CURRENT_TIMESTAMP                             | 계정 생성 일시 |
+| theme_id      | BIGINT       | FK (theme.id), NOT NULL                                         | 현재 적용 테마 ID. 가입 시 기본 테마(`theme.is_default = TRUE`) |
+| introduction  | VARCHAR(255) | NULL                                                            | 소개글   |
+| authmethod    | VARCHAR(255) | NOT NULL                                                        | 로그인 인증 방식(google/kakao/local)   |
+| month_income  | BIGINT       | NULL                                                            | 월간 정산 금액   |
+| updated_at    | DATETIME     | NOT NULL, DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP | 회원 정보 수정 일시 |
+| created_at    | DATETIME     | NOT NULL, DEFAULT CURRENT_TIMESTAMP                             | 계정 생성 일시 |
 
 ### 1.2.2 member_interest (회원 관심 카테고리)
 
