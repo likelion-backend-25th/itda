@@ -87,7 +87,7 @@ erDiagram
         bigint id PK "결제 고유 식별자"
         bigint member_id FK "결제 회원 ID"
         varchar payment_type "theme, subscription 등 결제 타입"
-        bigint target_id "결제 대상 id payment_type = theme : theme테이블 id, payment_type =subscription : subsctiption테이블의 id"
+        bigint payment_target_id "결제 대상 id payment_type = theme : theme테이블 id, payment_type =subscription : subsctiption테이블의 id"
         varchar imp_uid "결제 승인 고유번호"
         varchar merchant_uid "상점 고유 주문번호 (UK)"
         bigint amount "결제 금액"
@@ -229,7 +229,7 @@ erDiagram
 | id | BIGINT | PK, NOT NULL, AUTO_INCREMENT | 결제 내역 고유 식별자 |
 | member_id | BIGINT | FK (member.id), NOT NULL | 결제 회원 ID |
 | payment_type | VARCHAR(20) | NOT NULL | 결제 구분 (`THEME`, `SUBSCRIPTION`) |
-| target_id | BIGINT | NOT NULL |결제 대상 id payment_type = theme : theme테이블 id, payment_type =subscription : subsctiption테이블의 id|
+| payment_target_id | BIGINT | NOT NULL |결제 대상 id payment_type = theme : theme테이블 id, payment_type =subscription : subsctiption테이블의 id|
 | imp_uid | VARCHAR(100) | NULL | 결제 승인 고유 번호 |
 | merchant_uid | VARCHAR(100) | UNIQUE, NOT NULL | 상점 주문번호 |
 | amount | BIGINT | NOT NULL | 결제 금액 |
