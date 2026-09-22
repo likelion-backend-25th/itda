@@ -58,7 +58,7 @@ CREATE TABLE member (
                         role VARCHAR(20) NOT NULL DEFAULT 'ROLE_USER',  -- ROLE_USER 회원, ROLE_ADMIN 관리자
                         -- default 기본 이미지 주소 추가
                         profile_image VARCHAR(255),
-                        theme_id BIGINT NOT NULL,
+                        theme_id BIGINT NOT NULL DEFAULT 1,
                         introduction VARCHAR(255),
                         authmethod VARCHAR(20) NOT NULL,    -- 로그인 인증 방식
                         month_income BIGINT,
