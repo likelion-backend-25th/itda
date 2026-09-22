@@ -317,6 +317,7 @@
 
 ### 1.2.21 관리자 페이지 - 결제 관리
 <img src="../images/img_43.png" width="500" alt="">
+<img src="../images/img_32.png" width="500" alt="">
 
 - 출력 데이터 항목 (Output Data):
   - 상단 영역: 검색 조건 선택 박스, 검색 입력창
@@ -384,6 +385,8 @@
 
 ### 1.2.25 관리자 페이지 - 테마 관리
 <img src="../images/img_48.png" width="500" alt="">
+<img src="../images/img_50.png" width="500" alt="">
+<img src="../images/img_51.png" width="500" alt="">
 
 - 출력 데이터 항목 (Output Data):
   - 상단 영역: 검색 조건 선택 박스, 검색 입력창
