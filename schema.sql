@@ -75,109 +75,115 @@ CREATE TABLE member_interest (
                         FOREIGN KEY (category_id) REFERENCES common_code(code) ON DELETE CASCADE
 );
 
--- 3. 게시글 테이블
-CREATE TABLE post (
-                      id BIGINT AUTO_INCREMENT PRIMARY KEY,
-                      member_id BIGINT NOT NULL,
-                      category_id BIGINT NOT NULL,
-                      content TEXT NOT NULL,
-                      image_url VARCHAR(255),
-                      like_count INT DEFAULT 0,
-                      view_count INT DEFAULT 0,
-                      subscriber_only BOOLEAN DEFAULT FALSE,    -- 구독자 전용 여부
-                      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-                      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-                      FOREIGN KEY (member_id) REFERENCES member(id) ON DELETE CASCADE,
-                      FOREIGN KEY (category_id) REFERENCES common_code(code) ON DELETE CASCADE
-);
-
--- 4. 댓글 테이블
-CREATE TABLE reply (
-                       id BIGINT AUTO_INCREMENT PRIMARY KEY,
-                       post_id BIGINT NOT NULL,
-                       member_id BIGINT NOT NULL,
-                       content TEXT NOT NULL,
-                       updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-                       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-                       FOREIGN KEY (member_id) REFERENCES member(id) ON DELETE CASCADE,
-                       FOREIGN KEY (post_id) REFERENCES post(id) ON DELETE CASCADE
-);
-
--- 5. 게시글 좋아요/스크랩 테이블
-CREATE TABLE post_reaction (
-                               id BIGINT AUTO_INCREMENT PRIMARY KEY,
-                               member_id BIGINT NOT NULL,
-                               post_id BIGINT NOT NULL,
-                               type INT NOT NULL,
-                               created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-                               FOREIGN KEY (member_id) REFERENCES member(id) ON DELETE CASCADE,
-                               FOREIGN KEY (post_id) REFERENCES post(id) ON DELETE CASCADE
-);
-
--- 6. 결제 테이블
-CREATE TABLE payment (
-                         id BIGINT AUTO_INCREMENT PRIMARY KEY,
-                         member_id BIGINT NOT NULL,
-                         post_id BIGINT NOT NULL,
-                         payment_type VARCHAR(30) NOT NULL,
-    -- subscription target_id 하고 컬럼 명이 겹치는데 이대로 진행할건가요?
-                         target_id BIGINT NOT NULL,
-                         imp_uid BIGINT NOT NULL,
-                         merchan_uid BIGINT NOT NULL,
-                         amount BIGINT NOT NULL,
-    -- 공통 코드의 타입 1의 무엇을 default값으로 저장하는가?
-                         status_id BIGINT NOT NULL DEFAULT 1,
-    -- 공통 코드의 타입 2, 결제 수단 등록? null을 허용해야하는가?
-                         pay_method_id BIGINT NOT NULL,
-    -- CURRENT_TIME_STAMP인지?
-                         paid_at DATETIME,
-                         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-                         FOREIGN KEY (member_id) REFERENCES member(id) ON DELETE CASCADE,
-                         FOREIGN KEY (status_id) REFERENCES common_code(code) ON DELETE CASCADE,
-                         FOREIGN KEY (pay_method_id) REFERENCES common_code(code) ON DELETE CASCADE
-);
-
--- 7. 사용자 정기 구독 테이블
-CREATE TABLE subscription (
-                              id BIGINT AUTO_INCREMENT PRIMARY KEY,
-                              member_id BIGINT NOT NULL,
-                              target_id BIGINT NOT NULL,
-                              customer_id VARCHAR(100) NOT NULL,
-                              price_id BIGINT NOT NULL,
-                              status_id VARCHAR(20) NOT NULL DEFAULT 'ACTIVE',
-                              next_billing_at DATETIME NOT NULL,
-                              started_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-                              ended_at DATETIME,
-                              FOREIGN KEY (member_id) REFERENCES member(id) ON DELETE CASCADE,
-                              FOREIGN KEY (target_id) REFERENCES member(id) ON DELETE CASCADE,
-                              FOREIGN KEY (price_id) REFERENCES common_code(code) ON DELETE CASCADE,
-                              FOREIGN KEY (status_id) REFERENCES common_code(code) ON DELETE CASCADE
-);
-
-
- -- 8. 게시글 좋아요/ 스크랩
-CREATE TABLE post_reaction(
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    member_id BIGINT NOT NULL,
-    post_id BIGINT NOT NULL,
-    type INT NOT NULL  -- 1 LIKE, 2 SCRAP
-);
-
--- 10. 구매한 테마 테이블
-CREATE TABLE theme_purchase (
-                                id BIGINT AUTO_INCREMENT PRIMARY KEY,
-                                member_id BIGINT NOT NULL,
-                                theme_id BIGINT NOT NULL,
-                                payment_id BIGINT NOT NULL,
-                                apply_theme BOOLEAN,
-                                created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-);
-
--- 11. 회원 팔로우 테이블
+-- 5. 회원 팔로우 테이블
 CREATE TABLE follow (
                         id BIGINT AUTO_INCREMENT PRIMARY KEY,
-                        from_id INT NOT NULL,
-                        to_id INT NOT NULL,
-                        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+                        from_id BIGINT NOT NULL,
+                        to_id BIGINT NOT NULL,
+                        created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                        FOREIGN KEY (from_id) REFERENCES member(id) ON DELETE CASCADE,
+                        FOREIGN KEY (to_id) REFERENCES member(id) ON DELETE CASCADE,
+                        UNIQUE (from_id, to_id),        -- 같은 사용자 여러번 팔로우하지 못하도록
+                        CHECK ( from_id <> to_id )      -- 자기 자신 팔로우 방지
+);
+
+-- 6. 게시글 테이블
+CREATE TABLE post (
+                        id BIGINT AUTO_INCREMENT PRIMARY KEY,
+                        member_id BIGINT NOT NULL,
+                        category_id BIGINT NOT NULL,
+                        content TEXT NOT NULL,
+                        image_url VARCHAR(255),
+                        like_count INT NOT NULL DEFAULT 0,
+                        view_count INT NOT NULL DEFAULT 0,
+                        subscriber_only BOOLEAN DEFAULT FALSE,    -- 구독자 전용 여부
+                        created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                        updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                        FOREIGN KEY (member_id) REFERENCES member(id) ON DELETE CASCADE,
+                        FOREIGN KEY (category_id) REFERENCES common_code(code) ON DELETE CASCADE
+);
+
+-- 7. 댓글 테이블
+CREATE TABLE reply (
+                        id BIGINT AUTO_INCREMENT PRIMARY KEY,
+                        member_id BIGINT NOT NULL,
+                        post_id BIGINT NOT NULL,
+                        content TEXT NOT NULL,
+                        created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                        updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                        FOREIGN KEY (member_id) REFERENCES member(id) ON DELETE CASCADE,
+                        FOREIGN KEY (post_id) REFERENCES post(id) ON DELETE CASCADE
+);
+
+-- 8. 게시글 좋아요/스크랩 테이블
+CREATE TABLE post_reaction (
+                        id BIGINT AUTO_INCREMENT PRIMARY KEY,
+                        member_id BIGINT NOT NULL,
+                        post_id BIGINT NOT NULL,
+                        type INT NOT NULL,
+                        created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                        FOREIGN KEY (member_id) REFERENCES member(id) ON DELETE CASCADE,
+                        FOREIGN KEY (post_id) REFERENCES post(id) ON DELETE CASCADE,
+                        UNIQUE (member_id, post_id, type)   -- 같은 게시글에 같은 reaction 중복방지
+);
+-- 9. 결제 테이블
+CREATE TABLE payment (
+                        id BIGINT AUTO_INCREMENT PRIMARY KEY,
+                        member_id BIGINT NOT NULL,
+                        payment_type VARCHAR(30) NOT NULL,
+                        -- subscription target_id 하고 컬럼 명이 겹치는데 이대로 진행할건가요?
+                        payment_target_id BIGINT NOT NULL,
+                        imp_uid BIGINT NOT NULL,
+                        merchant_uid VARCHAR(100) NOT NULL UNIQUE, -- 서비스 내부 주문번호
+                        amount BIGINT NOT NULL,
+                        -- 결제 상태: WAITING / PAID / FAILED / CANCELLED 등
+                        status_id BIGINT NOT NULL,
+                        -- 결제 수단: 카드, 카카오페이 등
+                        -- 결제 레코드를 먼저 만들고 결제 수단은 나중에 확정될 수 있기 때문에 NULL허용
+                        pay_method_id BIGINT,
+                        -- CURRENT_TIME_STAMP인지?
+                        paid_at DATETIME DEFAULT NULL,
+                        created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                        FOREIGN KEY (member_id) REFERENCES member(id) ON DELETE CASCADE,
+                        FOREIGN KEY (status_id) REFERENCES common_code(code),
+                        FOREIGN KEY (pay_method_id) REFERENCES common_code(code)
+);
+
+-- 10. 사용자 정기 구독 테이블
+CREATE TABLE subscription (
+                        id BIGINT AUTO_INCREMENT PRIMARY KEY,
+                        member_id BIGINT NOT NULL,
+                        -- 구독 대상 회원
+                        target_id BIGINT NOT NULL,
+                        customer_id VARCHAR(100) NOT NULL,
+                        price_id BIGINT NOT NULL,
+                        -- ACTIVE / CANCELLED / EXPIRED 등
+                        -- DEFAULT를 둘지 말지 고민
+                        status_id BIGINT NOT NULL,
+                        next_billing_at DATETIME NOT NULL,
+                        -- 실제 구독 종료일
+                        ended_at DATETIME,
+                        created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                        FOREIGN KEY (member_id) REFERENCES member(id) ON DELETE CASCADE,
+                        FOREIGN KEY (target_id) REFERENCES member(id) ON DELETE CASCADE,
+                        FOREIGN KEY (price_id) REFERENCES common_code(id) ON DELETE CASCADE,
+                        FOREIGN KEY (status_id) REFERENCES common_code(id) ON DELETE CASCADE,
+                        -- 자기 자신 구독 방지
+                        CHECK ( member_id <> target_id)
+);
+
+-- 11. 구매한 테마 테이블
+CREATE TABLE theme_purchase (
+                        id BIGINT AUTO_INCREMENT PRIMARY KEY,
+                        member_id BIGINT NOT NULL,
+                        theme_id BIGINT NOT NULL,
+                        payment_id BIGINT NOT NULL,
+                        apply_theme BOOLEAN,
+                        created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                        FOREIGN KEY (member_id) REFERENCES member(id) ON DELETE CASCADE,
+                        FOREIGN KEY (theme_id) REFERENCES payment(id),
+                        -- 같은 회원이 같은 테마를 중복 구매하지 못하도록 설정
+                        UNIQUE (member_id,theme_id)
 
 );
+
