@@ -171,7 +171,7 @@ erDiagram
 | profile_image | VARCHAR(255) | NULL                                                            | AWS S3 프로필 사진 URL |
 | theme_id      | BIGINT       | FK (theme.id), NOT NULL                                         | 현재 적용 테마 ID. 가입 시 기본 테마(`theme.is_default = TRUE`) |
 | introduction  | VARCHAR(255) | NULL                                                            | 소개글   |
-| authmethod    | VARCHAR(255) | NOT NULL                                                        | 로그인 인증 방식(google/kakao/local)   |
+| authmethod    | VARCHAR(20) | NOT NULL                                                        | 로그인 인증 방식(google/kakao/local)   |
 | month_income  | BIGINT       | NULL                                                            | 월간 정산 금액   |
 | updated_at    | DATETIME     | NOT NULL, DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP | 회원 정보 수정 일시 |
 | created_at    | DATETIME     | NOT NULL, DEFAULT CURRENT_TIMESTAMP                             | 계정 생성 일시 |
