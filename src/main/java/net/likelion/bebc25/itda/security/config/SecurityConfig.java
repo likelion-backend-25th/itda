@@ -98,7 +98,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/notices/**").hasAnyRole("ADMIN", "MANAGER")
 
                         // 로그인, 회원가입 등 인증 진입 엔드포인트 접근 허용
-                        .requestMatchers("/api/v1/auth/**").permitAll()
+                        .requestMatchers("/api/v1/auth/**","/api/v1/member").permitAll()
 
                         // H2 인메모리 데이터베이스 웹 콘솔 접근 허용 (개발 환경 전용)
                         .requestMatchers("/h2-console/**").permitAll()
