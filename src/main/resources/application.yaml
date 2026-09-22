@@ -34,7 +34,7 @@ spring:
             scope:
               - profile_nickname
               - profile_image
-              - account_email
+#              - account_email
             redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
             client-name: Kakao
         provider:
@@ -49,7 +49,7 @@ mybatis:
   # 매퍼 XML 파일 경로 매핑
   mapper-locations: classpath:mapper/**/*.xml
   # DTO 패키지 별칭 지정 (매퍼 XML에서 패키지명 생략 가능)
-  type-aliases-package: net.likelion.bebc25.sns.dto
+  type-aliases-package: net.likelion.bebc25.itda
   configuration:
     # DB 컬럼명 스네이크 케이스를 자바 카멜 케이스 필드로 자동 변환
     map-underscore-to-camel-case: true
@@ -83,5 +83,6 @@ logging:
 jwt:
   # Base64로 인코딩된 최소 256비트(32바이트) 이상의 보안 비밀키 (환경 변수 주입)
   secret: ${JWT_SECRET}
+#  secret: dGhpc2lzbXlzZWNyZXRrZXlmb3Jqd3R0b2tlbnNpZ25hdHVyZXZhbGlkYXRpb24xMjM0NTY3ODkwIQ==
   access-token-expiration: 3600000      # 1시간 (밀리초 단위)
   refresh-token-expiration: 604800000   # 7일 (밀리초 단위)
