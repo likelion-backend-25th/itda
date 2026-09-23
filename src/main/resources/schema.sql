@@ -97,7 +97,7 @@ CREATE TABLE post (
                         image_url VARCHAR(255),
                         like_count INT NOT NULL DEFAULT 0,
                         view_count INT NOT NULL DEFAULT 0,
-                        subscriber_only BOOLEAN DEFAULT FALSE,    -- 구독자 전용 여부
+                        subscriber_only BOOLEAN NOT NULL DEFAULT FALSE,    -- 구독자 전용 여부
                         created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
                         updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
                         FOREIGN KEY (member_id) REFERENCES member(id) ON DELETE CASCADE,
