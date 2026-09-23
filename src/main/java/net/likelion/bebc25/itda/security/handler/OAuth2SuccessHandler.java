@@ -38,6 +38,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         // 3. React 메인 페이지로 리다이렉트
         String targetUrl = UriComponentsBuilder
                 .fromUriString("https://itda-web.netlify.app/")
+//                .fromUriString("http://localhost:5173/")
                 .queryParam("accessToken", accessToken)
                 .build().toUriString();
 
