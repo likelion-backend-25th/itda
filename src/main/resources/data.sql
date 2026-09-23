@@ -59,16 +59,16 @@ INSERT INTO member (
     profile_image, theme_id, authmethod, month_income
 )
 VALUES
-    (1, 'user1@itda.com', '$2a$10$7EqJtq98hPqEX7fNZaFWoO5xZ5x8x5x5x5x5x5x5x5x5x5x5x5u',
+    (1, 'user1@itda.com', '$2a$10$e4dlYcuksXo57vvps8oPaeyDcD0keCuSwPIHBuYDn5oIGZD1PpHrq',
      '책읽는사람', 'ROLE_USER', '책과 독서를 좋아합니다.', '/images/profile/user1.png', 1, 'LOCAL', 0),
 
-    (2, 'user2@itda.com', '$2a$10$7EqJtq98hPqEX7fNZaFWoO5xZ5x8x5x5x5x5x5x5x5x5x5x5x5u',
+    (2, 'user2@itda.com', '$2a$10$e4dlYcuksXo57vvps8oPaeyDcD0keCuSwPIHBuYDn5oIGZD1PpHrq',
      '요리하는사람', 'ROLE_USER', '맛있는 요리를 만드는 것을 좋아합니다.', '/images/profile/user2.png', 1, 'LOCAL', 0),
 
-    (3, 'creator@itda.com', '$2a$10$7EqJtq98hPqEX7fNZaFWoO5xZ5x8x5x5x5x5x5x5x5x5x5x5x5u',
+    (3, 'creator@itda.com', '$2a$10$e4dlYcuksXo57vvps8oPaeyDcD0keCuSwPIHBuYDn5oIGZD1PpHrq',
      '오늘의취미', 'ROLE_USER', '취미를 함께 나누고 있습니다.', '/images/profile/creator.png', 2, 'LOCAL', 50000),
 
-    (4, 'artist@itda.com', '$2a$10$7EqJtq98hPqEX7fNZaFWoO5xZ5x8x5x5x5x5x5x5x5x5x5x5x5u',
+    (4, 'artist@itda.com', '$2a$10$e4dlYcuksXo57vvps8oPaeyDcD0keCuSwPIHBuYDn5oIGZD1PpHrq',
      '그림그리는사람', 'ROLE_USER', '그림과 드로잉을 공유합니다.', '/images/profile/artist.png', 1, 'LOCAL', 30000);
 
 
