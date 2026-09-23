@@ -1,5 +1,5 @@
 services:
-  mybatis-sns-app:
+  itda-sns-app:
     image: dltmddjs98/itda-sns:latest
     container_name: itda-sns-app
     restart: always
@@ -7,12 +7,6 @@ services:
       - "80:8080"
     env_file:
       - .env
-    environment:
-      - DB_HOST=mysql
-      - TZ=Asia/Seoul
-    depends_on:
-      mysql:
-        condition: service_healthy
 
 #  mysql:
 #    image: mysql:9.7
@@ -32,6 +26,3 @@ services:
 #      start_period: 10s
 #    volumes:
 #      - mysql-data:/var/lib/mysql
-
-volumes:
-  mysql-data:
