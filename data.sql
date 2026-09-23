@@ -150,7 +150,7 @@ VALUES
 
 -- 9. 테마 결제
 INSERT INTO payment (
-    id, member_id, payment_type, target_id,
+    id, member_id, payment_type, payment_target_id,
     imp_uid, merchant_uid, amount, status_id, pay_method_id, paid_at
 )
 VALUES
@@ -172,7 +172,7 @@ UPDATE member SET theme_id = 3 WHERE id = 2;
 
 -- 12. 구독 결제
 INSERT INTO payment (
-    id, member_id, payment_type, target_id,
+    id, member_id, payment_type, payment_target_id,
     imp_uid, merchant_uid, amount, status_id, pay_method_id, paid_at
 )
 VALUES
@@ -185,7 +185,7 @@ VALUES
 
 -- 13. 정기 구독
 INSERT INTO subscription (
-    id, member_id, target_id, customer_id,
+    id, member_id, target_id, customer_uid,
     price_id, status_id, next_billing_at, started_at, ended_at
 )
 VALUES
