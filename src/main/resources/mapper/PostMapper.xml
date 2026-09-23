@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="net.likelion.bebc25.itda.post.mapper.PostMapper">
+
+
+<!--    1. 신규 게시글 등록  작성일은 DEFAULT로 만든 날로 들어가기 때문에 필요 없음  -->
+    <insert id="save" parameterType="net.likelion.bebc25.itda.post.domain.Post"
+            useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO post (member_id, category_id, content, image_url, subscriber_only)
+        VALUES (#{memberId},#{categoryId},#{content},#{imageUrl},#{subscriberOnly})
+    </insert>
+
+<!--    2. 게시글 단건 상세 조회(ID) -->
+    <select id="findById" parameterType="long" resultType="net.likelion.bebc25.itda.post.domain.Post">
+        SELECT id, member_id, category_id, content, image_url, like_count, view_count, subscriber_only, created_at, updated_at
+        FROM post
+        WHERE id = #{id}
+    </select>
+
+
+</mapper>
