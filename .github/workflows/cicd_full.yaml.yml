@@ -112,11 +112,6 @@ jobs:
             cat << 'EOF' > .env
             DB_HOST=${{ secrets.DB_HOST }}
             DB_PORT=3306
-
-#            MYSQL_DATABASE=${{ secrets.MYSQL_DATABASE }}
-#            MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }}
-#            MYSQL_USER=${{ secrets.MYSQL_USER }}
-#            MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}
             
             SPRING_DATASOURCE_USERNAME=${{ secrets.MYSQL_USER }}
             SPRING_DATASOURCE_PASSWORD=${{ secrets.MYSQL_PASSWORD }}
