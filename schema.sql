@@ -132,7 +132,7 @@ CREATE TABLE payment (
                         id BIGINT AUTO_INCREMENT PRIMARY KEY,
                         member_id BIGINT NOT NULL,
                         payment_type VARCHAR(20) NOT NULL,
-                        payment_target_id BIGINT NOT NULL,
+                        target_id BIGINT NOT NULL,
                         imp_uid VARCHAR(100),
                         merchant_uid VARCHAR(100) NOT NULL UNIQUE, -- 서비스 내부 주문번호
                         amount BIGINT NOT NULL,
