@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>소셜 로그인 콜백 테스트</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; line-height: 1.6; }
+        .token-box { background: #f4f4f4; border: 1px solid #ddd; padding: 15px; border-radius: 6px; word-break: break-all; margin-top: 10px; font-family: monospace; }
+    </style>
+</head>
+<body>
+<h1>소셜 로그인 성공!</h1>
+<p>백엔드에서 발급되어 URL 쿼리 파라미터로 전달된 JWT 액세스 토큰입니다:</p>
+<div id="token" class="token-box">토큰 확인 중...</div>
+
+<script>
+    // 1. URL 쿼리 파라미터에서 accessToken 추출
+    const params = new URLSearchParams(window.location.search);
+    const accessToken = params.get('accessToken');
+
+    // 2. 화면 출력 및 로컬 스토리지 보관
+    if (accessToken) {
+        document.getElementById('token').innerText = accessToken;
+        localStorage.setItem('accessToken', accessToken);
+        console.log('발급된 JWT Access Token:', accessToken);
+    } else {
+        document.getElementById('token').innerText = '전달된 accessToken이 없습니다.';
+    }
+</script>
+</body>
+</html>

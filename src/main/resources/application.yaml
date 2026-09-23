@@ -2,3 +2,87 @@ spring:
   application:
     name: itda
 
+  # 데이터베이스 접속 정보
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/sns_db?serverTimezone=Asia/Seoul&useSSL=false&allowPublicKeyRetrieval=true
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+
+  # 데이터베이스 초기화 설정 (애플리케이션 구동 시 schema.sql 및 data.sql 자동 실행)
+  sql:
+    init:
+      mode: always
+
+  # OAuth2 소셜 로그인 설정 (application-oauth.yaml 통합)
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${GOOGLE_CLIENT_ID}
+            client-secret: ${GOOGLE_CLIENT_SECRET}
+            scope:
+              - profile
+              - email
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+          kakao:
+            client-id: ${KAKAO_CLIENT_ID}
+            client-secret: ${KAKAO_CLIENT_SECRET}
+            client-authentication-method: client_secret_post
+            authorization-grant-type: authorization_code
+            scope:
+              - profile_nickname
+              - profile_image
+#              - account_email
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+            client-name: Kakao
+        provider:
+          kakao:
+            authorization-uri: https://kauth.kakao.com/oauth/authorize
+            token-uri: https://kauth.kakao.com/oauth/token
+            user-info-uri: https://kapi.kakao.com/v2/user/me
+            user-name-attribute: id
+
+# MyBatis 설정
+mybatis:
+  # 매퍼 XML 파일 경로 매핑
+  mapper-locations: classpath:mapper/**/*.xml
+  # DTO 패키지 별칭 지정 (매퍼 XML에서 패키지명 생략 가능)
+  type-aliases-package: net.likelion.bebc25.itda
+  configuration:
+    # DB 컬럼명 스네이크 케이스를 자바 카멜 케이스 필드로 자동 변환
+    map-underscore-to-camel-case: true
+    # 쿼리 실행 로그 콘솔 출력 (개발/테스트 디버깅용)
+#    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+# Springdoc OpenAPI 및 Swagger UI 설정
+springdoc:
+  # 기본 응답 미디어 타입을 application/json으로 지정
+  default-produces-media-type: application/json
+  swagger-ui:
+    # Swagger UI 엔드포인트 커스텀 경로 설정
+    path: /swagger-ui.html
+    # 태그 그룹 정렬 기준 (옵션: alpha - 태그명 알파벳/가나다 사전순)
+    tags-sorter: alpha
+    # 개별 API 엔드포인트 정렬 기준 (옵션: alpha - URI 경로 사전순, method - HTTP 메서드명 알파벳순)
+    operations-sorter: alpha
+  api-docs:
+    # OpenAPI 문서 자동 생성 활성화 및 엔드포인트 경로
+    enabled: true
+    path: /v3/api-docs
+
+logging:
+  level:
+    # 스프링 시큐리티 전체 로그를 디버그 레벨로 활성화
+    org.springframework.security: DEBUG
+
+    # 더 세부적인 필터 체인 통과 흐름을 보려면 TRACE 지정 가능
+    # org.springframework.security.web.FilterChainProxy: TRACE
+
+jwt:
+  # Base64로 인코딩된 최소 256비트(32바이트) 이상의 보안 비밀키 (환경 변수 주입)
+  secret: ${JWT_SECRET}
+#  secret: dGhpc2lzbXlzZWNyZXRrZXlmb3Jqd3R0b2tlbnNpZ25hdHVyZXZhbGlkYXRpb24xMjM0NTY3ODkwIQ==
+  access-token-expiration: 3600000      # 1시간 (밀리초 단위)
+  refresh-token-expiration: 604800000   # 7일 (밀리초 단위)
