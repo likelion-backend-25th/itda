@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="net.likelion.bebc25.itda.subscription.mapper.SubscriptionMapper">
+
+    <select id="findActiveSubscription"
+            resultType="net.likelion.bebc25.itda.domain.Subscription">
+
+        SELECT
+        s.id,
+        s.member_id,
+        s.target_id,
+        s.customer_uid,
+        s.price_id,
+        s.status_id,
+        s.next_billing_at,
+        s.started_at,
+        s.ended_at
+        FROM subscription s
+        JOIN common_code c
+        ON s.status_id = c.id
+        WHERE s.member_id = #{memberId}
+        AND s.target_id = #{targetId}
+        AND c.type = 4
+        AND c.code = 'SS01'
+
+    </select>
+
+
+    <insert id="save"
+            parameterType="net.likelion.bebc25.itda.domain.Subscription"
+            useGeneratedKeys="true"
+            keyProperty="id">
+
+        INSERT INTO subscription (
+        member_id,
+        target_id,
+        customer_uid,
+        price_id,
+        status_id,
+        next_billing_at,
+        started_at,
+        ended_at
+        )
+        VALUES (
+        #{member_id},
+        #{target_id},
+        #{customer_uid},
+        #{price_id},
+        (
+        SELECT id
+        FROM common_code
+        WHERE type = 4
+        AND code = 'SS01'
+        AND is_active = TRUE
+        ),
+        DATE_ADD(NOW(), INTERVAL 1 MONTH),
+        NOW(),
+        NULL
+        )
+
+    </insert>
+
+</mapper>
