@@ -2,9 +2,9 @@ package net.likelion.bebc25.itda.exception;
 
 import lombok.extern.slf4j.Slf4j;
 import net.likelion.bebc25.itda.security.dto.ApiErrorResponse;
-import org.apache.tomcat.websocket.AuthenticationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authorization.AuthorizationDeniedException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
