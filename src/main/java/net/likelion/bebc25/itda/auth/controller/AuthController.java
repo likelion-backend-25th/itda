@@ -1,6 +1,8 @@
 package net.likelion.bebc25.itda.auth.controller;
 
+import com.nimbusds.oauth2.sdk.TokenResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 import net.likelion.bebc25.itda.domain.Member;
 import net.likelion.bebc25.itda.member.dto.LoginRequest;
 import net.likelion.bebc25.itda.member.dto.LoginResponse;
@@ -28,30 +30,29 @@ public class AuthController {
         this.jwtProvider = jwtProvider;
     }
 
-    @PostMapping("/login")
-    public ResponseEntity<LoginResponse> login(
-            @RequestBody LoginRequest request
-    ) {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        request.getEmail(),
-                        request.getPassword()
-                )
-        );
-
-        CustomUserDetails userDetails =
-                (CustomUserDetails) authentication.getPrincipal();
-
-        Member member = userDetails.getMember();
-
-        String accessToken = jwtProvider.createAccessToken(
-                member.getId(),
-                member.getEmail(),
-                member.getRole()
-        );
-
-        return ResponseEntity.ok(
-                new LoginResponse(accessToken)
-        );
-    }
+//    @PostMapping("/login")
+//    public ResponseEntity<LoginResponse> login(
+//            @RequestBody LoginRequest request
+//    ) {
+//        Authentication authentication = authenticationManager.authenticate(
+//                new UsernamePasswordAuthenticationToken(
+//                        request.getEmail(),
+//                        request.getPassword()
+//                )
+//        );
+//
+//        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+//
+//        Long memberId = userDetails.getMember().getId();
+//        String email = userDetails.getUsername();
+//        String role = userDetails.getMember().getRole();
+//
+//        // 4. JWT 토큰 생성
+//        String accessToken = jwtProvider.createAccessToken(memberId, email, role);
+//        String refreshToken = jwtProvider.createRefreshToken(memberId);
+//
+//        // 5. 발급된 토큰 응답 반환 (Access Token 유효기간 1시간 = 3600초)
+//        TokenResponse response = TokenResponse.of(accessToken, refreshToken, 3600L);
+//        return ResponseEntity.ok(new LoginResponse(accessToken));
+//    }
 }
