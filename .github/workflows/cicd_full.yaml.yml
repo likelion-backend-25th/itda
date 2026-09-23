@@ -75,8 +75,8 @@ jobs:
           file: ./Dockerfile
           push: true
           tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/mybatis-sns:latest
-            ${{ secrets.DOCKERHUB_USERNAME }}/mybatis-sns:${{ github.sha }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/itda-sns:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/itda-sns:${{ github.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -110,14 +110,17 @@ jobs:
             cd /home/ec2-user
             echo ">>> 1. GitHub Secrets 기반 운영 환경 변수(.env) 자동 동기화"
             cat << 'EOF' > .env
-            DB_HOST=mysql
+            DB_HOST=${{ secrets.DB_HOST }}
             DB_PORT=3306
-            MYSQL_DATABASE=${{ secrets.MYSQL_DATABASE }}
-            MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }}
-            MYSQL_USER=${{ secrets.MYSQL_USER }}
-            MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}
+
+#            MYSQL_DATABASE=${{ secrets.MYSQL_DATABASE }}
+#            MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }}
+#            MYSQL_USER=${{ secrets.MYSQL_USER }}
+#            MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}
+            
             SPRING_DATASOURCE_USERNAME=${{ secrets.MYSQL_USER }}
             SPRING_DATASOURCE_PASSWORD=${{ secrets.MYSQL_PASSWORD }}
+            
             JWT_SECRET=${{ secrets.JWT_SECRET }}
             GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}
             GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}
