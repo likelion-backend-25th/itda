@@ -104,6 +104,8 @@ public class SecurityConfig {
                         // 공지사항 조회(GET)는 비로그인 사용자에게도 공개 허용
                         .requestMatchers(HttpMethod.GET, "/api/v1/notices/**").permitAll()
 
+                        .requestMatchers(HttpMethod.GET, "/api/v1/themes").permitAll()
+
                         // 공지사항 등록, 수정, 삭제(POST, PUT, DELETE 등)는 관리자 또는 매니저 권한 필수
                         .requestMatchers("/api/v1/notices/**").hasAnyRole("ADMIN", "MANAGER")
 
