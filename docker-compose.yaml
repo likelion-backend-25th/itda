@@ -7,7 +7,6 @@ services:
       - "80:8080"
     env_file:
       - .env
-
   mysql:
     image: mysql:9.7
     container_name: itda-sns-db
