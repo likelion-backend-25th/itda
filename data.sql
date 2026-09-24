@@ -151,7 +151,7 @@ VALUES
 -- 9. 테마 결제
 INSERT INTO payment (
     id, member_id, payment_type, target_id,
-    imp_uid, merchant_uid, amount, status_id, pay_method_id, paid_at
+    payment_id, transaction_id, amount, status_id, pay_method_id, paid_at
 )
 VALUES
     (1, 1, 'THEME', 2, 'imp_test_theme_001', 'merchant_theme_001', 3000, 2, 5, CURRENT_TIMESTAMP),
@@ -173,7 +173,7 @@ UPDATE member SET theme_id = 3 WHERE id = 2;
 -- 12. 구독 결제
 INSERT INTO payment (
     id, member_id, payment_type, target_id,
-    imp_uid, merchant_uid, amount, status_id, pay_method_id, paid_at
+    payment_id, transaction_id, amount, status_id, pay_method_id, paid_at
 )
 VALUES
     (3, 1, 'SUBSCRIPTION', 3, 'imp_test_subscription_001', 'merchant_subscription_001',

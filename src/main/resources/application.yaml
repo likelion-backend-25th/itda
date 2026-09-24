@@ -86,3 +86,10 @@ jwt:
 #  secret: dGhpc2lzbXlzZWNyZXRrZXlmb3Jqd3R0b2tlbnNpZ25hdHVyZXZhbGlkYXRpb24xMjM0NTY3ODkwIQ==
   access-token-expiration: 3600000      # 1시간 (밀리초 단위)
   refresh-token-expiration: 604800000   # 7일 (밀리초 단위)
+
+protone:
+  store-id: ${PORTONE_STORE_ID}
+  channel-key: ${PORTONE_CHANNEL_KEY}
+  api-secret: ${PORTONE_API_SECRET}
+  webhook-secret: ${PORTONE_WEBHOOK_SECRET}
+
