@@ -19,4 +19,9 @@ public interface SubscriptionService {
             Long memberId,
             Long targetId
     );
+
+    void cancelSubscription(
+            Long memberId,
+            Long targetId
+    );
 }

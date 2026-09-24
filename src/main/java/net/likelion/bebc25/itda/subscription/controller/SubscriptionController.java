@@ -51,4 +51,19 @@ public class SubscriptionController {
                 new SubscriptionStatusResponse(subscribed)
         );
     }
+
+    @PatchMapping("/{targetId}/cancel")
+    public ResponseEntity<Void> cancelSubscription(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PathVariable Long targetId
+    ) {
+        Long memberId = userDetails.getMember().getId();
+
+        subscriptionService.cancelSubscription(
+                memberId,
+                targetId
+        );
+
+        return ResponseEntity.ok().build();
+    }
 }

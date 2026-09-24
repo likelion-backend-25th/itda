@@ -79,7 +79,6 @@ logging:
 jwt:
   # Base64로 인코딩된 최소 256비트(32바이트) 이상의 보안 비밀키 (환경 변수 주입)
   secret: ${JWT_SECRET}
-#  secret: dGhpc2lzbXlzZWNyZXRrZXlmb3Jqd3R0b2tlbnNpZ25hdHVyZXZhbGlkYXRpb24xMjM0NTY3ODkwIQ==
   access-token-expiration: 3600000      # 1시간 (밀리초 단위)
   refresh-token-expiration: 604800000   # 7일 (밀리초 단위)
 
@@ -89,3 +88,6 @@ protone:
   api-secret: ${PORTONE_API_SECRET}
   webhook-secret: ${PORTONE_WEBHOOK_SECRET}
 
+server:
+  # 프레임워크 레벨에서 처리
+  forward-headers-strategy: framework
