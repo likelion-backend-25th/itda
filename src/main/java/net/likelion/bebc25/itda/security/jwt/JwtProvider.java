@@ -29,7 +29,6 @@ public class JwtProvider {
     ) {
         // Base64 디코딩 후 HMAC-SHA 알고리즘에 적합한 SecretKey 인스턴스 생성
         byte[] keyBytes = Decoders.BASE64.decode(secret);
-        System.out.println(new String(keyBytes));
         this.secretKey = Keys.hmacShaKeyFor(keyBytes); // HMAC-SHA 알고리즘사용
         this.accessTokenExpiration = accessTokenExpiration;
         this.refreshTokenExpiration = refreshTokenExpiration;
@@ -41,7 +40,7 @@ public class JwtProvider {
         Date validity = new Date(now.getTime() + accessTokenExpiration);
 
         return Jwts.builder()
-                .issuer("mybatis-sns") // 토큰 발행자
+                .issuer("itda-sns") // 토큰 발행자
                 .subject(String.valueOf(memberId)) // 토큰의 주체, 사용자 식별값
                 .claim("email", email) // payload에 포함할 사용자 정의 정보
                 .claim("roles", List.of(role)) // payload에 포함할 사용자 정의 정보
@@ -57,7 +56,7 @@ public class JwtProvider {
         Date validity = new Date(now.getTime() + refreshTokenExpiration);
 
         return Jwts.builder()
-                .issuer("mybatis-sns")
+                .issuer("itda-sns")
                 .subject(String.valueOf(memberId))
                 .issuedAt(now)
                 .expiration(validity)

@@ -2,19 +2,16 @@ spring:
   application:
     name: itda
 
-  # 데이터베이스 접속 정보
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/sns_db?serverTimezone=Asia/Seoul&useSSL=false&allowPublicKeyRetrieval=true
+    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/itda_db?serverTimezone=Asia/Seoul&useSSL=false&allowPublicKeyRetrieval=true
     username: ${SPRING_DATASOURCE_USERNAME}
     password: ${SPRING_DATASOURCE_PASSWORD}
 
-  # 데이터베이스 초기화 설정 (애플리케이션 구동 시 schema.sql 및 data.sql 자동 실행)
   sql:
     init:
       mode: always
 
-  # OAuth2 소셜 로그인 설정 (application-oauth.yaml 통합)
   security:
     oauth2:
       client:
@@ -44,7 +41,6 @@ spring:
             user-info-uri: https://kapi.kakao.com/v2/user/me
             user-name-attribute: id
 
-# MyBatis 설정
 mybatis:
   # 매퍼 XML 파일 경로 매핑
   mapper-locations: classpath:mapper/**/*.xml

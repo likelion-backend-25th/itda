@@ -3,15 +3,25 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="net.likelion.bebc25.itda.payment.mapper.PaymentMapper">
+<mapper namespace="net.likelion.bebc25.itda.commoncode.mapper.CommonCodeMapper">
 
-    <!--common_code 조회 -->
-    <select id="findCommonCodeId" resultType="java.lang.Long">>
-        SELECT id
+    <select id="findActiveSubscriptionPrice"
+            parameterType="Long"
+            resultType="net.likelion.bebc25.itda.domain.CommonCode">
+
+        SELECT
+        id,
+        type,
+        code,
+        name,
+        description,
+        sort,
+        is_active
         FROM common_code
-        WHERE type = #{type}
-        AND code = #{code}
+        WHERE id = #{priceId}
+        AND type = 5
         AND is_active = TRUE
+
     </select>
 
 </mapper>
