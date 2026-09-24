@@ -6,9 +6,15 @@ import net.likelion.bebc25.itda.domain.CommonCode;
 import net.likelion.bebc25.itda.domain.Member;
 import net.likelion.bebc25.itda.domain.Subscription;
 import net.likelion.bebc25.itda.member.mapper.MemberMapper;
+import net.likelion.bebc25.itda.subscription.dto.MySubscriptionResponse;
+import net.likelion.bebc25.itda.subscription.dto.SubscriptionInfo;
 import net.likelion.bebc25.itda.subscription.dto.SubscriptionRequest;
 import net.likelion.bebc25.itda.subscription.mapper.SubscriptionMapper;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -83,6 +89,36 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     }
 
     @Override
+    public List<MySubscriptionResponse> getMySubscriptions(Long memberId) {
+
+        List<SubscriptionInfo> subscriptions =
+                subscriptionMapper.findMySubscriptions(memberId);
+
+        LocalDateTime now = LocalDateTime.now();
+
+        return subscriptions.stream()
+                .map(subscription -> {
+
+                    long remainingDays =
+                            ChronoUnit.DAYS.between(
+                                    now,
+                                    subscription.getNextBillingAt()
+                            );
+
+                    return new MySubscriptionResponse(
+                            subscription.getSubscriptionId(),
+                            subscription.getTargetId(),
+                            subscription.getNickname(),
+                            subscription.getProfileImage(),
+                            subscription.getPriceId(),
+                            subscription.getNextBillingAt(),
+                            Math.max(remainingDays, 0)
+                    );
+                })
+                .toList();
+    }
+
+    @Override
     public boolean isSubscribed(
             Long memberId,
             Long targetId
@@ -117,5 +153,10 @@ public class SubscriptionServiceImpl implements SubscriptionService {
                 memberId,
                 targetId
         );
+    }
+
+    @Override
+    public void expireSubscriptions() {
+        subscriptionMapper.expireSubscriptions();
     }
 }

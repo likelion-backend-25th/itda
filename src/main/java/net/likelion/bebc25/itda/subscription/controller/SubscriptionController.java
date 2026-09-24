@@ -4,12 +4,15 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import net.likelion.bebc25.itda.security.principal.CustomUserDetails;
+import net.likelion.bebc25.itda.subscription.dto.MySubscriptionResponse;
 import net.likelion.bebc25.itda.subscription.dto.SubscriptionRequest;
 import net.likelion.bebc25.itda.subscription.dto.SubscriptionStatusResponse;
 import net.likelion.bebc25.itda.subscription.service.SubscriptionService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Tag(name = "구독 API", description = "구독 관련 기능")
 @RestController
@@ -34,6 +37,7 @@ public class SubscriptionController {
         return ResponseEntity.ok().build();
     }
 
+    // 자신이 특정 창작자를 구독하고 있는지 여부 (구독중 / 구독하기)
     @GetMapping("/{targetId}")
     public ResponseEntity<SubscriptionStatusResponse> getSubscriptionStatus(
             @AuthenticationPrincipal CustomUserDetails userDetails,
@@ -52,6 +56,20 @@ public class SubscriptionController {
         );
     }
 
+    // 내가 구독한 창작자들 목록
+    @GetMapping("/me")
+    public ResponseEntity<List<MySubscriptionResponse>> getMySubscriptions(
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        Long memberId = userDetails.getMember().getId();
+
+        List<MySubscriptionResponse> subscriptions =
+                subscriptionService.getMySubscriptions(memberId);
+
+        return ResponseEntity.ok(subscriptions);
+    }
+
+    // 구독하고 있는 특정 창작자를 구독 해제
     @PatchMapping("/{targetId}/cancel")
     public ResponseEntity<Void> cancelSubscription(
             @AuthenticationPrincipal CustomUserDetails userDetails,

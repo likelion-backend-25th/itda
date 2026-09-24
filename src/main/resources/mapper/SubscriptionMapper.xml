@@ -28,6 +28,28 @@
 
     </select>
 
+    <select id="findMySubscriptions"
+            resultType="net.likelion.bebc25.itda.subscription.dto.SubscriptionInfo">
+
+        SELECT
+        s.id AS subscriptionId,
+        s.target_id AS targetId,
+        m.nickname,
+        m.profile_image AS profileImage,
+        s.price_id AS priceId,
+        s.next_billing_at AS nextBillingAt
+        FROM subscription s
+        JOIN member m
+        ON s.target_id = m.id
+        JOIN common_code c
+        ON s.status_id = c.id
+        WHERE s.member_id = #{memberId}
+        AND c.type = 4
+        AND c.code = 'SS01'
+        ORDER BY s.next_billing_at ASC
+
+    </select>
+
 
     <insert id="save"
             parameterType="net.likelion.bebc25.itda.domain.Subscription"
@@ -101,4 +123,25 @@
 
     </update>
 
+    <update id="expireSubscriptions">
+        UPDATE subscription
+        SET
+        status_id = (
+        SELECT id
+        FROM common_code
+        WHERE type = 4
+        AND code = 'SS03'
+        AND is_active = TRUE
+        ),
+        ended_at = next_billing_at
+        WHERE status_id = (
+        SELECT id
+        FROM common_code
+        WHERE type = 4
+        AND code = 'SS01'
+        AND is_active = TRUE
+        )
+        AND next_billing_at &lt;= NOW()
+    </update>
+<!-- %lt= 는 <= 과 같음 -->
 </mapper>
