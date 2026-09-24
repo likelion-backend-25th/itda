@@ -63,4 +63,42 @@
 
     </insert>
 
+    <update id="extendSubscription">
+        UPDATE subscription
+        SET next_billing_at = DATE_ADD(next_billing_at, INTERVAL 1 MONTH)
+        WHERE member_id = #{memberId}
+        AND target_id = #{targetId}
+        AND status_id = (
+        SELECT id
+        FROM common_code
+        WHERE type = 4
+        AND code = 'SS01'
+        AND is_active = TRUE
+        )
+    </update>
+
+    <update id="cancelSubscription">
+
+        UPDATE subscription
+        SET
+        status_id = (
+        SELECT id
+        FROM common_code
+        WHERE type = 4
+        AND code = 'SS02'
+        AND is_active = TRUE
+        ),
+        ended_at = NOW()
+        WHERE member_id = #{memberId}
+        AND target_id = #{targetId}
+        AND status_id = (
+        SELECT id
+        FROM common_code
+        WHERE type = 4
+        AND code = 'SS01'
+        AND is_active = TRUE
+        )
+
+    </update>
+
 </mapper>

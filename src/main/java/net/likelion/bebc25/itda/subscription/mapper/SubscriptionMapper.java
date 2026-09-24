@@ -1,8 +1,11 @@
 package net.likelion.bebc25.itda.subscription.mapper;
 
 import net.likelion.bebc25.itda.domain.Subscription;
+import net.likelion.bebc25.itda.subscription.dto.MySubscriptionResponse;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 @Mapper
 public interface SubscriptionMapper {
@@ -13,4 +16,18 @@ public interface SubscriptionMapper {
     );
 
     int save(Subscription subscription);
+
+    int extendSubscription(
+            @Param("memberId") Long memberId,
+            @Param("targetId") Long targetId
+    );
+
+    int cancelSubscription(
+            @Param("memberId") Long memberId,
+            @Param("targetId") Long targetId
+    );
+
+    List<MySubscriptionResponse> findMySubscriptions(
+            @Param("memberId") Long memberId
+    );
 }
