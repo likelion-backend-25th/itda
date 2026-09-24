@@ -2,6 +2,7 @@ package net.likelion.bebc25.itda.subscription.mapper;
 
 import net.likelion.bebc25.itda.domain.Subscription;
 import net.likelion.bebc25.itda.subscription.dto.MySubscriptionResponse;
+import net.likelion.bebc25.itda.subscription.dto.SubscriptionInfo;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -27,7 +28,9 @@ public interface SubscriptionMapper {
             @Param("targetId") Long targetId
     );
 
-    List<MySubscriptionResponse> findMySubscriptions(
+    List<SubscriptionInfo> findMySubscriptions(
             @Param("memberId") Long memberId
     );
+
+    int expireSubscriptions();
 }
