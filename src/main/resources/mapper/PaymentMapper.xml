@@ -19,8 +19,7 @@
     </insert>
 
     <!-- 나중에 결제 검증에서 사용 -->
-    <select id="findByPaymentId"
-            resultType="net.likelion.bebc25.itda.payment.dto.Payment">
+    <select id="findByPaymentId" resultType="net.likelion.bebc25.itda.payment.dto.Payment">
 
         SELECT
         id,
@@ -39,5 +38,15 @@
         WHERE payment_id = #{paymentId}
 
     </select>
+        <!-- 결제 상태 / 수단 코드 조회 -->
+        <select id="findCommonCodeId" resultType="java.lang.Long">
+
+            SELECT id
+            FROM common_code
+            WHERE type = #{type}
+            AND code = #{code}
+            AND is_active = TRUE
+
+        </select>
 
 </mapper>

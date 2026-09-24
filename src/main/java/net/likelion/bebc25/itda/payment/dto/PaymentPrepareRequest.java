@@ -17,7 +17,7 @@ public record PaymentPrepareRequest(
          * 결제 유형
          * 테마 / 구독
          */
-        @Schema(description = "결제 유형",
+        @Schema(description = "상품 유형",
                 example = "THENE"
         )
         @NotBlank(message = "결제 유형은 필수입니다.")
