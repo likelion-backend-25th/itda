@@ -44,16 +44,6 @@ public class SubscriptionServiceImpl implements SubscriptionService {
             throw new IllegalArgumentException("유효하지 않은 구독 가격입니다.");
         }
 
-        // 4. 이미 활성화된 구독이 있는지 확인
-        Subscription activeSubscription =
-                subscriptionMapper.findActiveSubscription(
-                        memberId,
-                        request.getTargetId()
-                );
-
-        if (activeSubscription != null) {
-            throw new IllegalArgumentException("이미 구독 중인 회원입니다.");
-        }
     }
 
     @Override
@@ -64,6 +54,23 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     ) {
         // 구독 생성 전 검증
         validateSubscription(memberId, request);
+
+        // 지금 구독중인지
+        Subscription activeSubscription =
+                subscriptionMapper.findActiveSubscription(
+                        memberId,
+                        request.getTargetId()
+                );
+
+        //이미 구독중이라면 연장
+        if (activeSubscription != null) {
+
+            subscriptionMapper.extendSubscription(
+                    memberId,
+                    request.getTargetId()
+            );
+            return;
+        }
 
         Subscription subscription = Subscription.builder()
                 .member_id(memberId)
@@ -87,5 +94,28 @@ public class SubscriptionServiceImpl implements SubscriptionService {
                 );
 
         return subscription != null;
+    }
+
+    @Override
+    public void cancelSubscription(
+            Long memberId,
+            Long targetId
+    ) {
+        Subscription subscription =
+                subscriptionMapper.findActiveSubscription(
+                        memberId,
+                        targetId
+                );
+
+        if (subscription == null) {
+            throw new IllegalArgumentException(
+                    "현재 구독 중인 회원이 아닙니다."
+            );
+        }
+
+        subscriptionMapper.cancelSubscription(
+                memberId,
+                targetId
+        );
     }
 }
