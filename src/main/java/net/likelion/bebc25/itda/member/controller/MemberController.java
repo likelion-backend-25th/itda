@@ -48,15 +48,13 @@ public class MemberController {
         return ResponseEntity.ok(MemberProfileResponse.from(member));
     }
 
-    // 내 팔로워 목록 조회
-    @GetMapping("/followers")
+    // 특정 회원의 팔로워 목록 조회
+    @GetMapping("/{id}/followers")
     public ResponseEntity<List<FollowerResponse>> getFollowers(
-            @AuthenticationPrincipal CustomUserDetails userDetails
+            @PathVariable Long id
     ) {
-        Long memberId = userDetails.getMember().getId();
-
         List<FollowerResponse> followers =
-                memberService.getFollowers(memberId);
+                memberService.getFollowers(id);
 
         return ResponseEntity.ok(followers);
     }
