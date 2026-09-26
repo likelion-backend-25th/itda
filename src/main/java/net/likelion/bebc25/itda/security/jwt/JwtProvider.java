@@ -42,6 +42,7 @@ public class JwtProvider {
         return Jwts.builder()
                 .issuer("itda-sns") // 토큰 발행자
                 .subject(String.valueOf(memberId)) // 토큰의 주체, 사용자 식별값
+                .claim("tokenType", "access")
                 .claim("email", email) // payload에 포함할 사용자 정의 정보
                 .claim("roles", List.of(role)) // payload에 포함할 사용자 정의 정보
                 .issuedAt(now) // 토큰 발급 시간
@@ -58,6 +59,7 @@ public class JwtProvider {
         return Jwts.builder()
                 .issuer("itda-sns")
                 .subject(String.valueOf(memberId))
+                .claim("tokenType", "refresh")
                 .issuedAt(now)
                 .expiration(validity)
                 .signWith(secretKey)
