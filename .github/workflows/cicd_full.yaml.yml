@@ -37,10 +37,11 @@ jobs:
         run: chmod +x gradlew
 
       - name: 4. 단위 및 통합 테스트 수행
-        run: ./gradlew test
+        run: ./gradlew test --stacktrace
         env:
           DB_HOST: localhost
           DB_PORT: 3306
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
           SPRING_DATASOURCE_USERNAME: ${{ secrets.MYSQL_USER }}
           SPRING_DATASOURCE_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
           # 3.2.1절에서 등록한 보안 시크릿 환경 변수 주입
@@ -48,7 +49,6 @@ jobs:
           GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
           KAKAO_CLIENT_ID: ${{ secrets.KAKAO_CLIENT_ID }}
           KAKAO_CLIENT_SECRET: ${{ secrets.KAKAO_CLIENT_SECRET }}
-          JWT_SECRET: ${{ secrets.JWT_SECRET }}
 
   # 2. 지속적 제공 (Continuous Delivery) - 2단원 Docker Hub 이미지 빌드 및 푸시
   docker-build-and-push:

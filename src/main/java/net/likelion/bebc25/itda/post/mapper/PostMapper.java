@@ -24,5 +24,6 @@ public interface PostMapper {
                                        @Param("size")int size);
 
 
-
+    // 4. 게시글 수정
+    void update(Post post);
 }

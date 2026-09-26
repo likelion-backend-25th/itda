@@ -7,6 +7,6 @@ import java.util.List;
 
 public interface ThemeService {
 
-    // 전체 테마 목록 조회
+    // 전체 테마 목록  조회
     PageResponse<ThemeResponse> getAllThemesById(Long memberId, int page, int size);
 }
