@@ -164,4 +164,9 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     public int getSubscriberCount(Long targetId) {
         return subscriptionMapper.countActiveSubscribers(targetId);
     }
+
+    @Override
+    public int getMonthlyIncome(Long targetId) {
+        return subscriptionMapper.getMonthlyIncome(targetId);
+    }
 }
