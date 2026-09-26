@@ -2,7 +2,6 @@
 **/*.pem
 .env*
 !.env.example
-ITDA
 # OS 생성 파일
 .DS_Store
 Thumbs.db
