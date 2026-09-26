@@ -6,7 +6,7 @@
 <mapper namespace="net.likelion.bebc25.itda.post.mapper.PostMapper">
 
 
-<!--    1. 신규 게시글 등록  작성일은 DEFAULT로 만든 날로 들어가기 때문에 필요 없음  -->
+<!--    1. 신규 게시글 등록 작성일은 DEFAULT로 만든 날로 들어가기 때문에 필요 없음  -->
     <insert id="save" parameterType="net.likelion.bebc25.itda.post.domain.Post"
             useGeneratedKeys="true" keyProperty="id">
         INSERT INTO post (member_id, category_id, content, image_url, subscriber_only)
@@ -15,16 +15,20 @@
 
 <!--    2. 게시글 단건 상세 조회(ID) -->
     <select id="findById" parameterType="long" resultType="net.likelion.bebc25.itda.post.domain.Post">
-        SELECT p.id, p.member_id, p.category_id, c.name AS category_name, p.content, p.image_url, p.like_count, p.view_count, p.subscriber_only, p.created_at, p.updated_at
+        SELECT p.id, p.member_id, m.nickname, p.category_id, c.name AS category_name, p.content, p.image_url, p.like_count, p.view_count, p.subscriber_only, p.created_at, p.updated_at
         FROM post p
+        JOIN member m
+        ON p.member_id = m.id
         JOIN common_code c
         ON p.category_id = c.id
         WHERE p.id = #{id}
     </select>
 <!--    3. 비로그인시 보며주는 게시글(일반 게시글만)-->
     <select id="findPublicPostsByCursor" resultType="net.likelion.bebc25.itda.post.domain.Post">
-        SELECT p.id, p.member_id, p.category_id, c.name AS category_name, p.content, p.image_url, p.like_count, p.view_count, p.subscriber_only, p.created_at, p.updated_at
+        SELECT p.id, p.member_id, m.nickname, p.category_id, c.name AS category_name, p.content, p.image_url, p.like_count, p.view_count, p.subscriber_only, p.created_at, p.updated_at
         FROM post p
+        JOIN member m
+        ON p.member_id = m.id
         JOIN common_code c
         ON p.category_id = c.id
         WHERE p.subscriber_only = FALSE
@@ -38,10 +42,12 @@
     
 <!--    4. 로그인시 보여주는 게시글 구독자 전용 게시글 -->
     <select id="findSubscribedPostsByCursor" resultType="net.likelion.bebc25.itda.post.domain.Post">
-        SELECT p.id, p.member_id, p.category_id, c.name AS category_name, p.content, p.image_url, p.like_count, p.view_count, p.subscriber_only, p.created_at, p.updated_at
+        SELECT p.id, p.member_id, m.nickname, p.category_id, c.name AS category_name, p.content, p.image_url, p.like_count, p.view_count, p.subscriber_only, p.created_at, p.updated_at
         FROM post p
         INNER JOIN subscription s
         ON s.target_id = p.member_id
+        JOIN member m
+        ON p.member_id = m.id
         JOIN common_code c
         ON p.category_id = c.id
         WHERE s.member_id = #{memberId}
@@ -61,6 +67,20 @@
         UPDATE post
         SET category_id = #{categoryId}, content = #{content}, image_url = #{imageUrl}, subscriber_only = #{subscriberOnly}
         WHERE id = #{id}
+    </update>
+    
+<!--    6. 게시글 좋아요 + 1 -->
+    <update id="increaseLikeCount">
+        UPDATE post
+        SET like_count = like_count + 1
+        WHERE id = #{postId}
+    </update>
+
+    <!--    7. 게시글 좋아요 - 1 -->
+    <update id="decreaseLikeCount">
+        UPDATE post
+        SET like_count = GREATEST(like_count - 1, 0)
+        WHERE id = #{postId}
     </update>
 
 <!--    6. 게시글 삭제-->

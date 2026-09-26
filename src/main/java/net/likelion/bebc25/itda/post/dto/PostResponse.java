@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 public record PostResponse(
         Long id,
         Long memberId,
+        String nickname,
         Long categoryId,
         String categoryName,
         String content,
@@ -22,6 +23,7 @@ public record PostResponse(
         return new PostResponse(
                 post.getId(),
                 post.getMemberId(),
+                post.getNickname(),
                 post.getCategoryId(),
                 post.getCategoryName(),
                 post.getContent(),
