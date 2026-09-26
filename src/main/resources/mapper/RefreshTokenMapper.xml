@@ -10,7 +10,7 @@
         VALUES (#{memberId}, #{tokenHash}, #{expiresAt}, NOW())
     </insert>
 
-    <select id="findByMemberId" resultType="net.likelion.bebc25.itda.auth.dto.RefreshTokenResponse">
+    <select id="findValidToken" resultType="net.likelion.bebc25.itda.auth.dto.RefreshTokenResponse">
         SELECT id, member_id, token_hash, expires_at, created_at, revoked_at
         FROM refresh_token
         WHERE member_id = #{memberId} AND token_hash = #{hashToken} AND revoked_at IS NULL

@@ -59,11 +59,7 @@ public class AuthController {
 
         // 5. Refresh Token hash 값으로 DB 저장
         String tokenHash = refreshTokenService.hashToken(refreshToken);
-        refreshTokenService.save(
-                memberId,
-                tokenHash,
-                LocalDateTime.now().plusDays(7)
-        );
+        refreshTokenService.save(memberId, tokenHash, LocalDateTime.now().plusDays(7));
 
         // 6. Refresh Token을 HttpOnly Coolie로 설정
         ResponseCookie cookie = ResponseCookie.from("refreshToken", refreshToken)
@@ -114,11 +110,7 @@ public class AuthController {
 
         // 7. 새 Refresh Token hash 값으로 DB 저장
         String newTokenHash = refreshTokenService.hashToken(newRefreshToken);
-        refreshTokenService.save(
-                memberId,
-                newTokenHash,
-                LocalDateTime.now().plusDays(7)
-        );
+        refreshTokenService.save(memberId, newTokenHash, LocalDateTime.now().plusDays(7));
 
         // 8. 새로운 Refresh Token을 HttpOnly Cookie로 설정
         ResponseCookie cookie = ResponseCookie.from("refreshToken", newRefreshToken)
