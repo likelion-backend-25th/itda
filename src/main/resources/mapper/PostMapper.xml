@@ -36,7 +36,7 @@
         LIMIT #{size}
     </select>
     
-<!--    4. 로그인시 보여주는 게시글(일반 게시글 + 구독자 전용 게시글) -->
+<!--    4. 로그인시 보여주는 게시글 구독자 전용 게시글 -->
     <select id="findSubscribedPostsByCursor" resultType="net.likelion.bebc25.itda.post.domain.Post">
         SELECT p.id, p.member_id, p.category_id, c.name AS category_name, p.content, p.image_url, p.like_count, p.view_count, p.subscriber_only, p.created_at, p.updated_at
         FROM post p
@@ -62,6 +62,12 @@
         SET category_id = #{categoryId}, content = #{content}, image_url = #{imageUrl}, subscriber_only = #{subscriberOnly}
         WHERE id = #{id}
     </update>
+
+<!--    6. 게시글 삭제-->
+    <delete id="deleteById" parameterType="long">
+        DELETE FROM post
+        WHERE id = #{id}
+    </delete>
 
 
 </mapper>

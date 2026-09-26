@@ -13,6 +13,7 @@ import net.likelion.bebc25.itda.post.dto.PostCreateRequest;
 import net.likelion.bebc25.itda.post.dto.PostResponse;
 import net.likelion.bebc25.itda.post.service.PostService;
 import net.likelion.bebc25.itda.security.principal.CustomUserDetails;
+import net.likelion.bebc25.itda.theme.dto.ThemeDetailResponse;
 import net.likelion.bebc25.itda.theme.dto.ThemeResponse;
 import net.likelion.bebc25.itda.theme.service.ThemeService;
 import org.springframework.http.ResponseEntity;
@@ -49,4 +50,13 @@ public class ThemeController {
 
         return ResponseEntity.ok(themeService.getAllThemesById(memberId, page, size));
     }
+
+//    @GetMapping
+//    public ResponseEntity<ThemeDetailResponse> getThemeDetail(
+//            @Parameter(description = "테마 id", example = "1") @RequestParam(defaultValue = "1") Long themeId
+//    ) {
+//        themeService.getThemeById(themeId);
+//
+//        return ResponseEntity.ok(themeService.getAllThemesById(memberId, page, size));
+//    }
 }
