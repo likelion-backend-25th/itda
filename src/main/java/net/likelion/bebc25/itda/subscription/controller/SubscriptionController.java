@@ -4,10 +4,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import net.likelion.bebc25.itda.security.principal.CustomUserDetails;
-import net.likelion.bebc25.itda.subscription.dto.MySubscriptionResponse;
-import net.likelion.bebc25.itda.subscription.dto.SubscriberCountResponse;
-import net.likelion.bebc25.itda.subscription.dto.SubscriptionRequest;
-import net.likelion.bebc25.itda.subscription.dto.SubscriptionStatusResponse;
+import net.likelion.bebc25.itda.subscription.dto.*;
 import net.likelion.bebc25.itda.subscription.service.SubscriptionService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -95,6 +92,18 @@ public class SubscriptionController {
 
         return ResponseEntity.ok(
                 new SubscriberCountResponse(count)
+        );
+    }
+
+    @GetMapping("/{targetId}/income")
+    public ResponseEntity<MonthlyIncomeResponse> getMonthlyIncome(
+            @PathVariable Long targetId
+    ) {
+        int monthlyIncome =
+                subscriptionService.getMonthlyIncome(targetId);
+
+        return ResponseEntity.ok(
+                new MonthlyIncomeResponse(monthlyIncome)
         );
     }
 }

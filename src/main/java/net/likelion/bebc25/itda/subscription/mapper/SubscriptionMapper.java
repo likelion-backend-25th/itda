@@ -37,4 +37,8 @@ public interface SubscriptionMapper {
     int countActiveSubscribers(
             @Param("targetId") Long targetId
     );
+
+    int getMonthlyIncome(
+            @Param("targetId") Long targetId
+    );
 }
