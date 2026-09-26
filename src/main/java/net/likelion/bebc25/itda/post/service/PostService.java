@@ -19,4 +19,7 @@ public interface PostService {
     // 4. 게시글 수정
     PostResponse updatePost(Long memberId, Long postId, PostUpdateRequest request);
 
+    // 5. 게시글 삭제
+    void  deletePost(Long postId);
+
 }
