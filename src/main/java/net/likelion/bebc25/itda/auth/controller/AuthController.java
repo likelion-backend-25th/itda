@@ -79,7 +79,6 @@ public class AuthController {
     // Refresh Token 기반 Access Token 갱신 엔드포인트
     @PostMapping("/refresh")
     public ResponseEntity<TokenResponse> refresh(@CookieValue("refreshToken") String refreshToken, HttpServletResponse response) {
-
         // 1. Refresh Token 서명 및 만료 유효성 검증
         if (!jwtProvider.validateToken(refreshToken)) {
             throw new BadCredentialsException("유효하지 않거나 만료된 Refresh Token입니다.");
@@ -126,5 +125,32 @@ public class AuthController {
         // 9. Access Token만 Response Body로 반환
         TokenResponse tokenResponse = TokenResponse.of(newAccessToken, 3600L);
         return ResponseEntity.ok(tokenResponse);
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(@CookieValue(value = "refreshToken", required = false) String refreshToken, HttpServletResponse response) {
+        // 1. 쿠키에 refresh가 있으면 DB에서 revoke (RTR 정리)
+        if (refreshToken != null && jwtProvider.validateToken(refreshToken)) {
+            Long memberId = jwtProvider.getMemberId(refreshToken);
+            String tokenHash = refreshTokenService.hashToken(refreshToken);
+
+            RefreshTokenResponse saved = refreshTokenService.findValidToken(memberId, tokenHash);
+
+            if (saved != null) {
+                refreshTokenService.revoke(saved.getId());
+            }
+        }
+
+        // 2. 브라우저 refresh 쿠키 삭제 (로그인 때와 속성 동일하게)
+        ResponseCookie cookie = ResponseCookie.from("refreshToken", "")
+                .httpOnly(true)
+                .secure(true)
+                .sameSite("None")
+                .path("/api/v1/auth")  // 로그인과 반드시 동일
+                .maxAge(0)             // 즉시 만료
+                .build();
+        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+
+        return ResponseEntity.noContent().build(); // 204
     }
 }
