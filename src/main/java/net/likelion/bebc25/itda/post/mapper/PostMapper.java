@@ -26,4 +26,7 @@ public interface PostMapper {
 
     // 4. 게시글 수정
     void update(Post post);
+
+    // 5. 게시글 삭제
+    void deleteById(long id);
 }
