@@ -24,6 +24,12 @@ public interface PaymentMapper {
             @Param("code") String code
     );
 
-    // 나중에 complete 에서 사용
+    /**
+     * 결제 완료 후
+     * 결제 아이디를 이용해 우리 DB의 결제 정보를 조회
+     * @param paymentId
+     *
+     * @return
+     */
     Payment findByPaymentId(String paymentId);
 }

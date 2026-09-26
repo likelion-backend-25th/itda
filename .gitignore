@@ -2,6 +2,8 @@
 **/*.pem
 .env*
 !.env.example
+# 브루노에 필요했던 폴더
+ITDA
 # OS 생성 파일
 .DS_Store
 Thumbs.db
