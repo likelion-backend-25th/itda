@@ -1,5 +1,6 @@
 package net.likelion.bebc25.itda.payment.client;
 
+import net.likelion.bebc25.itda.payment.dto.PortOnePaymentResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -69,5 +70,15 @@ public class PortOneClient {
             String storeId,
             Long totalAmount
     ) {
+    }
+    public PortOnePaymentResponse getPayment(String paymentId){
+        return restClient
+                .get().uri(
+                        "/payments/{paymentId}",
+                        paymentId
+                )
+                .retrieve().body(
+                        PortOnePaymentResponse.class
+                );
     }
 }
