@@ -15,6 +15,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.List;
 
 @Tag(name = "회원 API", description = "회원가입 기능")
 @RestController
@@ -45,5 +46,18 @@ public class MemberController {
         // 인증된 사용자 정보를 꺼내서 반환한다.
         Member member = userDetails.getMember();
         return ResponseEntity.ok(MemberProfileResponse.from(member));
+    }
+
+    // 내 팔로워 목록 조회
+    @GetMapping("/followers")
+    public ResponseEntity<List<FollowerResponse>> getFollowers(
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        Long memberId = userDetails.getMember().getId();
+
+        List<FollowerResponse> followers =
+                memberService.getFollowers(memberId);
+
+        return ResponseEntity.ok(followers);
     }
 }
