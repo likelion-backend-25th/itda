@@ -151,6 +151,7 @@ public class SecurityConfig {
         // 허용할 HTTP 메서드
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
+        // 쿠키 인증을 cross-origin으로 사용
         config.setAllowCredentials(true);
         // 브라우저가 CORS 설정 결과를 캐시하는 시간 (1시간)
         config.setMaxAge(3600L);
