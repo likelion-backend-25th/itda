@@ -82,7 +82,7 @@ jwt:
   access-token-expiration: 3600000      # 1시간 (밀리초 단위)
   refresh-token-expiration: 604800000   # 7일 (밀리초 단위)
 
-protone:
+portone:
   store-id: ${PORTONE_STORE_ID}
   channel-key: ${PORTONE_CHANNEL_KEY}
   api-secret: ${PORTONE_API_SECRET}

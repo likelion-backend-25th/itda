@@ -12,7 +12,7 @@ public interface ThemeMapper {
     // 테마 전체 목록 조회
     List<ThemeResponse> findAllThemes(@Param("memberId") Long memberId, @Param("limit") int limit, @Param("offset") int offset);
 
-    // ID 기반 테마 단건 조회
+    // ID 기반 테마 상세 조회
     ThemeResponse findById(@Param("id") Long id);
 
     long countThemes();

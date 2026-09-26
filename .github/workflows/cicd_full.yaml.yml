@@ -127,6 +127,11 @@ jobs:
             GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}
             KAKAO_CLIENT_ID=${{ secrets.KAKAO_CLIENT_ID }}
             KAKAO_CLIENT_SECRET=${{ secrets.KAKAO_CLIENT_SECRET }}
+
+            PORTONE_STORE_ID: ${{ secrets.PORTONE_STORE_ID }}
+            PORTONE_CHANNEL_KEY: ${{ secrets.PORTONE_CHANNEL_KEY }}
+            PORTONE_API_SECRET: ${{ secrets.PORTONE_API_SECRET }}
+            PORTONE_WEBHOOK_SECRET: ${{ secrets.PORTONE_WEBHOOK_SECRET }}
             EOF
 
             echo ">>> 2. 최신 Docker 이미지 다운로드"

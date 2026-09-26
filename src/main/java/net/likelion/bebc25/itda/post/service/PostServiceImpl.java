@@ -7,6 +7,7 @@ import net.likelion.bebc25.itda.post.dto.PostCreateRequest;
 import net.likelion.bebc25.itda.post.dto.PostFeedResponse;
 import net.likelion.bebc25.itda.post.dto.PostResponse;
 import net.likelion.bebc25.itda.post.mapper.PostMapper;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -129,7 +130,8 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
+    @PreAuthorize("@postServiceImpl.isAuthor(#postId, authentication.principal.id)")
     public PostResponse updatePost(Long memberId, Long postId, PostUpdateRequest request) {
 
         // 게시글 존재 여부 확인
@@ -140,9 +142,9 @@ public class PostServiceImpl implements PostService {
         }
 
         // 작성자 본인인지 확인
-        if(!post.getMemberId().equals(memberId)){
-            throw new IllegalArgumentException("본인이 작성한 게시글만 수정할 수 있습니다.");
-        }
+//        if(!post.getMemberId().equals(memberId)){
+//            throw new IllegalArgumentException("본인이 작성한 게시글만 수정할 수 있습니다.");
+//        }
 
         // 수정할 값으로 Post 객체 생성
         Post updatedPost = Post.builder()
@@ -162,5 +164,25 @@ public class PostServiceImpl implements PostService {
 
         return PostResponse.from(savedPost);
 
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    @PreAuthorize("hasRole('ADMIN') or @postServiceImpl.isAuthor(#postId, authentication.principal.id)")
+    public void deletePost(Long postId) {
+        Post post = postMapper.findById(postId);
+
+        if(post == null){
+            throw new NoSuchElementException("존재하지 않는 게시글입니다. id: " + postId);
+        }
+
+        postMapper.deleteById(postId);
+    }
+
+    // 게시글 작성자 본인 여부를 검증하는 헬퍼 메서드
+    public boolean isAuthor (Long postId, Long memberId){
+        Post post = postMapper.findById(postId);
+
+        return post != null && post.getMemberId().equals(memberId);
     }
 }
