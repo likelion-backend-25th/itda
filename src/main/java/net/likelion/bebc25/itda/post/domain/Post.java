@@ -13,6 +13,7 @@ public class Post {
     private Long id;
     private Long memberId;
     private Long categoryId;
+    private String categoryName;
     private String content;
     private String imageUrl;
     private int likeCount;

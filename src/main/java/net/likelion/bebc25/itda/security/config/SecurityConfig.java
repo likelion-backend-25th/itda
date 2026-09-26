@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -22,6 +23,11 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.context.SecurityContextHolderFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -56,6 +62,10 @@ public class SecurityConfig {
                         new RequestAuditFilter(),
                         SecurityContextHolderFilter.class
                 )
+
+                // CORS 설정 활성화
+                // CorsConfigurationSource Bean의 설정을 사용
+                .cors(Customizer.withDefaults())
 
                 // CSRF 공격 방어 기능 비활성화 (쿠키사용 공격 기법, 해당사항없어서 비활성화)
                 .csrf(AbstractHttpConfigurer::disable)
@@ -94,6 +104,8 @@ public class SecurityConfig {
                         // 공지사항 조회(GET)는 비로그인 사용자에게도 공개 허용
                         .requestMatchers(HttpMethod.GET, "/api/v1/notices/**").permitAll()
 
+                        .requestMatchers(HttpMethod.GET, "/api/v1/themes").permitAll()
+
                         // 공지사항 등록, 수정, 삭제(POST, PUT, DELETE 등)는 관리자 또는 매니저 권한 필수
                         .requestMatchers("/api/v1/notices/**").hasAnyRole("ADMIN", "MANAGER")
 
@@ -123,5 +135,28 @@ public class SecurityConfig {
                 );
 
         return http.build();
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
+
+        // CORS 요청을 허용할 프론트엔드 Origin
+        // 운영: 실제 배포된 프론트엔드 도메인
+        // 개발: 로컬에서 실행하는 Vite 개발 서버
+        config.setAllowedOrigins(List.of(
+                "https://itda-web.netlify.app",
+                "http://localhost:5173"
+        ));
+        // 허용할 HTTP 메서드
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+        config.setAllowedHeaders(List.of("*"));
+        // 쿠키 인증을 cross-origin으로 사용
+        config.setAllowCredentials(true);
+        // 브라우저가 CORS 설정 결과를 캐시하는 시간 (1시간)
+        config.setMaxAge(3600L);
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+        return source;
     }
 }

@@ -34,8 +34,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         // 1. 요청 헤더에서 JWT 토큰 추출
         String token = resolveToken(request);
 
-        // 2. 토큰 유효성 검증
-        if (StringUtils.hasText(token) && jwtProvider.validateToken(token)) {
+        // 2. 토큰 유효성 검증, 토큰 타입이 access인 것만 통과
+        if (StringUtils.hasText(token) && jwtProvider.validateToken(token) && "access".equals(jwtProvider.parseClaims(token).get("tokenType", String.class))) {
             Long memberId = jwtProvider.getMemberId(token);
 
             // 3. 토큰 주체(PK) 기반 사용자 정보 조회 및 UserDetails 생성

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="net.likelion.bebc25.itda.payment.mapper.PaymentMapper">
+    <!--결제 정보 저장 -->
+    <insert id="insert" parameterType="Payment">
+        INSERT INTO payment (
+        member_id, payment_type, target_id,
+        payment_id, transaction_id, amount,
+        status_id, pay_method_id, paid_at
+        )
+        VALUES (
+        #{memberId}, #{paymentType}, #{targetId},
+        #{paymentId}, #{transactionId}, #{amount},
+        #{statusId}, #{payMethodId}, #{paidAt}
+        )
+    </insert>
+
+    <!-- 나중에 결제 검증에서 사용 -->
+    <select id="findByPaymentId" resultType="net.likelion.bebc25.itda.payment.dto.Payment">
+
+        SELECT
+        id,
+        member_id AS memberId,
+        payment_type AS paymentType,
+        target_id AS targetId,
+        transaction_id AS transactionId,
+        payment_id AS paymentId,
+        amount,
+        status_id AS statusId,
+        pay_method_id AS payMethodId,
+        paid_at AS paidAt
+
+        FROM payment
+
+        WHERE payment_id = #{paymentId}
+
+    </select>
+        <!-- 결제 상태 / 수단 코드 조회 -->
+        <select id="findCommonCodeId" resultType="java.lang.Long">
+
+            SELECT id
+            FROM common_code
+            WHERE type = #{type}
+            AND code = #{code}
+            AND is_active = TRUE
+
+        </select>
+
+</mapper>
