@@ -121,6 +121,9 @@ public class SecurityConfig {
                         // 관리자 전용 엔드포인트 (ROLE_ADMIN 권한 필수)
                         .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
 
+                        // 테마 이미지 정적 리소스는 인증 없이 접근 허용
+                        .requestMatchers("/images/**").permitAll()
+
                         // 그 외 모든 요청(게시글 작성, 수정, 삭제 등)은 로그인 인증을 거쳐야 함
                         .anyRequest().authenticated()
                 )
