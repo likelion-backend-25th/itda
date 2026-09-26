@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 public class Post {
     private Long id;
     private Long memberId;
+    private String nickname;
     private Long categoryId;
     private String categoryName;
     private String content;

@@ -29,4 +29,12 @@ public interface PostMapper {
 
     // 5. 게시글 삭제
     void deleteById(long id);
+
+    // 5. 게시글 좋아요 + 1
+    void increaseLikeCount(Long postId);
+
+    // 6. 게시글 좋아요 - 1
+    void decreaseLikeCount(Long postId);
+
+
 }
