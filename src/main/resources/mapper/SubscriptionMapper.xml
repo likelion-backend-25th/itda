@@ -167,7 +167,7 @@
         AND p.target_id = #{targetId}
         AND p.status_id = 2
         AND p.paid_at >= DATE_FORMAT(CURRENT_DATE, '%Y-%m-01')
-        AND p.paid_at %lt; DATE_ADD(
+        AND p.paid_at &lt;DATE_ADD(
         DATE_FORMAT(CURRENT_DATE, '%Y-%m-01'),
         INTERVAL 1 MONTH
         )
