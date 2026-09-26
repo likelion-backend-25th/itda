@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="net.likelion.bebc25.itda.theme.mapper.ThemeMapper">
+
+    <select id="findAllThemes" resultType="net.likelion.bebc25.itda.theme.dto.ThemeResponse">
+        SELECT t.id, t.theme_name, t.price, t.thumbnail_url, t.theme_code,
+        <choose>
+            <when test="memberId != null">
+                CASE
+                WHEN tp.id IS NOT NULL OR t.is_default = TRUE THEN TRUE
+                ELSE FALSE
+                END AS is_owned,
+                CASE
+                WHEN m.theme_id = t.id THEN TRUE
+                ELSE FALSE
+                END AS is_applied
+            </when>
+            <otherwise>
+                FALSE AS is_owned,
+                FALSE AS is_applied
+            </otherwise>
+        </choose>
+        FROM theme t
+        <if test="memberId != null">
+            LEFT JOIN theme_purchase tp
+            ON tp.theme_id = t.id
+            AND tp.member_id = #{memberId}
+            LEFT JOIN member m
+            ON m.id = #{memberId}
+        </if>
+        WHERE t.status = 'ON_SALE'
+        ORDER BY t.created_at DESC
+        LIMIT #{limit} OFFSET #{offset}
+    </select>
+
+    <select id="countThemes" resultType="long">
+        SELECT COUNT(*)
+        FROM theme t
+        WHERE t.status = 'ON_SALE'
+    </select>
+</mapper>

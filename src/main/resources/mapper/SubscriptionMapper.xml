@@ -28,6 +28,28 @@
 
     </select>
 
+    <select id="findMySubscriptions"
+            resultType="net.likelion.bebc25.itda.subscription.dto.SubscriptionInfo">
+
+        SELECT
+        s.id AS subscriptionId,
+        s.target_id AS targetId,
+        m.nickname,
+        m.profile_image AS profileImage,
+        s.price_id AS priceId,
+        s.next_billing_at AS nextBillingAt
+        FROM subscription s
+        JOIN member m
+        ON s.target_id = m.id
+        JOIN common_code c
+        ON s.status_id = c.id
+        WHERE s.member_id = #{memberId}
+        AND c.type = 4
+        AND c.code = 'SS01'
+        ORDER BY s.next_billing_at ASC
+
+    </select>
+
 
     <insert id="save"
             parameterType="net.likelion.bebc25.itda.domain.Subscription"
@@ -63,4 +85,92 @@
 
     </insert>
 
+    <update id="extendSubscription">
+        UPDATE subscription
+        SET next_billing_at = DATE_ADD(next_billing_at, INTERVAL 1 MONTH)
+        WHERE member_id = #{memberId}
+        AND target_id = #{targetId}
+        AND status_id = (
+        SELECT id
+        FROM common_code
+        WHERE type = 4
+        AND code = 'SS01'
+        AND is_active = TRUE
+        )
+    </update>
+
+    <update id="cancelSubscription">
+
+        UPDATE subscription
+        SET
+        status_id = (
+        SELECT id
+        FROM common_code
+        WHERE type = 4
+        AND code = 'SS02'
+        AND is_active = TRUE
+        ),
+        ended_at = NOW()
+        WHERE member_id = #{memberId}
+        AND target_id = #{targetId}
+        AND status_id = (
+        SELECT id
+        FROM common_code
+        WHERE type = 4
+        AND code = 'SS01'
+        AND is_active = TRUE
+        )
+
+    </update>
+
+    <update id="expireSubscriptions">
+        UPDATE subscription
+        SET
+        status_id = (
+        SELECT id
+        FROM common_code
+        WHERE type = 4
+        AND code = 'SS03'
+        AND is_active = TRUE
+        ),
+        ended_at = next_billing_at
+        WHERE status_id = (
+        SELECT id
+        FROM common_code
+        WHERE type = 4
+        AND code = 'SS01'
+        AND is_active = TRUE
+        )
+        AND next_billing_at &lt;= NOW()
+    </update>
+<!-- %lt= 는 <= 과 같음 -->
+
+    <select id="countActiveSubscribers"
+            resultType="int">
+
+        SELECT COUNT(*)
+        FROM subscription s
+        JOIN common_code c
+        ON s.status_id = c.id
+        WHERE s.target_id = #{targetId}
+        AND c.type = 4
+        AND c.code = 'SS01'
+
+    </select>
+
+    <select id="getMonthlyIncome"
+            resultType="int">
+
+        SELECT COALESCE(SUM(p.amount), 0)
+        FROM payment p
+        WHERE p.payment_type = 'SUBSCRIPTION'
+        AND p.target_id = #{targetId}
+        AND p.status_id = 2
+        AND p.paid_at >= DATE_FORMAT(CURRENT_DATE, '%Y-%m-01')
+        AND p.paid_at &lt;DATE_ADD(
+        DATE_FORMAT(CURRENT_DATE, '%Y-%m-01'),
+        INTERVAL 1 MONTH
+        )
+
+    </select>
 </mapper>

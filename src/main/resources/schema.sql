@@ -7,6 +7,7 @@ DROP TABLE IF EXISTS reply;
 DROP TABLE IF EXISTS post;
 DROP TABLE IF EXISTS member_interest;
 DROP TABLE IF EXISTS follow;
+DROP TABLE IF EXISTS refresh_token;
 DROP TABLE IF EXISTS member;
 DROP TABLE IF EXISTS theme;
 DROP TABLE IF EXISTS common_code;
@@ -133,8 +134,8 @@ CREATE TABLE payment (
                         member_id BIGINT NOT NULL,
                         payment_type VARCHAR(20) NOT NULL,
                         target_id BIGINT NOT NULL,
-                        imp_uid VARCHAR(100),
-                        merchant_uid VARCHAR(100) NOT NULL UNIQUE, -- 서비스 내부 주문번호
+                        payment_id VARCHAR(100),
+                        transaction_id VARCHAR(100) UNIQUE, -- 서비스 내부 주문번호
                         amount BIGINT NOT NULL,
                         -- 결제 상태: WAITING / PAID / FAILED / CANCELLED 등
                         status_id BIGINT NOT NULL,
@@ -178,7 +179,7 @@ CREATE TABLE theme_purchase (
                         member_id BIGINT NOT NULL,
                         theme_id BIGINT NOT NULL,
                         payment_id BIGINT,
-                        apply_theme BOOLEAN,
+                        is_used BOOLEAN,
                         created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
                         FOREIGN KEY (member_id) REFERENCES member(id) ON DELETE CASCADE,
                         FOREIGN KEY (theme_id) REFERENCES theme(id),
@@ -186,4 +187,18 @@ CREATE TABLE theme_purchase (
                         -- 같은 회원이 같은 테마를 중복 구매하지 못하도록 설정
                         UNIQUE (member_id,theme_id)
 
+);
+
+-- 12. Refresh Token
+CREATE TABLE refresh_token (
+                               id BIGINT AUTO_INCREMENT PRIMARY KEY,
+                               member_id BIGINT NOT NULL,
+                               token_hash VARCHAR(255) NOT NULL,
+                               expires_at DATETIME NOT NULL,
+                               created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                               revoked_at DATETIME NULL,
+
+                               CONSTRAINT fk_refresh_token_member
+                                   FOREIGN KEY (member_id)
+                                       REFERENCES member(id)
 );

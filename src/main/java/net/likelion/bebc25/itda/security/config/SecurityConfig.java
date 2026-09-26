@@ -104,6 +104,8 @@ public class SecurityConfig {
                         // 공지사항 조회(GET)는 비로그인 사용자에게도 공개 허용
                         .requestMatchers(HttpMethod.GET, "/api/v1/notices/**").permitAll()
 
+                        .requestMatchers(HttpMethod.GET, "/api/v1/themes").permitAll()
+
                         // 공지사항 등록, 수정, 삭제(POST, PUT, DELETE 등)는 관리자 또는 매니저 권한 필수
                         .requestMatchers("/api/v1/notices/**").hasAnyRole("ADMIN", "MANAGER")
 
@@ -149,6 +151,7 @@ public class SecurityConfig {
         // 허용할 HTTP 메서드
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
+        // 쿠키 인증을 cross-origin으로 사용
         config.setAllowCredentials(true);
         // 브라우저가 CORS 설정 결과를 캐시하는 시간 (1시간)
         config.setMaxAge(3600L);
