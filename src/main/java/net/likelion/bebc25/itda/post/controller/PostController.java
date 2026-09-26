@@ -2,6 +2,7 @@ package net.likelion.bebc25.itda.post.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import net.likelion.bebc25.itda.member.dto.PostUpdateRequest;
 import net.likelion.bebc25.itda.post.dto.PostCreateRequest;
 import net.likelion.bebc25.itda.post.dto.PostFeedResponse;
 import net.likelion.bebc25.itda.post.dto.PostResponse;
@@ -61,5 +62,19 @@ public class PostController {
         PostFeedResponse response = postService.getPosts(memberId, publicCursor, subscribedCursor, size);
 
         return ResponseEntity.ok(response);
+    }
+
+    // 글 수정
+    @PutMapping("{id}")
+    public ResponseEntity<PostResponse> updatePost(
+            @PathVariable Long id,
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @Valid @RequestBody PostUpdateRequest request
+    ){
+        Long memberId = userDetails.getId();
+
+        PostResponse updatedPost = postService.updatePost(memberId, id, request);
+
+        return ResponseEntity.ok(updatedPost);
     }
 }

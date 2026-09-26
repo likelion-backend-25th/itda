@@ -1,5 +1,9 @@
 package net.likelion.bebc25.itda.theme.mapper;
 
+<<<<<<< Updated upstream
+=======
+//import net.likelion.bebc25.itda.dto.PageResponse;
+>>>>>>> Stashed changes
 import net.likelion.bebc25.itda.theme.dto.ThemeResponse;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;

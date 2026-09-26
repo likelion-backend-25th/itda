@@ -1,6 +1,7 @@
 package net.likelion.bebc25.itda.post.service;
 
 import lombok.RequiredArgsConstructor;
+import net.likelion.bebc25.itda.member.dto.PostUpdateRequest;
 import net.likelion.bebc25.itda.post.domain.Post;
 import net.likelion.bebc25.itda.post.dto.PostCreateRequest;
 import net.likelion.bebc25.itda.post.dto.PostFeedResponse;
@@ -124,6 +125,42 @@ public class PostServiceImpl implements PostService {
                 nextSubscribedCursor,
                 hasNext
         );
+
+    }
+
+    @Override
+    @Transactional
+    public PostResponse updatePost(Long memberId, Long postId, PostUpdateRequest request) {
+
+        // 게시글 존재 여부 확인
+        Post post = postMapper.findById(postId);
+
+        if(post == null){
+            throw new NoSuchElementException("존재하지 않는 게시글입니다. id: " + postId);
+        }
+
+        // 작성자 본인인지 확인
+        if(!post.getMemberId().equals(memberId)){
+            throw new IllegalArgumentException("본인이 작성한 게시글만 수정할 수 있습니다.");
+        }
+
+        // 수정할 값으로 Post 객체 생성
+        Post updatedPost = Post.builder()
+                .id(postId)
+                .memberId(memberId)
+                .categoryId(request.categoryId())
+                .content(request.content())
+                .imageUrl(request.imageUrl())
+                .subscriberOnly(request.subscriberOnly())
+                .build();
+
+        // DB 수정
+        postMapper.update(updatedPost);
+
+        // 수정된 게시글 다시 조회
+        Post savedPost = postMapper.findById(postId);
+
+        return PostResponse.from(savedPost);
 
     }
 }
