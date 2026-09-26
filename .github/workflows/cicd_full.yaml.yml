@@ -37,7 +37,7 @@ jobs:
         run: chmod +x gradlew
 
       - name: 4. 단위 및 통합 테스트 수행
-        run: ./gradlew test --stacktrace
+        run: ./gradlew test
         env:
           DB_HOST: localhost
           DB_PORT: 3306
@@ -49,6 +49,11 @@ jobs:
           GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
           KAKAO_CLIENT_ID: ${{ secrets.KAKAO_CLIENT_ID }}
           KAKAO_CLIENT_SECRET: ${{ secrets.KAKAO_CLIENT_SECRET }}
+          # PortOne 환경 변수 추가
+          PORTONE_STORE_ID: ${{ secrets.PORTONE_STORE_ID }}
+          PORTONE_CHANNEL_KEY: ${{ secrets.PORTONE_CHANNEL_KEY }}
+          PORTONE_API_SECRET: ${{ secrets.PORTONE_API_SECRET }}
+          PORTONE_WEBHOOK_SECRET: ${{ secrets.PORTONE_WEBHOOK_SECRET }}
 
   # 2. 지속적 제공 (Continuous Delivery) - 2단원 Docker Hub 이미지 빌드 및 푸시
   docker-build-and-push:

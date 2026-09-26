@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="net.likelion.bebc25.itda.member.mapper.FollowerMapper">
+
+    <!-- 나를 팔로우한 사람들의 목록 조회 -->
+    <select id="findFollowers"
+            parameterType="Long"
+            resultType="net.likelion.bebc25.itda.member.dto.FollowerResponse">
+
+        SELECT
+        m.id,
+        m.nickname,
+        m.profile_image
+        FROM follow f
+        JOIN member m
+        ON f.from_id = m.id
+        WHERE f.to_id = #{toId}
+        ORDER BY f.created_at DESC
+
+    </select>
+
+</mapper>
