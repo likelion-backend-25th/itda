@@ -73,10 +73,13 @@ public class PortOneClient {
     }
     public PortOnePaymentResponse getPayment(String paymentId){
         return restClient
+                // PortOne V2 결제 단건 조회 API
                 .get().uri(
                         "/payments/{paymentId}",
                         paymentId
                 )
+                // HTTP 요청 실행
+                // JSON 응답을 DTO로 변환
                 .retrieve().body(
                         PortOnePaymentResponse.class
                 );

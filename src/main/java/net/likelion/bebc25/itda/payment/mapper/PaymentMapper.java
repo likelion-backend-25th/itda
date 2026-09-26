@@ -4,6 +4,8 @@ import net.likelion.bebc25.itda.payment.dto.Payment;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.time.LocalDateTime;
+
 @Mapper
 public interface PaymentMapper {
 
@@ -24,12 +26,34 @@ public interface PaymentMapper {
             @Param("code") String code
     );
 
+
     /**
      * 결제 완료 후
      * 결제 아이디를 이용해 우리 DB의 결제 정보를 조회
      * @param paymentId
      *
-     * @return
      */
-    Payment findByPaymentId(String paymentId);
+    Payment findByPaymentId(@Param("paymentId") String paymentId);
+
+    /**
+     * ✅ 정상 결제로 검증된 payment를 결제 완료 상태로 변경
+     *
+     * PS01 → PS02
+     *
+     * transactionId와 실제 결제 완료 시간도 함께 저장한다.
+     */
+    int updatePaid(
+
+            @Param("paymentId")
+            String paymentId,
+
+            @Param("transactionId")
+            String transactionId,
+
+            @Param("statusId")
+            Long statusId,
+
+            @Param("paidAt")
+            LocalDateTime paidAt
+    );
 }

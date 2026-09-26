@@ -18,7 +18,17 @@
         )
     </insert>
 
-    <!-- 나중에 결제 검증에서 사용 -->
+    <!-- 결제 상태 / 수단 코드 조회 -->
+    <select id="findCommonCodeId" resultType="java.lang.Long">
+
+        SELECT id
+        FROM common_code
+        WHERE type = #{type}
+        AND code = #{code}
+        AND is_active = TRUE
+    </select>
+
+    <!-- paymentId를 이용해 우리 서비스의 결제 정보 조회 -->
     <select id="findByPaymentId" resultType="net.likelion.bebc25.itda.payment.dto.Payment">
 
         SELECT
@@ -38,15 +48,26 @@
         WHERE payment_id = #{paymentId}
 
     </select>
-        <!-- 결제 상태 / 수단 코드 조회 -->
-        <select id="findCommonCodeId" resultType="java.lang.Long">
 
-            SELECT id
-            FROM common_code
-            WHERE type = #{type}
-            AND code = #{code}
-            AND is_active = TRUE
+    <!--
+    실제 결제 완료 처리
+    PortOne 서버 검증까지 성공한 경우에만 호출
+    변경되는 값:
+    transaction_id : 실제 PortOne 결제 시도 ID
+    status_id      : PS01 → PS02
+    paid_at        : 실제 결제 완료 시간
+    -->
+    <update id="updatePaid">
 
-        </select>
+        UPDATE payment
+
+        SET
+        transaction_id = #{transactionId},
+        status_id = #{statusId},
+        paid_at = #{paidAt}
+
+        WHERE payment_id = #{paymentId}
+
+    </update>
 
 </mapper>
