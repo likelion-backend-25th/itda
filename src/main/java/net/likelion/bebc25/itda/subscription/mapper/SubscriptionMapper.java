@@ -33,4 +33,8 @@ public interface SubscriptionMapper {
     );
 
     int expireSubscriptions();
+
+    int countActiveSubscribers(
+            @Param("targetId") Long targetId
+    );
 }

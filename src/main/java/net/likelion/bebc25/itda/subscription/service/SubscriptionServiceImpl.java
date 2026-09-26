@@ -159,4 +159,9 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     public void expireSubscriptions() {
         subscriptionMapper.expireSubscriptions();
     }
+
+    @Override
+    public int getSubscriberCount(Long targetId) {
+        return subscriptionMapper.countActiveSubscribers(targetId);
+    }
 }

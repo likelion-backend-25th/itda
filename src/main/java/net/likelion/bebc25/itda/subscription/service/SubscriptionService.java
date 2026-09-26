@@ -31,4 +31,6 @@ public interface SubscriptionService {
     );
 
     void expireSubscriptions();
+
+    int getSubscriberCount(Long targetId);
 }

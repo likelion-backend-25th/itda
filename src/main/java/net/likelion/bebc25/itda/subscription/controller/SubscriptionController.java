@@ -5,6 +5,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import net.likelion.bebc25.itda.security.principal.CustomUserDetails;
 import net.likelion.bebc25.itda.subscription.dto.MySubscriptionResponse;
+import net.likelion.bebc25.itda.subscription.dto.SubscriberCountResponse;
 import net.likelion.bebc25.itda.subscription.dto.SubscriptionRequest;
 import net.likelion.bebc25.itda.subscription.dto.SubscriptionStatusResponse;
 import net.likelion.bebc25.itda.subscription.service.SubscriptionService;
@@ -83,5 +84,17 @@ public class SubscriptionController {
         );
 
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/{targetId}/count")
+    public ResponseEntity<SubscriberCountResponse> getSubscriberCount(
+            @PathVariable Long targetId
+    ) {
+        int count =
+                subscriptionService.getSubscriberCount(targetId);
+
+        return ResponseEntity.ok(
+                new SubscriberCountResponse(count)
+        );
     }
 }

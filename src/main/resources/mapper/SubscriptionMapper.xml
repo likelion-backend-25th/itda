@@ -144,4 +144,17 @@
         AND next_billing_at &lt;= NOW()
     </update>
 <!-- %lt= 는 <= 과 같음 -->
+
+    <select id="countActiveSubscribers"
+            resultType="int">
+
+        SELECT COUNT(*)
+        FROM subscription s
+        JOIN common_code c
+        ON s.status_id = c.id
+        WHERE s.target_id = #{targetId}
+        AND c.type = 4
+        AND c.code = 'SS01'
+
+    </select>
 </mapper>
