@@ -15,30 +15,35 @@
 
 <!--    2. 게시글 단건 상세 조회(ID) -->
     <select id="findById" parameterType="long" resultType="net.likelion.bebc25.itda.post.domain.Post">
-        SELECT id, member_id, category_id, content, image_url, like_count, view_count, subscriber_only, created_at, updated_at
-        FROM post
-        WHERE id = #{id}
+        SELECT p.id, p.member_id, p.category_id, c.name AS category_name, p.content, p.image_url, p.like_count, p.view_count, p.subscriber_only, p.created_at, p.updated_at
+        FROM post p
+        JOIN common_code c
+        ON p.category_id = c.id
+        WHERE p.id = #{id}
     </select>
 <!--    3. 비로그인시 보며주는 게시글(일반 게시글만)-->
     <select id="findPublicPostsByCursor" resultType="net.likelion.bebc25.itda.post.domain.Post">
-        SELECT id, member_id, category_id, content, image_url, like_count, view_count, subscriber_only, created_at, updated_at
-        FROM post
-        WHERE subscriber_only = FALSE
+        SELECT p.id, p.member_id, p.category_id, c.name AS category_name, p.content, p.image_url, p.like_count, p.view_count, p.subscriber_only, p.created_at, p.updated_at
+        FROM post p
+        JOIN common_code c
+        ON p.category_id = c.id
+        WHERE p.subscriber_only = FALSE
         <if test="cursor != null">
 <!--           마크업언어에서 CDATA로 문자열들을 감싸게 되면 이 문자열들을 사이의 데이터는 마크업으로 해석하지 않아야하는 데이터를 포함한다는 것을 의미-->
-            AND id <![CDATA[ < ]]> #{cursor}
+            AND p.id <![CDATA[ < ]]> #{cursor}
         </if>
-        ORDER BY id DESC
+        ORDER BY p.id DESC
         LIMIT #{size}
-
     </select>
     
 <!--    4. 로그인시 보여주는 게시글(일반 게시글 + 구독자 전용 게시글) -->
     <select id="findSubscribedPostsByCursor" resultType="net.likelion.bebc25.itda.post.domain.Post">
-        SELECT p.id, p.member_id, p.category_id, p.content, p.image_url, p.like_count, p.view_count, p.subscriber_only, p.created_at, p.updated_at
+        SELECT p.id, p.member_id, p.category_id, c.name AS category_name, p.content, p.image_url, p.like_count, p.view_count, p.subscriber_only, p.created_at, p.updated_at
         FROM post p
         INNER JOIN subscription s
         ON s.target_id = p.member_id
+        JOIN common_code c
+        ON p.category_id = c.id
         WHERE s.member_id = #{memberId}
         AND s.status_id = 15
         AND p.subscriber_only = TRUE
@@ -50,6 +55,13 @@
         LIMIT #{size}
 
     </select>
+
+    <!--    5. 게시글 수정-->
+    <update id="update" parameterType="net.likelion.bebc25.itda.post.domain.Post">
+        UPDATE post
+        SET category_id = #{categoryId}, content = #{content}, image_url = #{imageUrl}, subscriber_only = #{subscriberOnly}
+        WHERE id = #{id}
+    </update>
 
 
 </mapper>
