@@ -28,7 +28,7 @@ public class ThemeServiceImpl implements ThemeService{
         return themeId;
     }
     @Override
-    public PageResponse<ThemeResponse> getAllThemesById(Long memberId, int page, int size) {
+    public PageResponse<ThemeResponse> getAllThemes(Long memberId, int page, int size) {
         if(page < 1) page = 1;
         if(size < 1) size = 6;
 
@@ -36,9 +36,7 @@ public class ThemeServiceImpl implements ThemeService{
         List<ThemeResponse> content = themeMapper.findAllThemes(memberId,size,offset);
         long total = themeMapper.countThemes();
 
-        int totalPages = (int) Math.ceil((double) total / size);
-
-        return new PageResponse<>(content, page, size, total, totalPages);
+        return PageResponse.of(content, page, size, total);
     }
 
     @Override
@@ -56,4 +54,16 @@ public class ThemeServiceImpl implements ThemeService{
         themeMapper.insertDefaultTheme(memberId, themeId);
     }
 
+    @Override
+    public PageResponse<ThemeResponse> getOwnedThemes(Long memberId, int page, int size) {
+        if(page < 1) page = 1;
+        if(size < 1) size = 6;
+
+        int offset = (page - 1) * size;
+
+        List<ThemeResponse> themes = themeMapper.findOwnedThemes(memberId, size, offset);
+        long totalCount = themeMapper.countOwnedThemes(memberId);
+
+        return PageResponse.of(themes, page, size, totalCount);
+    }
 }
