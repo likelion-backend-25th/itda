@@ -52,9 +52,18 @@ public class ThemeController {
         return ResponseEntity.ok(themes);
     }
 
+    @Operation(
+            summary = "테마 상세 조회",
+            description = "테마의 상세정보를 조회합니다."
+    )
     @GetMapping("/{themeId}")
-    public ResponseEntity<ThemeDetailResponse> getThemeDetail(@PathVariable Long themeId) {
-        ThemeDetailResponse theme = themeService.getThemeById(themeId);
+    public ResponseEntity<ThemeDetailResponse> getThemeDetail(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PathVariable Long themeId
+    ) {
+        Long memberId = userDetails != null ? userDetails.getId() : null;
+
+        ThemeDetailResponse theme = themeService.getThemeById(memberId, themeId);
 
         return ResponseEntity.ok(theme);
     }
