@@ -38,12 +38,10 @@ public class ThemeServiceImpl implements ThemeService{
 
     @Override
     public ThemeDetailResponse getThemeById(Long id) {
-//        Post post = postMapper.findById(id);
-//        if (post == null) {
-//            throw new NoSuchElementException("존재하지 않는 게시글입니다. ID: " + id);
-//        }
-//        return PostResponse.from(post);
-
-        return null;
+        ThemeDetailResponse theme = themeMapper.findById(id);
+        if (theme == null) {
+            throw new NoSuchElementException("존재하지 않는 테마입니다. ID: " + id);
+        }
+        return theme;
     }
 }

@@ -48,15 +48,14 @@ public class ThemeController {
     ) {
         Long memberId = userDetails != null ? userDetails.getId() : null;
 
-        return ResponseEntity.ok(themeService.getAllThemesById(memberId, page, size));
+        PageResponse<ThemeResponse> themes = themeService.getAllThemesById(memberId, page, size);
+        return ResponseEntity.ok(themes);
     }
 
-//    @GetMapping
-//    public ResponseEntity<ThemeDetailResponse> getThemeDetail(
-//            @Parameter(description = "테마 id", example = "1") @RequestParam(defaultValue = "1") Long themeId
-//    ) {
-//        themeService.getThemeById(themeId);
-//
-//        return ResponseEntity.ok(themeService.getAllThemesById(memberId, page, size));
-//    }
+    @GetMapping("/{themeId}")
+    public ResponseEntity<ThemeDetailResponse> getThemeDetail(@PathVariable Long themeId) {
+        ThemeDetailResponse theme = themeService.getThemeById(themeId);
+
+        return ResponseEntity.ok(theme);
+    }
 }
