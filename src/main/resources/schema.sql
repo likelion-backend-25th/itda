@@ -1,7 +1,7 @@
 -- 0. 기존 테이블 삭제 (외래 키 참조 역순으로 삭제)
 DROP TABLE IF EXISTS theme_purchase;
-DROP TABLE IF EXISTS payment;
 DROP TABLE IF EXISTS subscription;
+DROP TABLE IF EXISTS payment;
 DROP TABLE IF EXISTS post_reaction;
 DROP TABLE IF EXISTS reply;
 DROP TABLE IF EXISTS post;
