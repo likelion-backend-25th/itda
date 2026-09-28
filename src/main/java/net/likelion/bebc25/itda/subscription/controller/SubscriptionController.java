@@ -27,9 +27,10 @@ public class SubscriptionController {
     ) {
         Long memberId = userDetails.getMember().getId();
 
-        subscriptionService.validateSubscription(
+        subscriptionService.createSubscription(
                 memberId,
-                request
+                request,
+                null
         );
 
         return ResponseEntity.ok().build();

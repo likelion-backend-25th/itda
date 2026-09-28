@@ -12,12 +12,13 @@
         s.id,
         s.member_id,
         s.target_id,
-        s.customer_uid,
+        s.billing_key,
         s.price_id,
         s.status_id,
         s.next_billing_at,
         s.started_at,
-        s.ended_at
+        s.ended_at,
+        s.payment_id
         FROM subscription s
         JOIN common_code c
         ON s.status_id = c.id
@@ -59,17 +60,17 @@
         INSERT INTO subscription (
         member_id,
         target_id,
-        customer_uid,
+        billing_key,
         price_id,
         status_id,
         next_billing_at,
         started_at,
-        ended_at
+        payment_id
         )
         VALUES (
         #{member_id},
         #{target_id},
-        #{customer_uid},
+        #{billing_key},
         #{price_id},
         (
         SELECT id
@@ -80,7 +81,7 @@
         ),
         DATE_ADD(NOW(), INTERVAL 1 MONTH),
         NOW(),
-        NULL
+        #{payment_id}
         )
 
     </insert>
