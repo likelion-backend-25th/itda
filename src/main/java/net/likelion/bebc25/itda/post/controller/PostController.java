@@ -78,6 +78,7 @@ public class PostController {
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @RequestParam(required = false) Long publicCursor,
             @RequestParam(required = false) Long subscribedCursor,
+            @RequestParam(required = false) Long categoryId,
             @RequestParam(defaultValue = "10") int size
     ){
         Long memberId = null;
@@ -87,7 +88,7 @@ public class PostController {
             memberId = userDetails.getId();
         }
 
-        PostFeedResponse response = postService.getPosts(memberId, publicCursor, subscribedCursor, size);
+        PostFeedResponse response = postService.getPosts(memberId, publicCursor, subscribedCursor, categoryId, size);
 
         return ResponseEntity.ok(response);
     }

@@ -12,7 +12,7 @@
 
 <!--    2. 댓글 한 건 조회-->
     <select id="findById" parameterType="long" resultType="net.likelion.bebc25.itda.reply.domain.Reply">
-        SELECT r.id, r.member_id, m.nickname, m.profile_image, r.post_id, r.content, r.content_at, r.updated_at
+        SELECT r.id, r.member_id, m.nickname, m.profile_image, r.post_id, r.content, r.created_at, r.updated_at
         FROM reply r
         JOIN member m
         ON r.member_id = m.id

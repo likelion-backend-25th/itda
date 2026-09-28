@@ -16,11 +16,14 @@ public interface PostMapper {
     Post findById(long id);
 
     // 3. 비로그인 시 보이는 메인 게시글(구독자 전용 게시글을 제외한 모든 게시글만 보임)
-    List<Post> findPublicPostsByCursor(@Param("cursor") Long cursor, @Param("size") int size);
+    List<Post> findPublicPostsByCursor(@Param("cursor") Long cursor,
+                                       @Param("categoryId") Long categoryId,
+                                       @Param("size") int size);
 
     // 3.1 로그인 시 보이는 메인 게시글(구독자 전용 게시글 + 일반 게시글, size = 게시글수)
     List<Post> findSubscribedPostsByCursor(@Param("memberId")Long memberId,
                                        @Param("cursor") Long cursor,
+                                       @Param("categoryId") Long categoryId,
                                        @Param("size")int size);
 
 
