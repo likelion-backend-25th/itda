@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="net.likelion.bebc25.itda.admin.member.mapper.AdminMemberMapper">
+
+    <select id="findAllMembers"
+            resultType="net.likelion.bebc25.itda.admin.member.dto.AdminMemberResponse">
+        SELECT
+        id,
+        email,
+        nickname,
+        role,
+        status,
+        profile_image AS profileImage,
+        theme_id AS themeId,
+        authmethod,
+        created_at AS createdAt
+        FROM member
+        ORDER BY created_at DESC
+    </select>
+
+    <update id="updateMemberStatus">
+        UPDATE member
+        SET status = #{status}
+        WHERE id = #{memberId}
+    </update>
+
+</mapper>
