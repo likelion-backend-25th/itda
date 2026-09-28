@@ -1,6 +1,7 @@
 package net.likelion.bebc25.itda.payment.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import net.likelion.bebc25.itda.payment.client.PortOneClient;
 import net.likelion.bebc25.itda.payment.dto.*;
 import net.likelion.bebc25.itda.payment.mapper.PaymentMapper;
@@ -9,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class PaymentServiceImpl implements PaymentService {
@@ -34,6 +36,13 @@ public class PaymentServiceImpl implements PaymentService {
             Long memberId,
             PaymentPrepareRequest request
     ) {
+        // 1. 결제 준비 요청 시작
+        log.info(
+                "[PAYMENT PREPARE START] memberId={}, paymentType={}, targetId={}",
+                memberId,
+                request.paymentType(),
+                request.targetId()
+        );
 
         // PS01 = 결제 대기
         Long statusId =
@@ -67,6 +76,7 @@ public class PaymentServiceImpl implements PaymentService {
                         .toString()
                         .replace("-", "");
 
+
         // 결제 대기 정보 생성
         Payment payment =
                 new Payment(
@@ -79,8 +89,22 @@ public class PaymentServiceImpl implements PaymentService {
                         payMethodId
                 );
 
+        // 2. DB 저장 직전 결제 객체 확인
+        log.info(
+                "[PAYMENT CREATED] paymentId={}, memberId={}, amount={}, statusId={}, payMethodId={}",
+                payment.getPaymentId(),
+                payment.getMemberId(),
+                payment.getAmount(),
+                payment.getStatusId(),
+                payment.getPayMethodId()
+        );
+
+
         // payment 테이블 저장
         paymentMapper.insert(payment);
+
+
+
 
         // PortOne 서버에 결제 금액 사전 등록
         portOneClient.preRegister(
