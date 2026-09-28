@@ -199,14 +199,14 @@ VALUES
 
 -- 11. 정기 구독
 INSERT INTO subscription (
-    id, member_id, target_id, customer_uid,
-    price_id, status_id, next_billing_at, started_at, ended_at
+    id, member_id, target_id, billing_key,
+    price_id, status_id, next_billing_at, started_at, ended_at, payment_id
 ) VALUES
       (1, 1, 3, 'customer_test_001', 20, 15,
-       DATE_ADD(CURRENT_TIMESTAMP, INTERVAL 1 MONTH), CURRENT_TIMESTAMP, NULL),
+       DATE_ADD(CURRENT_TIMESTAMP, INTERVAL 1 MONTH), CURRENT_TIMESTAMP, NULL,6),
       (2, 2, 3, 'customer_test_002', 20, 15,
-       DATE_ADD(CURRENT_TIMESTAMP, INTERVAL 1 MONTH), CURRENT_TIMESTAMP, NULL),
+       DATE_ADD(CURRENT_TIMESTAMP, INTERVAL 1 MONTH), CURRENT_TIMESTAMP, NULL,7),
       (3, 4, 3, 'customer_test_003', 19, 15,
-       DATE_ADD(CURRENT_TIMESTAMP, INTERVAL 1 MONTH), CURRENT_TIMESTAMP, NULL),
+       DATE_ADD(CURRENT_TIMESTAMP, INTERVAL 1 MONTH), CURRENT_TIMESTAMP, NULL,8),
       (4, 5, 4, 'customer_test_004', 20, 16,
-       DATE_SUB(CURRENT_TIMESTAMP, INTERVAL 1 DAY), DATE_SUB(CURRENT_TIMESTAMP, INTERVAL 2 MONTH),DATE_SUB(CURRENT_TIMESTAMP, INTERVAL 1 DAY));
+       DATE_SUB(CURRENT_TIMESTAMP, INTERVAL 1 DAY), DATE_SUB(CURRENT_TIMESTAMP, INTERVAL 2 MONTH),DATE_SUB(CURRENT_TIMESTAMP, INTERVAL 1 DAY),9);
