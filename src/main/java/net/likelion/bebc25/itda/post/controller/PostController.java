@@ -13,6 +13,7 @@ import net.likelion.bebc25.itda.security.principal.CustomUserDetails;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.View;
 
 import java.net.URI;
 
@@ -24,6 +25,7 @@ public class PostController {
     private final PostService postService;
     private final PostLikeService postLikeService;
     private final PostScrapService postScrapService;
+    private final View view;
 
     // 1. 게시글 등록
     @PostMapping
@@ -143,17 +145,10 @@ public class PostController {
 
         // viewedPosts 쿠키가 없거나 viewedPosts쿠키의 값이 비어있으면
         if(viewedPosts == null || viewedPosts.isBlank()) {
-            return false;
+           return false;
         }
 
-        String[] postIds = viewedPosts.split("-");
-
-        for(String id : postIds) {
-            if(id.equals(String.valueOf(postId))) {
-                return true;
-            }
-        }
-        return false;
+        return viewedPosts.contains("[" + postId + "]");
     }
 
     // 8. 쿠키 생성
@@ -166,9 +161,9 @@ public class PostController {
         String newViewedPosts;
 
         if (viewedPosts == null || viewedPosts.isBlank()) {
-            newViewedPosts = String.valueOf(postId);
+            newViewedPosts = "[" + postId + "]";
         } else {
-            newViewedPosts = viewedPosts + "-" + postId;
+            newViewedPosts = viewedPosts + "[" + postId + "]";
         }
 
         Cookie cookie = new Cookie(
