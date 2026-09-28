@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.likelion.bebc25.itda.payment.client.PortOneClient;
 import net.likelion.bebc25.itda.payment.dto.*;
 import net.likelion.bebc25.itda.payment.mapper.PaymentMapper;
+import net.likelion.bebc25.itda.subscription.service.SubscriptionServiceImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,7 +18,7 @@ public class PaymentServiceImpl implements PaymentService {
 
     private final PaymentMapper paymentMapper;
     private final PortOneClient portOneClient;
-
+    private final SubscriptionServiceImpl subscriptionServiceImpl;
 
 
     /**
@@ -37,7 +38,7 @@ public class PaymentServiceImpl implements PaymentService {
     ) {
         // 1. 결제 준비 요청 시작
         log.info(
-                "[PAYMENT PREPARE START] memberId={}, paymentType={}, targetId={}",
+                "[01 PAYMENT PREPARE START] memberId={}, paymentType={}, targetId={}",
                 memberId,
                 request.paymentType(),
                 request.targetId()
@@ -103,7 +104,7 @@ public class PaymentServiceImpl implements PaymentService {
 
         // 02. DB 저장 직전 결제 객체 확인
         log.info(
-                "[PAYMENT CREATED] paymentId={}, memberId={}, amount={}, statusId={}, payMethodId={}",
+                "[02 PAYMENT CREATED] paymentId={}, memberId={}, amount={}, statusId={}, payMethodId={}",
                 payment.getPaymentId(),
                 payment.getMemberId(),
                 payment.getAmount(),
@@ -113,11 +114,11 @@ public class PaymentServiceImpl implements PaymentService {
 
 
         // payment 테이블 저장
-        paymentMapper.insert(payment);
+        paymentMapper.insertPayment(payment);
 
-        // 0. INSERT 호출 이후
+        // 03. INSERT 호출 이후
         log.info(
-                "[PAYMENT DB SAVE COMPLETE] paymentId={}",
+                "[03 PAYMENT DB SAVE COMPLETE] paymentId={}",
                 payment.getPaymentId()
         );
 
@@ -130,7 +131,7 @@ public class PaymentServiceImpl implements PaymentService {
         );
         // 04. PortOne 사전등록 성공
         log.info(
-                "[PORTONE PRE-REGISTER COMPLETE] paymentId={}, amount={}",
+                "[04 PORTONE PRE-REGISTER COMPLETE] paymentId={}, amount={}",
                 paymentId,
                 amount
         );
@@ -187,7 +188,7 @@ public class PaymentServiceImpl implements PaymentService {
         }
         //  05.  DB에서 조회한 결제 대기 정보 확인
         log.info(
-                "[PAYMENT DB FOUND] paymentId={}, memberId={}, amount={}, statusId={}, transactionId={}",
+                "[05 PAYMENT DB FOUND] paymentId={}, memberId={}, amount={}, statusId={}, transactionId={}",
                 payment.getPaymentId(),
                 payment.getMemberId(),
                 payment.getAmount(),
@@ -268,7 +269,7 @@ public class PaymentServiceImpl implements PaymentService {
         }
         // 06. PortOne 조회 직후
         log.info(
-                "[PORTONE PAYMENT FOUND] paymentId={}, status={}, transactionId={}, paidAt={}",
+                "[06 PORTONE PAYMENT FOUND] paymentId={}, status={}, transactionId={}, paidAt={}",
                 portOnePayment.id(),
                 portOnePayment.status(),
                 portOnePayment.transactionId(),
@@ -367,7 +368,7 @@ public class PaymentServiceImpl implements PaymentService {
 
         // 07. PortOne 결제 정보 검증 완료
         log.info(
-                "[PAYMENT VALIDATION SUCCESS] paymentId={}, amount={}, status={}",
+                "[07 PAYMENT VALIDATION SUCCESS] paymentId={}, amount={}, status={}",
                 payment.getPaymentId(),
                 payment.getAmount(),
                 portOnePayment.status()
@@ -416,13 +417,60 @@ public class PaymentServiceImpl implements PaymentService {
 
         // 08. DB 결제 완료 상태 저장 성공
         log.info(
-                "[PAYMENT COMPLETE SUCCESS] paymentId={}, transactionId={}, statusId={}, paidAt={}",
+                "[08 PAYMENT COMPLETE SUCCESS] paymentId={}, transactionId={}, statusId={}, paidAt={}",
                 payment.getPaymentId(),
                 portOnePayment.transactionId(),
                 paidStatusId,
                 portOnePayment.paidAt()
         );
 
+        // 결제 유형에 따라 후속 처리
+        if (payment.getPaymentType().equals("THEME")) {
+
+            // 테마 결제 완료 → theme_purchase 저장
+            int insertedTheme =
+                    paymentMapper.insertThemePurchase(
+                            payment.getMemberId(),
+                            payment.getTargetId(),
+                            payment.getId()
+                    );
+
+            if (insertedTheme != 1) {
+                throw new IllegalStateException(
+                        "테마 구매 내역 저장에 실패했습니다."
+                );
+            }
+
+        } else if (payment.getPaymentType().equals("SUBSCRIPTION")) {
+
+            // 구독 활성 상태 코드 조회
+            Long subscriptionStatusId =
+                    paymentMapper.findCommonCodeId(
+                            4,
+                            "SS01" // 실제 구독 활성 코드로 맞추기
+                    );
+
+            if (subscriptionStatusId == null) {
+                throw new IllegalStateException(
+                        "구독 활성 상태 코드가 없습니다."
+                );
+            }
+
+            // 구독 결제 완료 → subscription 저장
+            int insertedSubscription =
+                    paymentMapper.insertSubscription(
+                            payment.getMemberId(),
+                            payment.getTargetId(),
+                            subscriptionStatusId,
+                            payment.getId()
+                    );
+
+            if (insertedSubscription != 1) {
+                throw new IllegalStateException(
+                        "구독 내역 저장에 실패했습니다."
+                );
+            }
+        }
         /*
          * 12. 프론트에 결제 완료 결과 반환
          */
@@ -437,5 +485,4 @@ public class PaymentServiceImpl implements PaymentService {
                 portOnePayment.transactionId()
         );
     }
-
 }

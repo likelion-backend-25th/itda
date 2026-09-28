@@ -159,20 +159,25 @@ CREATE TABLE subscription (
                         member_id BIGINT NOT NULL,
                           -- 구독 대상 회원
                         target_id BIGINT NOT NULL,
-                        customer_uid VARCHAR(100) NOT NULL,
+                          -- 단건 결제에서는 사용 안함
+                        billing_key VARCHAR(255) DEFAULT NULL,
                         price_id BIGINT NOT NULL,
                           -- ACTIVE / CANCELLED / EXPIRED 등
                           -- DEFAULT를 둘지 말지 고민
                         status_id BIGINT NOT NULL,
-                        next_billing_at DATETIME NOT NULL,
+                          -- 단건 결제에서는 사용 안함
+                        next_billing_at DATETIME DEFAULT NULL,
                           -- 실제 구독 종료일
-                        ended_at DATETIME,
                         started_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                        ended_at DATETIME DEFAULT (started_at + INTERVAL 1 MONTH),
+                        payment_id BIGINT,
                         FOREIGN KEY (member_id) REFERENCES member(id) ON DELETE CASCADE,
                         FOREIGN KEY (target_id) REFERENCES member(id) ON DELETE CASCADE,
                         FOREIGN KEY (price_id) REFERENCES common_code(id),
                         FOREIGN KEY (status_id) REFERENCES common_code(id),
-                          -- 자기 자신 구독 방지
+                        FOREIGN KEY (payment_id) REFERENCES payment(id),
+
+    -- 자기 자신 구독 방지
                         CHECK ( member_id <> target_id)
 );
 
@@ -181,7 +186,7 @@ CREATE TABLE theme_purchase (
                         id BIGINT AUTO_INCREMENT PRIMARY KEY,
                         member_id BIGINT NOT NULL,
                         theme_id BIGINT NOT NULL,
-                        payment_id BIGINT,
+                        payment_id BIGINT NOT NULL,
                         is_used BOOLEAN DEFAULT 0,
                         created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
                         FOREIGN KEY (member_id) REFERENCES member(id) ON DELETE CASCADE,
