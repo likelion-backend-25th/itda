@@ -58,4 +58,15 @@ public class MemberController {
 
         return ResponseEntity.ok(followers);
     }
+
+    // 특정 회원의 팔로잉 목록 조회
+    @GetMapping("/{id}/followings")
+    public ResponseEntity<List<FollowingResponse>> getFollowings(
+            @PathVariable Long id
+    ) {
+        List<FollowingResponse> followings =
+                memberService.getFollowings(id);
+
+        return ResponseEntity.ok(followings);
+    }
 }
