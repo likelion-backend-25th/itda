@@ -179,7 +179,7 @@ CREATE TABLE theme_purchase (
                         member_id BIGINT NOT NULL,
                         theme_id BIGINT NOT NULL,
                         payment_id BIGINT,
-                        is_used BOOLEAN,
+                        is_used BOOLEAN DEFAULT 0,
                         created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
                         FOREIGN KEY (member_id) REFERENCES member(id) ON DELETE CASCADE,
                         FOREIGN KEY (theme_id) REFERENCES theme(id),

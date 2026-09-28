@@ -1,11 +1,10 @@
 package net.likelion.bebc25.itda.theme.service;
 
 import net.likelion.bebc25.itda.dto.PageResponse;
-import net.likelion.bebc25.itda.post.domain.Post;
-import net.likelion.bebc25.itda.post.dto.PostResponse;
 import net.likelion.bebc25.itda.theme.dto.ThemeDetailResponse;
 import net.likelion.bebc25.itda.theme.dto.ThemeResponse;
 import net.likelion.bebc25.itda.theme.mapper.ThemeMapper;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +21,12 @@ public class ThemeServiceImpl implements ThemeService{
         this.themeMapper = themeMapper;
     }
 
+    @Override
+    public Long getDefaultThemeId(){
+        Long themeId = themeMapper.findDefaultThemeId();
+
+        return themeId;
+    }
     @Override
     public PageResponse<ThemeResponse> getAllThemesById(Long memberId, int page, int size) {
         if(page < 1) page = 1;
@@ -44,4 +49,11 @@ public class ThemeServiceImpl implements ThemeService{
         }
         return theme;
     }
+
+    @Override
+    public void insertDefaultTheme(Long memberId, Long themeId) {
+
+        themeMapper.insertDefaultTheme(memberId, themeId);
+    }
+
 }

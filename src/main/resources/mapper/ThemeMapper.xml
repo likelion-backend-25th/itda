@@ -5,6 +5,12 @@
 
 <mapper namespace="net.likelion.bebc25.itda.theme.mapper.ThemeMapper">
 
+    <select id="findDefaultThemeId" resultType="long">
+        SELECT id
+        FROM theme
+        WHERE is_default = 1
+    </select>
+
     <select id="findAllThemes" resultType="net.likelion.bebc25.itda.theme.dto.ThemeResponse">
         SELECT t.id, t.theme_name, t.price, t.thumbnail_url, t.theme_code,
         <choose>
@@ -70,4 +76,10 @@
         </if>
         WHERE t.id = #{themeId}
     </select>
+
+<!--    기본 테마 등록-->
+    <insert id="insertDefaultTheme">
+        INSERT INTO theme_purchase (member_id, theme_id, payment_id, is_used)
+        VALUES (#{memberId}, #{themeId}, NULL, 1)
+    </insert>
 </mapper>
