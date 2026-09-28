@@ -72,6 +72,7 @@ public class PostServiceImpl implements PostService {
         return PostResponse.from(updatedPost,liked, scrapped);
     }
 
+    // 게시글 가져오기
     @Override
     public PostFeedResponse getPosts(Long memberId, Long publicCursor, Long subscribedCursor, int size) {
 
@@ -156,6 +157,8 @@ public class PostServiceImpl implements PostService {
 
     }
 
+    // 게시글 수정
+    // 작성자 본인만 수정 가능하게끔
     @Override
     @Transactional(rollbackFor = Exception.class)
     @PreAuthorize("@postServiceImpl.isAuthor(#postId, authentication.principal.id)")
@@ -167,11 +170,6 @@ public class PostServiceImpl implements PostService {
         if(post == null){
             throw new NoSuchElementException("존재하지 않는 게시글입니다. id: " + postId);
         }
-
-        // 작성자 본인인지 확인
-//        if(!post.getMemberId().equals(memberId)){
-//            throw new IllegalArgumentException("본인이 작성한 게시글만 수정할 수 있습니다.");
-//        }
 
         // 수정할 값으로 Post 객체 생성
         Post updatedPost = Post.builder()
@@ -199,6 +197,7 @@ public class PostServiceImpl implements PostService {
     }
 
     // 게시글 삭제
+    // 관리자랑 해당 글 작성자만 게시글 삭제 가능하게끔
     @Override
     @Transactional(rollbackFor = Exception.class)
     @PreAuthorize("hasRole('ADMIN') or @postServiceImpl.isAuthor(#postId, authentication.principal.id)")
