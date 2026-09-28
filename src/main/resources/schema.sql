@@ -30,11 +30,14 @@ CREATE TABLE common_code (
                         name VARCHAR(30) NOT NULL,
                         -- 관리자에게 코드에 대한 설명
                         description VARCHAR(255),
+                        -- name의 int_value 값
+                        numeric_value bigint default null,
                         -- 정렬 순서
                         sort INT,
                         -- 활성화 여부
                         is_active BOOLEAN NOT NULL DEFAULT TRUE,
                         UNIQUE (type, code)
+
 );
 
 -- 2. 사이트 등록 테마 테이블

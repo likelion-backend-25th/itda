@@ -18,8 +18,7 @@ public class PaymentServiceImpl implements PaymentService {
     private final PaymentMapper paymentMapper;
     private final PortOneClient portOneClient;
 
-    // 결제 기능 테스트용 임시 금액
-    private static final Long TEST_AMOUNT = 100L;
+
 
     /**
      * 결제 준비
@@ -76,6 +75,19 @@ public class PaymentServiceImpl implements PaymentService {
                         .toString()
                         .replace("-", "");
 
+        // 결제 유형과 대상 ID를 기준으로 실제 결제 금액 조회
+        Long amount =
+                paymentMapper.findAmount(
+                        request.paymentType(),
+                        request.targetId()
+                );
+
+        if (amount == null) {
+            throw new IllegalArgumentException(
+                    "결제 대상의 가격 정보를 찾을 수 없습니다."
+            );
+        }
+
 
         // 결제 대기 정보 생성
         Payment payment =
@@ -84,12 +96,12 @@ public class PaymentServiceImpl implements PaymentService {
                         request.paymentType(),
                         request.targetId(),
                         paymentId,
-                        TEST_AMOUNT,
+                        amount,
                         statusId,
                         payMethodId
                 );
 
-        // 2. DB 저장 직전 결제 객체 확인
+        // 02. DB 저장 직전 결제 객체 확인
         log.info(
                 "[PAYMENT CREATED] paymentId={}, memberId={}, amount={}, statusId={}, payMethodId={}",
                 payment.getPaymentId(),
@@ -103,19 +115,30 @@ public class PaymentServiceImpl implements PaymentService {
         // payment 테이블 저장
         paymentMapper.insert(payment);
 
+        // 0. INSERT 호출 이후
+        log.info(
+                "[PAYMENT DB SAVE COMPLETE] paymentId={}",
+                payment.getPaymentId()
+        );
 
 
 
         // PortOne 서버에 결제 금액 사전 등록
         portOneClient.preRegister(
                 paymentId,
-                TEST_AMOUNT
+                amount
+        );
+        // 04. PortOne 사전등록 성공
+        log.info(
+                "[PORTONE PRE-REGISTER COMPLETE] paymentId={}, amount={}",
+                paymentId,
+                amount
         );
 
         // 프론트에 결제 준비 결과 반환
         return new PaymentPrepareResponse(
                 paymentId,
-                TEST_AMOUNT
+                amount
         );
     }
     /**
@@ -162,6 +185,15 @@ public class PaymentServiceImpl implements PaymentService {
                     "존재하지 않는 결제입니다."
             );
         }
+        //  05.  DB에서 조회한 결제 대기 정보 확인
+        log.info(
+                "[PAYMENT DB FOUND] paymentId={}, memberId={}, amount={}, statusId={}, transactionId={}",
+                payment.getPaymentId(),
+                payment.getMemberId(),
+                payment.getAmount(),
+                payment.getStatusId(),
+                payment.getTransactionId()
+        );
 
 
         /*
@@ -229,12 +261,19 @@ public class PaymentServiceImpl implements PaymentService {
                         request.paymentId()
                 );
 
-
         if (portOnePayment == null) {
             throw new IllegalStateException(
                     "PortOne 결제 정보를 조회할 수 없습니다."
             );
         }
+        // 06. PortOne 조회 직후
+        log.info(
+                "[PORTONE PAYMENT FOUND] paymentId={}, status={}, transactionId={}, paidAt={}",
+                portOnePayment.id(),
+                portOnePayment.status(),
+                portOnePayment.transactionId(),
+                portOnePayment.paidAt()
+        );
 
 
         /*
@@ -326,6 +365,14 @@ public class PaymentServiceImpl implements PaymentService {
             );
         }
 
+        // 07. PortOne 결제 정보 검증 완료
+        log.info(
+                "[PAYMENT VALIDATION SUCCESS] paymentId={}, amount={}, status={}",
+                payment.getPaymentId(),
+                payment.getAmount(),
+                portOnePayment.status()
+        );
+
 
         /*
          * 11. ⭐ 우리 DB 결제 완료 처리
@@ -367,6 +414,14 @@ public class PaymentServiceImpl implements PaymentService {
             );
         }
 
+        // 08. DB 결제 완료 상태 저장 성공
+        log.info(
+                "[PAYMENT COMPLETE SUCCESS] paymentId={}, transactionId={}, statusId={}, paidAt={}",
+                payment.getPaymentId(),
+                portOnePayment.transactionId(),
+                paidStatusId,
+                portOnePayment.paidAt()
+        );
 
         /*
          * 12. 프론트에 결제 완료 결과 반환
@@ -382,4 +437,5 @@ public class PaymentServiceImpl implements PaymentService {
                 portOnePayment.transactionId()
         );
     }
+
 }

@@ -35,6 +35,13 @@ public interface PaymentMapper {
      */
     Payment findByPaymentId(@Param("paymentId") String paymentId);
 
+    // 결제 상품 가격 조회
+    Long findAmount(
+            @Param("paymentType") String paymentType,
+            @Param("targetId") Long targetId
+    );
+
+
     /**
      * ✅ 정상 결제로 검증된 payment를 결제 완료 상태로 변경
      *
@@ -56,4 +63,6 @@ public interface PaymentMapper {
             @Param("paidAt")
             LocalDateTime paidAt
     );
+
+
 }

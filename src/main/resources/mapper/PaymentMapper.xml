@@ -49,6 +49,32 @@
 
     </select>
 
+    <!-- payment에서 테마/구독 결제에 따라 가격을 조회-->
+    <select id="findAmount"
+            resultType="java.lang.Long">
+        <!-- 둘 중 null값이 아닌것만 조회-->
+        SELECT COALESCE(
+
+        (
+        SELECT price
+        FROM theme
+        WHERE id = #{targetId}
+        AND #{paymentType} = 'THEME'
+        ),
+
+        (
+        SELECT cc.numeric_value
+        FROM subscription s
+        INNER JOIN common_code cc
+        ON s.price_id = cc.id
+        WHERE s.id = #{targetId}
+        AND #{paymentType} = 'SUBSCRIPTION'
+        )
+
+        )
+
+    </select>
+
     <!--
     실제 결제 완료 처리
     PortOne 서버 검증까지 성공한 경우에만 호출
