@@ -9,12 +9,9 @@
             resultType="net.likelion.bebc25.itda.admin.member.dto.AdminMemberResponse">
         SELECT
         id,
-        email,
-        nickname,
-        role,
-        status,
         profile_image AS profileImage,
-        theme_id AS themeId,
+        nickname,
+        email,
         authmethod,
         created_at AS createdAt
         FROM member
