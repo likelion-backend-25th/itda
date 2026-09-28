@@ -1,6 +1,7 @@
 package net.likelion.bebc25.itda.payment.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import net.likelion.bebc25.itda.payment.client.PortOneClient;
 import net.likelion.bebc25.itda.payment.dto.*;
 import net.likelion.bebc25.itda.payment.mapper.PaymentMapper;
@@ -9,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class PaymentServiceImpl implements PaymentService {
@@ -66,6 +68,9 @@ public class PaymentServiceImpl implements PaymentService {
                 "ITDA-" + UUID.randomUUID()
                         .toString()
                         .replace("-", "");
+
+        log.info("========== [1] 결제 준비 ==========");
+        log.info("paymentId = {}", paymentId);
 
         // 결제 대기 정보 생성
         Payment payment =
