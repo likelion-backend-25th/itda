@@ -95,7 +95,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     @Transactional
-    public ResponseCookie logout(String refreshTokenOrNull) { // 세션이 죽어있으면 바로 홈으로 리다이렉트? 취향
+    public ResponseCookie logout(String refreshTokenOrNull) {
         if (refreshTokenOrNull != null && jwtProvider.validateToken(refreshTokenOrNull)) {
             Long memberId = jwtProvider.getMemberId(refreshTokenOrNull);
 
