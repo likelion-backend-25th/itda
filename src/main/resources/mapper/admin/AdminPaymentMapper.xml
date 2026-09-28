@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="net.likelion.bebc25.itda.admin.payment.mapper.AdminPaymentMapper">
+
+    <select id="findAllPayments"
+            resultType="net.likelion.bebc25.itda.admin.payment.dto.AdminPaymentResponse">
+
+        SELECT
+        p.id AS paymentId,
+        p.member_id AS memberId,
+        m.nickname,
+        m.email,
+        p.payment_type AS paymentType,
+        p.target_id AS targetId,
+        p.transaction_id AS transactionId,
+        p.amount,
+        c.name AS paymentStatus,
+        pm.name AS paymentMethod,
+        p.paid_at AS paidAt,
+        p.created_at AS createdAt
+        FROM payment p
+        JOIN member m
+        ON p.member_id = m.id
+        JOIN common_code c
+        ON p.status_id = c.id
+        LEFT JOIN common_code pm
+        ON p.pay_method_id = pm.id
+        WHERE c.type = 1
+        ORDER BY p.created_at DESC
+
+    </select>
+
+    <select id="findAllRefunds"
+            resultType="net.likelion.bebc25.itda.admin.payment.dto.AdminRefundResponse">
+
+        SELECT
+        p.id AS paymentId,
+        p.member_id AS memberId,
+        m.nickname,
+        m.email,
+        p.payment_type AS paymentType,
+        p.target_id AS targetId,
+        p.transaction_id AS transactionId,
+        p.amount,
+        c.name AS paymentStatus,
+        pm.name AS paymentMethod,
+        p.paid_at AS paidAt,
+        p.created_at AS createdAt
+        FROM payment p
+        JOIN member m
+        ON p.member_id = m.id
+        JOIN common_code c
+        ON p.status_id = c.id
+        LEFT JOIN common_code pm
+        ON p.pay_method_id = pm.id
+        WHERE c.type = 1
+        AND c.code = 'PS04'
+        ORDER BY p.created_at DESC
+
+    </select>
+
+    <update id="refundPayment">
+        UPDATE payment
+        SET status_id = (
+        SELECT id
+        FROM common_code
+        WHERE type = 1
+        AND code = 'PS04'
+        AND is_active = TRUE
+        )
+        WHERE id = #{paymentId}
+        AND status_id = (
+        SELECT id
+        FROM common_code
+        WHERE type = 1
+        AND code = 'PS02'
+        AND is_active = TRUE
+        )
+    </update>
+
+</mapper>
