@@ -15,12 +15,12 @@ public record MemberProfileResponse(
         Long themeId,
         LocalDateTime createdAt
 ) {
-    public static MemberProfileResponse from(Member member) {
+    public static MemberProfileResponse from(Member member, String profileImageUrl) {
         return new MemberProfileResponse(
                 member.getId(),
                 member.getEmail(),
                 member.getNickname(),
-                member.getProfileImage(),
+                profileImageUrl,
                 member.getRole(),
                 member.getIntroduction(),
                 member.getTheme_id(),

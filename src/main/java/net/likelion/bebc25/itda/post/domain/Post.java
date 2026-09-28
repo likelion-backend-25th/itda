@@ -13,6 +13,8 @@ public class Post {
     private Long id;
     private Long memberId;
     private String nickname;
+    /** member.profile_image S3 key (JOIN 조회) */
+    private String profileImage;
     private Long categoryId;
     private String categoryName;
     private String content;
