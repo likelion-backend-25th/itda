@@ -42,4 +42,10 @@ public interface PostMapper {
     // 8. 조회수 증가
     void increaseViewCount(Long postId);
 
+    // 9. 댓글 수 + 1
+    void increaseReplyCount(long postId);
+
+    // 10. 댓글 수 - 1
+    void decreaseReplyCount(long postId);
+
 }

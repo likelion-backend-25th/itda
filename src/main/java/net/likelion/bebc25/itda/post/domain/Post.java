@@ -19,6 +19,7 @@ public class Post {
     private String categoryName;
     private String content;
     private String imageUrl;
+    private int replyCount;
     private int likeCount;
     private int viewCount;
     // 구독자 전용 여부

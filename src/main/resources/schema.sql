@@ -101,6 +101,7 @@ CREATE TABLE post (
                         category_id BIGINT NOT NULL,
                         content TEXT NOT NULL,
                         image_url VARCHAR(255),
+                        reply_count INT NOT NULL DEFAULT 0,
                         like_count INT NOT NULL DEFAULT 0,
                         view_count INT NOT NULL DEFAULT 0,
                         subscriber_only BOOLEAN NOT NULL DEFAULT FALSE,    -- 구독자 전용 여부
