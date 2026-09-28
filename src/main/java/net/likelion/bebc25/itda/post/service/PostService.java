@@ -14,7 +14,7 @@ public interface PostService {
     PostResponse getPostById(Long id, Long memberId, boolean alreadyViewed);
 
     // 3. 게시글 피드 무한 스크롤
-    PostFeedResponse getPosts(Long memberId, Long publicCursor, Long subscribedCursor, int size);
+    PostFeedResponse getPosts(Long memberId, Long publicCursor, Long subscribedCursor, Long categoryId, int size);
 
     // 4. 게시글 수정
     PostResponse updatePost(Long memberId, Long postId, PostUpdateRequest request);

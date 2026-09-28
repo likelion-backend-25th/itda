@@ -74,11 +74,11 @@ public class PostServiceImpl implements PostService {
 
     // 게시글 가져오기
     @Override
-    public PostFeedResponse getPosts(Long memberId, Long publicCursor, Long subscribedCursor, int size) {
+    public PostFeedResponse getPosts(Long memberId, Long publicCursor, Long subscribedCursor, Long categoryId, int size) {
 
         // 비로그인시
         if(memberId == null){
-            List<Post> publicPosts = postMapper.findPublicPostsByCursor(publicCursor,size + 1);
+            List<Post> publicPosts = postMapper.findPublicPostsByCursor(publicCursor,categoryId, size + 1);
             // size보다 많이 조회됐다면 다음 게시글이 있다는 걸 확인
             boolean hasNext = publicPosts.size() > size;
 
@@ -104,9 +104,9 @@ public class PostServiceImpl implements PostService {
         int subscribedSize = size - publicSize;
 
         // 공개글
-        List<Post> publicPosts = postMapper.findPublicPostsByCursor(publicCursor,publicSize + 1);
+        List<Post> publicPosts = postMapper.findPublicPostsByCursor(publicCursor, categoryId, publicSize + 1);
         // 구독글
-        List<Post> subscribedPosts = postMapper.findSubscribedPostsByCursor(memberId,subscribedCursor,subscribedSize + 1);
+        List<Post> subscribedPosts = postMapper.findSubscribedPostsByCursor(memberId,subscribedCursor,categoryId, subscribedSize + 1);
 
         // 각각 다음 데이터가 있는지 판단
         boolean hasNextPublic = publicPosts.size() > publicSize;

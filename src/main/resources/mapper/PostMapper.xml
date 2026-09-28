@@ -23,7 +23,7 @@
         ON p.category_id = c.id
         WHERE p.id = #{id}
     </select>
-<!--    3. 비로그인시 보며주는 게시글(일반 게시글만)-->
+<!--    3. 비로그인시 보여주는 게시글(일반 게시글만)-->
     <select id="findPublicPostsByCursor" resultType="net.likelion.bebc25.itda.post.domain.Post">
         SELECT p.id, p.member_id, m.nickname, p.category_id, c.name AS category_name, p.content, p.image_url, p.like_count, p.view_count, p.subscriber_only, p.created_at, p.updated_at
         FROM post p
@@ -32,6 +32,9 @@
         JOIN common_code c
         ON p.category_id = c.id
         WHERE p.subscriber_only = FALSE
+        <if test="categoryId != null">
+            AND p.category_id = #{categoryId}
+        </if>
         <if test="cursor != null">
 <!--           마크업언어에서 CDATA로 문자열들을 감싸게 되면 이 문자열들을 사이의 데이터는 마크업으로 해석하지 않아야하는 데이터를 포함한다는 것을 의미-->
             AND p.id <![CDATA[ < ]]> #{cursor}
@@ -50,9 +53,15 @@
         ON p.member_id = m.id
         JOIN common_code c
         ON p.category_id = c.id
+        JOIN common_code ss
+        ON s.status_id = ss.id
         WHERE s.member_id = #{memberId}
-        AND s.status_id = 15
+        AND ss.type = 4
+        AND ss.code = 'SS01'
         AND p.subscriber_only = TRUE
+        <if test="categoryId != null">
+            AND p.category_id = #{categoryId}
+        </if>
         <if test="cursor != null">
 <!--           마크업언어에서 CDATA로 문자열들을 감싸게 되면 이 문자열들을 사이의 데이터는 마크업으로 해석하지 않아야하는 데이터를 포함한다는 것을 의미-->
             AND p.id <![CDATA[ < ]]> #{cursor}
