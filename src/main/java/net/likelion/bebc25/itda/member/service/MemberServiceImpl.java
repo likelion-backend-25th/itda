@@ -8,6 +8,8 @@ import net.likelion.bebc25.itda.member.dto.SignupRequest;
 import net.likelion.bebc25.itda.member.mapper.FollowerMapper;
 import net.likelion.bebc25.itda.member.mapper.FollowingMapper;
 import net.likelion.bebc25.itda.member.mapper.MemberMapper;
+import net.likelion.bebc25.itda.theme.mapper.ThemeMapper;
+import net.likelion.bebc25.itda.theme.service.ThemeService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,23 +25,32 @@ public class MemberServiceImpl implements MemberService {
     private final FollowerMapper followerMapper;
     private final FollowingMapper followingMapper;
     private final PasswordEncoder passwordEncoder;
+    private final ThemeService themeService;
 
+    @Override
+    @Transactional
     public void signup(SignupRequest request) {
         Member existingMember = memberMapper.findByEmail(request.getEmail());
         if (existingMember != null) {
             throw new IllegalArgumentException("이미 가입된 이메일입니다.");
         }
 
+        // 기본 테마 조회
+        Long defaultThemeId = themeService.getDefaultThemeId();
+
+        // 회원 정보 저장
         Member member = Member.builder()
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .nickname(request.getNickname())
                 .role("ROLE_USER")
                 .authmethod("LOCAL")
-                .theme_id(1)
+                .theme_id(defaultThemeId)
                 .build();
-
         memberMapper.save(member);
+
+        // 기본 테마를 보유 테마로 등록
+        themeService.insertDefaultTheme(member.getId(), defaultThemeId);
     }
 
     // 내 팔로워 목록 조회

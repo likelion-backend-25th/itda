@@ -67,4 +67,20 @@ public class ThemeController {
 
         return ResponseEntity.ok(theme);
     }
+
+    @Operation(
+            summary = "내 보유 테마 조회",
+            description = "보유하고 있는 테마 목록을 조회합니다."
+    )
+    @GetMapping("/owned")
+    public ResponseEntity<ThemeDetailResponse> getOwnedThemes(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PathVariable Long themeId
+    ) {
+        Long memberId = userDetails != null ? userDetails.getId() : null;
+
+        ThemeDetailResponse theme = themeService.getThemeById(memberId, themeId);
+
+        return ResponseEntity.ok(theme);
+    }
 }

@@ -12,7 +12,7 @@ public record MemberProfileResponse(
         String profileImage,
         String role,
         String introduction,
-        int themeId,
+        Long themeId,
         LocalDateTime createdAt
 ) {
     public static MemberProfileResponse from(Member member) {
