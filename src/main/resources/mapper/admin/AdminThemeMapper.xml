@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="net.likelion.bebc25.itda.admin.theme.mapper.AdminThemeMapper">
+
+    <!-- 테마 전체 조회 -->
+    <select id="findAllThemes"
+            resultType="net.likelion.bebc25.itda.admin.theme.dto.AdminThemeResponse">
+        SELECT
+        id,
+        theme_name AS themeName,
+        description,
+        price,
+        thumbnail_url AS thumbnailUrl,
+        theme_code AS themeCode,
+        status,
+        is_default AS isDefault,
+        updated_at AS updatedAt,
+        created_at AS createdAt
+        FROM theme
+        ORDER BY created_at DESC
+    </select>
+
+    <!-- 테마 등록 -->
+    <insert id="insertTheme"
+            parameterType="net.likelion.bebc25.itda.admin.theme.dto.AdminThemeRequest">
+        INSERT INTO theme (
+        theme_name,
+        description,
+        price,
+        thumbnail_url,
+        theme_code
+        ) VALUES (
+        #{themeName},
+        #{description},
+        #{price},
+        #{thumbnailUrl},
+        #{themeCode}
+        )
+    </insert>
+
+    <!-- 테마 수정 -->
+    <update id="updateTheme">
+        UPDATE theme
+        SET
+        theme_name = #{request.themeName},
+        description = #{request.description},
+        price = #{request.price},
+        thumbnail_url = #{request.thumbnailUrl},
+        theme_code = #{request.themeCode}
+        WHERE id = #{themeId}
+    </update>
+
+    <!-- 테마 판매 상태 변경 -->
+    <update id="updateThemeStatus">
+        UPDATE theme
+        SET status = #{status}
+        WHERE id = #{themeId}
+    </update>
+
+    <!-- 테마 코드 중복 확인 -->
+    <select id="existsByThemeCode" resultType="boolean">
+        SELECT EXISTS (
+        SELECT 1
+        FROM theme
+        WHERE theme_code = #{themeCode}
+        )
+    </select>
+
+</mapper>
