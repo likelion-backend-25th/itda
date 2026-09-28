@@ -16,12 +16,12 @@
         <choose>
             <when test="memberId != null">
                 CASE
-                WHEN tp.id IS NOT NULL OR t.is_default = TRUE THEN TRUE
-                ELSE FALSE
+                    WHEN tp.id IS NOT NULL THEN TRUE
+                    ELSE FALSE
                 END AS is_owned,
                 CASE
-                WHEN m.theme_id = t.id THEN TRUE
-                ELSE FALSE
+                    WHEN m.theme_id = t.id THEN TRUE
+                    ELSE FALSE
                 END AS is_applied
             </when>
             <otherwise>
@@ -53,12 +53,12 @@
         <choose>
             <when test="memberId != null">
                 CASE
-                WHEN tp.id IS NOT NULL OR t.is_default = TRUE THEN TRUE
-                ELSE FALSE
+                    WHEN tp.id IS NOT NULL OR t.is_default = TRUE THEN TRUE
+                    ELSE FALSE
                 END AS is_owned,
                 CASE
-                WHEN m.theme_id = t.id THEN TRUE
-                ELSE FALSE
+                    WHEN m.theme_id = t.id THEN TRUE
+                    ELSE FALSE
                 END AS is_applied
             </when>
             <otherwise>
@@ -82,4 +82,29 @@
         INSERT INTO theme_purchase (member_id, theme_id, payment_id, is_used)
         VALUES (#{memberId}, #{themeId}, NULL, 1)
     </insert>
+
+<!--    보유 테마 목록 조회-->
+    <select id="findOwnedThemes" resultType="net.likelion.bebc25.itda.theme.dto.ThemeResponse">
+        SELECT t.id, t.theme_name, t.price, t.thumbnail_url, t.theme_code, TRUE AS is_owned,
+            CASE
+            WHEN m.theme_id = t.id THEN TRUE
+            ELSE FALSE
+            END AS is_applied
+        FROM theme_purchase tp
+        INNER JOIN theme t
+            ON t.id = tp.theme_id
+        INNER JOIN member m
+            ON m.id = tp.member_id
+        WHERE tp.member_id = #{memberId}
+        ORDER BY t.created_at DESC
+        LIMIT #{limit} OFFSET #{offset}
+    </select>
+
+    <select id="countOwnedThemes" resultType="long">
+        SELECT COUNT(*)
+        FROM theme_purchase tp
+        INNER JOIN theme t
+            ON t.id = tp.theme_id
+        WHERE tp.member_id = #{memberId}
+    </select>
 </mapper>

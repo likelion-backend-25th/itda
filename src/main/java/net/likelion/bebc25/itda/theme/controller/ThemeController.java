@@ -48,7 +48,25 @@ public class ThemeController {
     ) {
         Long memberId = userDetails != null ? userDetails.getId() : null;
 
-        PageResponse<ThemeResponse> themes = themeService.getAllThemesById(memberId, page, size);
+        PageResponse<ThemeResponse> themes = themeService.getAllThemes(memberId, page, size);
+        return ResponseEntity.ok(themes);
+    }
+
+    @Operation(
+            summary = "내 보유 테마 조회",
+            description = "보유하고 있는 테마 목록을 조회합니다."
+    )
+    @GetMapping("/owned")
+    public ResponseEntity<PageResponse<ThemeResponse>> getOwnedThemeList(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @Parameter(description = "페이지 번호 (1부터)", example = "1")
+            @RequestParam(defaultValue = "1") int page,
+            @Parameter(description = "페이지 크기", example = "6")
+            @RequestParam(defaultValue = "6") int size
+    ) {
+        Long memberId = userDetails.getId();
+
+        PageResponse<ThemeResponse> themes = themeService.getOwnedThemes(memberId, page, size);
         return ResponseEntity.ok(themes);
     }
 
@@ -58,22 +76,6 @@ public class ThemeController {
     )
     @GetMapping("/{themeId}")
     public ResponseEntity<ThemeDetailResponse> getThemeDetail(
-            @AuthenticationPrincipal CustomUserDetails userDetails,
-            @PathVariable Long themeId
-    ) {
-        Long memberId = userDetails != null ? userDetails.getId() : null;
-
-        ThemeDetailResponse theme = themeService.getThemeById(memberId, themeId);
-
-        return ResponseEntity.ok(theme);
-    }
-
-    @Operation(
-            summary = "내 보유 테마 조회",
-            description = "보유하고 있는 테마 목록을 조회합니다."
-    )
-    @GetMapping("/owned")
-    public ResponseEntity<ThemeDetailResponse> getOwnedThemes(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @PathVariable Long themeId
     ) {

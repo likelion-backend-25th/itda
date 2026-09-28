@@ -106,6 +106,7 @@ public class SecurityConfig {
 
                         // 전체 테마 목록
                         .requestMatchers(HttpMethod.GET, "/api/v1/themes").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/themes/owned").authenticated()
                         // 테마 상세
                         .requestMatchers(HttpMethod.GET, "/api/v1/themes/*").permitAll()
 
