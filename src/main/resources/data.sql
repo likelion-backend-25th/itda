@@ -87,40 +87,40 @@ VALUES
 
 -- 5. 게시글
 INSERT INTO post (
-    id, member_id, category_id, content, image_url,
+    id, member_id, category_id, content, image_url, reply_count,
     like_count, view_count, subscriber_only
 )
 VALUES
     (1, 1, 8, '오늘 읽은 책이 정말 재미있었어요. 오랜만에 시간 가는 줄 모르고 읽었습니다.',
-     'posts/book1.png', 3, 25, FALSE),
+     'posts/book1.png', 2, 3, 25, FALSE),
     (2, 1, 8, '요즘 읽고 있는 책입니다. 비슷한 책을 좋아한다면 추천해요.',
-     'posts/book2.png', 5, 41, FALSE),
+     'posts/book2.png', 0, 5, 41, FALSE),
     (3, 2, 10, '주말에 직접 만든 파스타입니다. 생각보다 만들기 어렵지 않았어요.',
-     'posts/pasta.png', 7, 56, FALSE),
+     'posts/pasta.png', 1, 7, 56, FALSE),
     (4, 3, 9, '이번 주에 들었던 음악들을 정리해봤어요. 구독자분들과 공유합니다.',
-     'posts/music.png', 10, 83, TRUE),
+     'posts/music.png', 1, 10, 83, TRUE),
     (5, 3, 10, '제가 자주 사용하는 홈카페 레시피를 정리했습니다.',
-     'posts/cafe.png', 8, 72, TRUE),
+     'posts/cafe.png', 1, 8, 72, TRUE),
     (6, 4, 13, '최근에 그린 그림입니다. 새로운 재료를 사용해봤어요.',
-     'posts/drawing.png', 4, 31, FALSE),
+     'posts/drawing.png', 1, 4, 31, FALSE),
     (7, 4, 13, '그림을 그릴 때 사용하는 도구들을 소개해볼게요.',
-     'posts/tools.png', 6, 48, TRUE),
+     'posts/tools.png', 0, 6, 48, TRUE),
     (8, 5, 9, '비 오는 날 듣기 좋은 플레이리스트를 모아봤습니다.',
-     'posts/playlist.png', 9, 60, FALSE),
+     'posts/playlist.png', 2, 9, 60, FALSE),
     (9, 5, 9, '구독자 전용: 이번 달 추천 앨범 리스트입니다.',
-     'posts/album.png', 12, 90, TRUE),
+     'posts/album.png', 0, 12, 90, TRUE),
     (10, 6, 11, '첫 코바늘 작품이에요. 실패도 많았지만 완성하니 뿌듯합니다.',
-     'posts/knit.png', 5, 33, FALSE),
+     'posts/knit.png', 2, 5, 33, FALSE),
     (11, 6, 12, '비즈로 만든 간단한 팔찌 튜토리얼을 남겨둡니다.',
-     'posts/bead.png', 7, 44, FALSE),
+     'posts/bead.png', 1, 7, 44, FALSE),
     (12, 2, 10, '초간단 김치볶음밥 레시피. 자취생도 바로 따라할 수 있어요.',
-     'posts/friedrice.png', 11, 70, FALSE),
+     'posts/friedrice.png', 2, 11, 70, FALSE),
     (13, 1, 8, '서점 나들이 후기. 신간 코너에서 발견한 책들입니다.',
-     'posts/bookstore.png', 2, 18, FALSE),
+     'posts/bookstore.png', 0, 2, 18, FALSE),
     (14, 3, 14, '취미를 꾸준히 하는 루틴을 공유합니다. (구독자 전용)',
-     'posts/routine.png', 15, 120, TRUE),
+     'posts/routine.png', 0, 15, 120, TRUE),
     (15, 4, 13, '스케치북 한 권을 다 채웠습니다. 과정 사진 모음.',
-     'posts/sketch.png', 8, 55, FALSE);
+     'posts/sketch.png', 2, 8, 55, FALSE);
 
 
 -- 6. 댓글

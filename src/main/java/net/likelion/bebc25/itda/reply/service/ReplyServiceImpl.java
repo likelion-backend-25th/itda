@@ -23,6 +23,7 @@ public class ReplyServiceImpl implements ReplyService {
     private final ReplyMapper replyMapper;
     private final PostMapper postMapper;
 
+    // 1. 댓글 등록
     @Override
     @Transactional(rollbackFor = Exception.class)
     public ReplyResponse createReply(Long memberId, Long postId, ReplyCreateRequest request) {
@@ -39,6 +40,9 @@ public class ReplyServiceImpl implements ReplyService {
 
         // 댓글 저장
         replyMapper.save(reply);
+
+        // 댓글 수 증가
+        postMapper.increaseReplyCount(postId);
 
         // 저장된 댓글 다시 조회
         Reply savedReply = replyMapper.findById(reply.getId());
@@ -69,7 +73,7 @@ public class ReplyServiceImpl implements ReplyService {
         return responses;
     }
 
-    // 댓글 수정 - 작성자만 수정 가능
+    // 3. 댓글 수정 - 작성자만 수정 가능
     @Override
     @Transactional(rollbackFor = Exception.class)   // 해당 기능이 실패하면 전부 롤백
     @PreAuthorize("@replyServiceImpl.isAuthor(#replyId, authentication.principal.id)")
@@ -94,7 +98,7 @@ public class ReplyServiceImpl implements ReplyService {
         return ReplyResponse.from(savedReply);
     }
 
-    // 댓글 삭제 - 관리자와 작성자만 삭제 가능
+    // 4. 댓글 삭제 - 관리자와 작성자만 삭제 가능
     @Override
     @Transactional(rollbackFor = Exception.class)
     @PreAuthorize("hasRole('ADMIN') or @replyServiceImpl.isAuthor(#replyId, authentication.principal.id)")
@@ -109,8 +113,10 @@ public class ReplyServiceImpl implements ReplyService {
             throw new IllegalArgumentException("해당 게시글의 댓글이 아닙니다.");
         }
 
-
         replyMapper.deleteById(replyId);
+
+        // 댓글 수 감소
+        postMapper.decreaseReplyCount(postId);
     }
 
     // 댓글 작성자 본인 여부를 검증하는 헬퍼 메서드
