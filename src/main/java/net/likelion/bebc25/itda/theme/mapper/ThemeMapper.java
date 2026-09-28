@@ -1,5 +1,6 @@
 package net.likelion.bebc25.itda.theme.mapper;
 
+import net.likelion.bebc25.itda.theme.dto.ThemeDetailResponse;
 import net.likelion.bebc25.itda.theme.dto.ThemeResponse;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -13,7 +14,7 @@ public interface ThemeMapper {
     List<ThemeResponse> findAllThemes(@Param("memberId") Long memberId, @Param("limit") int limit, @Param("offset") int offset);
 
     // ID 기반 테마 상세 조회
-    ThemeResponse findById(@Param("id") Long id);
+    ThemeDetailResponse findById(@Param("memberId") Long memberId, @Param("themeId") Long themeId);
 
     long countThemes();
 

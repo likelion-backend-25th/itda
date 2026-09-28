@@ -36,7 +36,7 @@ public class ThemeDetailResponse {
     Boolean isOwned;
 
     @Schema(description = "적용 중인지", example = "true / false")
-    Boolean isApplie;
+    Boolean isApplied;
 
     @Schema(description = "테마 수정 일시", example = "2026-09-26T08:22:26.352Z")
     LocalDateTime updatedAt;

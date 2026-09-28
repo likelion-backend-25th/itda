@@ -12,5 +12,5 @@ public interface ThemeService {
     // 전체 테마 목록  조회
     PageResponse<ThemeResponse> getAllThemesById(Long memberId, int page, int size);
 
-    ThemeDetailResponse getThemeById(Long id);
+    ThemeDetailResponse getThemeById(Long memberId, Long themeId);
 }
