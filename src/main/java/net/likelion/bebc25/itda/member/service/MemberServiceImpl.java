@@ -3,8 +3,10 @@ package net.likelion.bebc25.itda.member.service;
 import lombok.RequiredArgsConstructor;
 import net.likelion.bebc25.itda.domain.Member;
 import net.likelion.bebc25.itda.member.dto.FollowerResponse;
+import net.likelion.bebc25.itda.member.dto.FollowingResponse;
 import net.likelion.bebc25.itda.member.dto.SignupRequest;
 import net.likelion.bebc25.itda.member.mapper.FollowerMapper;
+import net.likelion.bebc25.itda.member.mapper.FollowingMapper;
 import net.likelion.bebc25.itda.member.mapper.MemberMapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -19,6 +21,7 @@ public class MemberServiceImpl implements MemberService {
 
     private final MemberMapper memberMapper;
     private final FollowerMapper followerMapper;
+    private final FollowingMapper followingMapper;
     private final PasswordEncoder passwordEncoder;
 
     public void signup(SignupRequest request) {
@@ -40,7 +43,14 @@ public class MemberServiceImpl implements MemberService {
     }
 
     // 내 팔로워 목록 조회
+    @Override
     public List<FollowerResponse> getFollowers(Long memberId) {
         return followerMapper.findFollowers(memberId);
+    }
+
+    // 팔로잉 목록 조회
+    @Override
+    public List<FollowingResponse> getFollowings(Long memberId) {
+        return followingMapper.findFollowings(memberId);
     }
 }
