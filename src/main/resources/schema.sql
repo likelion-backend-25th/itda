@@ -188,7 +188,7 @@ CREATE TABLE theme_purchase (
                         id BIGINT AUTO_INCREMENT PRIMARY KEY,
                         member_id BIGINT NOT NULL,
                         theme_id BIGINT NOT NULL,
-                        payment_id BIGINT NOT NULL,
+                        payment_id BIGINT,
                         is_used BOOLEAN DEFAULT 0,
                         created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
                         FOREIGN KEY (member_id) REFERENCES member(id) ON DELETE CASCADE,
