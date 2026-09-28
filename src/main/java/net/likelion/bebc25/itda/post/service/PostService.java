@@ -10,8 +10,8 @@ public interface PostService {
     // 1. 게시글 신규 등록
     PostResponse createPost(Long memberId, PostCreateRequest request);
 
-    // 2. 게시글 단건 조회
-    PostResponse getPostById(Long id);
+    // 2. 게시글 단건 조회 & 쿠키로 조회수
+    PostResponse getPostById(Long id, Long memberId, boolean alreadyViewed);
 
     // 3. 게시글 피드 무한 스크롤
     PostFeedResponse getPosts(Long memberId, Long publicCursor, Long subscribedCursor, int size);

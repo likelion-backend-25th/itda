@@ -15,11 +15,14 @@ public record PostResponse(
         int likeCount,
         int viewCount,
         boolean subscriberOnly,
+        boolean liked,
+        boolean scrapped,
         LocalDateTime createdAt,
         LocalDateTime updatedAt
 ) {
+    // 로그인한 사용자가 그 글에 좋아요나 스크랩을 해둔 상태인지 바로 알기 위해서 필요함
+    public static PostResponse from (Post post, boolean liked,  boolean scrapped) {
 
-    public static PostResponse from (Post post){
         return new PostResponse(
                 post.getId(),
                 post.getMemberId(),
@@ -31,8 +34,11 @@ public record PostResponse(
                 post.getLikeCount(),
                 post.getViewCount(),
                 post.isSubscriberOnly(),
+                liked,
+                scrapped,
                 post.getCreatedAt(),
                 post.getUpdatedAt()
         );
     }
+
 }

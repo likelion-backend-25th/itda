@@ -9,7 +9,7 @@
     <select id="countLike" resultType="int">
         SELECT COUNT(*)
         FROM post_reaction
-        WHERE member_id = #{memberId} AND post_id = @{postId} AND type = 1
+        WHERE member_id = #{memberId} AND post_id = #{postId} AND type = 1
     </select>
 
 <!--    2. 좋아요 등록-->
@@ -22,6 +22,36 @@
     <delete id="deleteLike">
         DELETE FROM post_reaction
         WHERE member_id = #{memberId} AND post_id = #{postId} AND type = 1
+    </delete>
+    <!-- 스크랩 여부 확인 -->
+    <select id="countScrap" resultType="int">
+        SELECT COUNT(*)
+        FROM post_reaction
+        WHERE member_id = #{memberId}
+        AND post_id = #{postId}
+        AND type = 2
+    </select>
+
+    <!-- 스크랩 등록 -->
+    <insert id="insertScrap">
+        INSERT INTO post_reaction (
+        member_id,
+        post_id,
+        type
+        )
+        VALUES (
+        #{memberId},
+        #{postId},
+        2
+        )
+    </insert>
+
+    <!-- 스크랩 취소 -->
+    <delete id="deleteScrap">
+        DELETE FROM post_reaction
+        WHERE member_id = #{memberId}
+        AND post_id = #{postId}
+        AND type = 2
     </delete>
 
 

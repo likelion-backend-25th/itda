@@ -7,6 +7,7 @@ import net.likelion.bebc25.itda.post.dto.PostCreateRequest;
 import net.likelion.bebc25.itda.post.dto.PostFeedResponse;
 import net.likelion.bebc25.itda.post.dto.PostResponse;
 import net.likelion.bebc25.itda.post.mapper.PostMapper;
+import net.likelion.bebc25.itda.post.mapper.PostReactionMapper;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,7 +23,9 @@ import java.util.NoSuchElementException;
 public class PostServiceImpl implements PostService {
 
     private final PostMapper postMapper;
+    private final PostReactionMapper postReactionMapper;
 
+    // 게시글 등록
     @Override
     @Transactional
     public PostResponse createPost(Long memberId, PostCreateRequest request) {
@@ -36,16 +39,37 @@ public class PostServiceImpl implements PostService {
 
         postMapper.save(post);
         Post savedPost = postMapper.findById(post.getId());
-        return PostResponse.from(savedPost);
+        // 게시글 등록 직후에 이 게시글에 대해 현재 사용자가 아직 좋아요와 스크랩을 등록하지 않음
+        return PostResponse.from(savedPost,false,false);
     }
 
+    // 게시글 단건 조회
     @Override
-    public PostResponse getPostById(Long id) {
+    @Transactional(rollbackFor =  Exception.class)
+    public PostResponse getPostById(Long id, Long memberId, boolean alreadyViewed) {
         Post post = postMapper.findById(id);
         if (post == null) {
             throw new NoSuchElementException("존재하지 않는 게시글입니다. ID: " + id);
         }
-        return PostResponse.from(post);
+
+        // 조회수 1 증가
+        // 처음 본 게시글 일 때만 조회수 증가
+        if(!alreadyViewed) {
+            postMapper.increaseViewCount(id);
+        }
+
+        // 증가된 조회수를 반영하기 위해 다시 조회
+        Post updatedPost = postMapper.findById(id);
+
+        boolean liked = false;
+        boolean scrapped = false;
+
+        if(memberId != null){
+            liked =  postReactionMapper.countLike(memberId, id) > 0;
+            scrapped = postReactionMapper.countScrap(memberId, id) > 0;
+        }
+
+        return PostResponse.from(updatedPost,liked, scrapped);
     }
 
     @Override
@@ -67,7 +91,7 @@ public class PostServiceImpl implements PostService {
             // Post를 PostResponse로 변환한다.
             List<PostResponse> responses = new ArrayList<>();
             for (Post post : publicPosts) {
-                PostResponse response = PostResponse.from(post);
+                PostResponse response = PostResponse.from(post,false,false);
                 responses.add(response);
             }
 
@@ -113,7 +137,10 @@ public class PostServiceImpl implements PostService {
         // posts에서 Post하나를 꺼내고 PostResponse.from(post)로 변환
         // responses 리스트에 추가
         for(Post post : posts) {
-            PostResponse response = PostResponse.from(post);
+            boolean liked = postReactionMapper.countLike(memberId, post.getId()) > 0;
+
+            boolean scrapped = postReactionMapper.countScrap(memberId, post.getId()) > 0;
+            PostResponse response = PostResponse.from(post,liked, scrapped);
             responses.add(response);
         }
 
@@ -162,10 +189,16 @@ public class PostServiceImpl implements PostService {
         // 수정된 게시글 다시 조회
         Post savedPost = postMapper.findById(postId);
 
-        return PostResponse.from(savedPost);
+        // 현재 사용자의 좋아요/스크랩 여부 확인
+        boolean liked = postReactionMapper.countLike(memberId, postId) > 0;
+
+        boolean scrapped = postReactionMapper.countScrap(memberId, postId) > 0;
+
+        return PostResponse.from(savedPost, liked, scrapped);
 
     }
 
+    // 게시글 삭제
     @Override
     @Transactional(rollbackFor = Exception.class)
     @PreAuthorize("hasRole('ADMIN') or @postServiceImpl.isAuthor(#postId, authentication.principal.id)")
