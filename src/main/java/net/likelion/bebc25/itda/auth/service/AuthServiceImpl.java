@@ -95,7 +95,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     @Transactional
-    public ResponseCookie logout(String refreshTokenOrNull) {
+    public ResponseCookie logout(String refreshTokenOrNull) { // 세션이 죽어있으면 바로 홈으로 리다이렉트? 취향
         if (refreshTokenOrNull != null && jwtProvider.validateToken(refreshTokenOrNull)) {
             Long memberId = jwtProvider.getMemberId(refreshTokenOrNull);
 
@@ -103,7 +103,7 @@ public class AuthServiceImpl implements AuthService {
             RefreshTokenResponse saved = refreshTokenService.findValidToken(memberId, tokenHash);
             if (saved != null) {
                 refreshTokenService.revoke(saved.getId());
-            }
+            } // REFRESH토큰 이 죽을만큼 오래있을경우에 자동 로그아웃처리? 어케할건지
         }
         return refreshCookie("", Duration.ZERO);
     }

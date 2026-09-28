@@ -5,6 +5,10 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import net.likelion.bebc25.itda.member.dto.PostUpdateRequest;
+import net.likelion.bebc25.itda.member.dto.SignupRequest;
+import net.likelion.bebc25.itda.post.dto.PostCreateRequest;
+import net.likelion.bebc25.itda.post.dto.PostFeedResponse;
+import net.likelion.bebc25.itda.post.dto.PostResponse;
 import net.likelion.bebc25.itda.post.dto.*;
 import net.likelion.bebc25.itda.post.service.PostLikeService;
 import net.likelion.bebc25.itda.post.service.PostScrapService;
@@ -13,6 +17,7 @@ import net.likelion.bebc25.itda.security.principal.CustomUserDetails;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.View;
 
 import java.net.URI;
@@ -31,10 +36,12 @@ public class PostController {
     @PostMapping
     public ResponseEntity<PostResponse> createPost(
             @AuthenticationPrincipal CustomUserDetails userDetails,
-            @Valid @RequestBody PostCreateRequest request)
+            @Valid @RequestPart("request") PostCreateRequest request,
+            @RequestPart(value = "imageUrl", required = false) MultipartFile postImage)
+
     {
         Long memberId = userDetails.getId();
-        PostResponse createdPost = postService.createPost(memberId, request);
+        PostResponse createdPost = postService.createPost(memberId, request, postImage);
         URI location = URI.create("/api/v1/posts/" + createdPost.id());
 
         return ResponseEntity.created(location).body(createdPost);
@@ -98,11 +105,12 @@ public class PostController {
     public ResponseEntity<PostResponse> updatePost(
             @PathVariable Long id,
             @AuthenticationPrincipal CustomUserDetails userDetails,
-            @Valid @RequestBody PostUpdateRequest request
+            @Valid @RequestPart("request") PostUpdateRequest request,
+            @RequestPart(value = "imageUrl", required = false) MultipartFile postImage
     ){
         Long memberId = userDetails.getId();
 
-        PostResponse updatedPost = postService.updatePost(memberId, id, request);
+        PostResponse updatedPost = postService.updatePost(memberId, id, request, postImage);
 
         return ResponseEntity.ok(updatedPost);
     }

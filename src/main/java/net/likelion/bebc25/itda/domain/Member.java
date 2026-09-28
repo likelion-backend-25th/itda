@@ -14,7 +14,7 @@ public class Member {
     private String email;
     private String password;
     private String nickname;
-    private String profileImage; // s3 URL
+    private String profileImage; // s3 key
     @Builder.Default
     private String role = "ROLE_USER";
     private String introduction;

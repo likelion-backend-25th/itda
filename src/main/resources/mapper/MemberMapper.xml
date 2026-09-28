@@ -19,8 +19,8 @@
 
     <!-- 신규 회원 등록 (소셜 로그인 자동 회원가입) -->
     <insert id="save" parameterType="net.likelion.bebc25.itda.domain.Member" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO member (email, password, nickname, role, authmethod, created_at)
-        VALUES (#{email}, COALESCE(#{password}, ''), #{nickname}, #{role}, #{authmethod}, NOW())
+        INSERT INTO member (email, password, nickname, role, profile_image, authmethod, created_at)
+        VALUES (#{email}, COALESCE(#{password}, ''), #{nickname}, #{role}, #{profileImage}, #{authmethod}, NOW())
     </insert>
 
 </mapper>

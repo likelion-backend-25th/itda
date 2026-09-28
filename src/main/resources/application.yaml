@@ -91,3 +91,8 @@ portone:
 server:
   # 프레임워크 레벨에서 처리
   forward-headers-strategy: framework
+
+aws:
+  s3:
+    bucket: ${AWS_S3_BUCKET}
+    region: ${AWS_REGION}
