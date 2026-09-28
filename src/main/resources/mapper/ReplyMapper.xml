@@ -19,4 +19,26 @@
         WHERE r.id = #{id}
     </select>
 
+<!--    3. 해당 게시글의 댓글 조회-->
+    <select id="findByPostId" parameterType="long" resultType="net.likelion.bebc25.itda.reply.domain.Reply">
+        SELECT r.id, r.member_id, m.nickname, m.profile_image, r.post_id, r.content, r.created_at, r.updated_at
+        FROM reply r
+        JOIN member m
+        ON r.member_id = m.id
+        WHERE r.post_id = #{postId}
+        ORDER BY r. created_at ASC
+    </select>
+
+<!--    4. 댓글 수정-->
+    <update id="update" parameterType="net.likelion.bebc25.itda.reply.domain.Reply">
+        UPDATE reply
+        SET content = #{content}
+        WHERE id = #{id}
+    </update>
+
+<!--    5. 댓글 삭제-->
+    <delete id="deleteById" parameterType="long">
+        DELETE FROM reply WHERE id = #{id}
+    </delete>
+
 </mapper>
