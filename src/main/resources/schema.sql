@@ -60,6 +60,7 @@ CREATE TABLE member (
                         password VARCHAR(255) NOT NULL,
                         nickname VARCHAR(50) NOT NULL DEFAULT '철수',
                         role VARCHAR(20) NOT NULL DEFAULT 'ROLE_USER',  -- ROLE_USER 회원, ROLE_ADMIN 관리자
+                        status VARCHAR(20) NOT NULL DEFAULT 'ACTIVE',    -- ACTIVE 정상, SUSPENDED 이용 제한
                         -- default 기본 이미지 주소 추가
                         profile_image VARCHAR(255),
                         theme_id BIGINT NOT NULL DEFAULT 1,
@@ -69,6 +70,7 @@ CREATE TABLE member (
                         updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
                         created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
                         FOREIGN KEY (theme_id) REFERENCES theme(id)
+
 );
 
 -- 4. 회원 관심 테이블
