@@ -68,26 +68,34 @@
         SET category_id = #{categoryId}, content = #{content}, image_url = #{imageUrl}, subscriber_only = #{subscriberOnly}
         WHERE id = #{id}
     </update>
-    
-<!--    6. 게시글 좋아요 + 1 -->
+
+    <!--    6. 게시글 삭제-->
+    <delete id="deleteById" parameterType="long">
+        DELETE FROM post
+        WHERE id = #{id}
+    </delete>
+
+    <!--    7. 게시글 좋아요 + 1 -->
     <update id="increaseLikeCount">
         UPDATE post
         SET like_count = like_count + 1
         WHERE id = #{postId}
     </update>
 
-    <!--    7. 게시글 좋아요 - 1 -->
+    <!--    8. 게시글 좋아요 - 1 -->
     <update id="decreaseLikeCount">
         UPDATE post
         SET like_count = GREATEST(like_count - 1, 0)
         WHERE id = #{postId}
     </update>
 
-<!--    6. 게시글 삭제-->
-    <delete id="deleteById" parameterType="long">
-        DELETE FROM post
-        WHERE id = #{id}
-    </delete>
+<!--    9. 조회수 증가 -->
+    <update id="increaseViewCount">
+        UPDATE post
+        SET view_count = view_count + 1
+        WHERE id =  #{postId}
+    </update>
+
 
 
 </mapper>
