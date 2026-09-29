@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="net.likelion.bebc25.itda.admin.subscription.mapper.AdminSubscriptionMapper">
+
+    <select id="findAllSubscriptions"
+            resultType="net.likelion.bebc25.itda.admin.subscription.dto.AdminSubscriptionResponse">
+
+        SELECT
+        s.id AS subscriptionId,
+        s.member_id AS memberId,
+        m.nickname AS memberNickname,
+        m.email AS memberEmail,
+        s.target_id AS targetId,
+        t.nickname AS targetNickname,
+        c.name AS subscriptionStatus,
+        s.price_id AS priceId,
+        s.started_at AS startedAt,
+        s.ended_at AS endedAt,
+        s.next_billing_at AS nextBillingAt,
+        s.payment_id AS paymentId
+        FROM subscription s
+        JOIN member m
+        ON s.member_id = m.id
+        JOIN member t
+        ON s.target_id = t.id
+        JOIN common_code c
+        ON s.status_id = c.id
+        WHERE c.type = 4
+        ORDER BY s.started_at DESC
+
+    </select>
+
+</mapper>
