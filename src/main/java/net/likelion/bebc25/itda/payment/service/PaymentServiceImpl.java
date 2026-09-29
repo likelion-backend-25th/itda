@@ -69,7 +69,7 @@ public class PaymentServiceImpl implements PaymentService {
             case "TOSSPAY" -> "PM03";
             // 지원하지 않는 결제 방식이 들어온 경우
             default -> throw new IllegalArgumentException(
-                    ErrorCode.BUSINESS_RULE_VIOLATION.getMessage() + "지원하지 않는 결제 방식입니다."
+                    ErrorCode.BUSINESS_RULE_VIOLATION.getMessage() + " 지원하지 않는 결제 방식입니다."
             );
         };
 
@@ -78,7 +78,7 @@ public class PaymentServiceImpl implements PaymentService {
             case "TOSSPAY" -> portOneClient.getTossPayChannelKey();
             // 지원하지 않는 결제 방식이 들어온 경우
             default -> throw new IllegalArgumentException(
-                    ErrorCode.BUSINESS_RULE_VIOLATION.getMessage() + ""
+                    ErrorCode.BUSINESS_RULE_VIOLATION.getMessage() + " 지원하지 않는 결제 방식입니다."
             );
         };
 
@@ -199,7 +199,7 @@ public class PaymentServiceImpl implements PaymentService {
     ) {
 
         /*
-         * 1. 우리 DB에서 payment 조회
+         * 우리 DB에서 payment 조회
          *
          * prepare 단계에서 저장한 결제 정보를 가져온다.
          */
@@ -230,7 +230,7 @@ public class PaymentServiceImpl implements PaymentService {
 
 
         /*
-         * 2. 결제를 요청한 회원과
+         * 결제를 요청한 회원과
          * 현재 로그인한 회원이 동일한지 검증
          *
          * 다른 사용자의 paymentId를 이용한
@@ -244,7 +244,7 @@ public class PaymentServiceImpl implements PaymentService {
 
 
         /*
-         * 3. PS02 = 결제 완료
+         * PS02 = 결제 완료
          *
          * AUTO_INCREMENT ID를 직접 2L로 사용하지 않고
          * common_code에서 실제 ID를 조회한다.
@@ -264,7 +264,7 @@ public class PaymentServiceImpl implements PaymentService {
 
 
         /*
-         * 4. 이미 결제 완료 처리된 결제인지 확인
+         * 이미 결제 완료 처리된 결제인지 확인
          *
          * 사용자가 새로고침하거나
          * complete API를 두 번 호출하더라도
@@ -284,7 +284,7 @@ public class PaymentServiceImpl implements PaymentService {
 
 
         /*
-         * 5. PortOne 서버에서 실제 결제 정보 조회
+         * PortOne 서버에서 실제 결제 정보 조회
          *
          * 프론트에서 "결제 성공"이라고 전달한 값을
          * 그대로 신뢰하지 않는다.
@@ -310,7 +310,7 @@ public class PaymentServiceImpl implements PaymentService {
 
 
         /*
-         * 6. paymentId 검증
+         * paymentId 검증
          *
          * 우리 DB에 있는 paymentId와
          * PortOne이 반환한 결제 ID가 같은지 확인한다.
@@ -320,13 +320,13 @@ public class PaymentServiceImpl implements PaymentService {
         )) {
 
             throw new IllegalArgumentException(
-                    ErrorCode.BUSINESS_RULE_VIOLATION.getMessage() + "결제 ID가 일치하지 않습니다."
+                    ErrorCode.BUSINESS_RULE_VIOLATION.getMessage() + " 결제 ID가 일치하지 않습니다."
             );
         }
 
 
         /*
-         * 6-1. 실제 결제 상태 검증
+         * 실제 결제 상태 검증
          *
          * PortOne 상태가 PAID일 때만
          * 정상 결제로 인정한다.
@@ -334,23 +334,23 @@ public class PaymentServiceImpl implements PaymentService {
          */
         if (!"PAID".equals(portOnePayment.status())) {
             throw new IllegalArgumentException(
-                    ErrorCode.BUSINESS_RULE_VIOLATION.getMessage() + portOnePayment.status() + "결제 완료 상태가 아닙니다."
+                    ErrorCode.BUSINESS_RULE_VIOLATION.getMessage() + portOnePayment.status() + " 결제 완료 상태가 아닙니다."
             );
         }
 
 
         /*
-         * 7-1. PortOne 응답에 금액 정보가 존재하는지 확인
+         * PortOne 응답에 금액 정보가 존재하는지 확인
          */
         if (portOnePayment.amount() == null || portOnePayment.amount().total() == null) {
             throw new IllegalStateException(
-                    ErrorCode.INTERNAL_SERVER_ERROR.getMessage() + "금액이 비어있습니다."
+                    ErrorCode.INTERNAL_SERVER_ERROR.getMessage() + " 금액이 비어있습니다."
             );
         }
 
 
         /*
-         * 7-2. 금액 위변조 검증
+         * 금액 위변조 검증
          *
          * prepare 단계에서 DB에 저장한 금액과
          * PortOne에서 실제 결제된 금액을 비교한다.
@@ -364,34 +364,34 @@ public class PaymentServiceImpl implements PaymentService {
          */
         if (!payment.getAmount().equals(portOnePayment.amount().total())) {
             throw new IllegalArgumentException(
-                    ErrorCode.BUSINESS_RULE_VIOLATION.getMessage() + "금액이 동일하지 않습니다."
+                    ErrorCode.BUSINESS_RULE_VIOLATION.getMessage() + " 금액이 동일하지 않습니다."
             );
         }
 
 
         /*
-         * 8. 실제 PortOne 거래 ID 확인
+         * 실제 PortOne 거래 ID 확인
          *
          * 결제가 완료되면 transactionId가 존재해야 한다.
          */
         if (portOnePayment.transactionId() == null) {
             throw new IllegalStateException(
-                    ErrorCode.INTERNAL_SERVER_ERROR.getMessage() + "PortOne transactionId가 없습니다."
+                    ErrorCode.INTERNAL_SERVER_ERROR.getMessage() + " PortOne transactionId가 없습니다."
             );
         }
 
 
         /*
-         * 10. 실제 결제 완료 시간 확인
+         * 실제 결제 완료 시간 확인
          */
         if (portOnePayment.paidAt() == null) {
             throw new IllegalStateException(
-                    ErrorCode.INTERNAL_SERVER_ERROR.getMessage() + "결제 시간이 없습니다."
+                    ErrorCode.INTERNAL_SERVER_ERROR.getMessage() + " 결제 시간이 없습니다."
             );
         }
 
         /*
-         * 11. 우리 DB 결제 완료 처리
+         * 우리 DB 결제 완료 처리
          *
          * 기존
          *
@@ -426,7 +426,7 @@ public class PaymentServiceImpl implements PaymentService {
          */
         if (updated != 1) {
             throw new RuntimeException(
-                    ErrorCode.INTERNAL_SERVER_ERROR.getMessage() + "DB 변경 오류"
+                    ErrorCode.INTERNAL_SERVER_ERROR.getMessage() + " DB 변경 오류"
             );
         }
 
@@ -452,7 +452,7 @@ public class PaymentServiceImpl implements PaymentService {
             // 결제는 완료되었지만 테마 구매 내역 저장에 실패한 경우
             if (insertedTheme != 1) {
                 throw new IllegalStateException(
-                        ErrorCode.INTERNAL_SERVER_ERROR.getMessage() + "테마 구매 목록에 저장 실패"
+                        ErrorCode.INTERNAL_SERVER_ERROR.getMessage() + " 테마 구매 목록에 저장 실패"
                 );
             }
 
@@ -467,7 +467,7 @@ public class PaymentServiceImpl implements PaymentService {
             // common_code의 구독 상태 코드가 없는 경우
             if (subscriptionStatusId == null) {
                 throw new IllegalStateException(
-                        ErrorCode.INTERNAL_SERVER_ERROR.getMessage() + "구독 활성 코드가 빈값입니다. "
+                        ErrorCode.INTERNAL_SERVER_ERROR.getMessage() + " 구독 활성 코드가 null값입니다. "
                 );
             }
 
@@ -482,12 +482,12 @@ public class PaymentServiceImpl implements PaymentService {
             // 결제는 완료되었지만 구독 내역 저장에 실패한 경우
             if (insertedSubscription != 1) {
                 throw new IllegalStateException(
-                        ErrorCode.INTERNAL_SERVER_ERROR.getMessage() + "구독 저장이 실패하였습니다."
+                        ErrorCode.INTERNAL_SERVER_ERROR.getMessage() + " 구독 저장이 실패하였습니다."
                 );
             }
         }
         /*
-         * 12. 프론트에 결제 완료 결과 반환
+         * 프론트에 결제 완료 결과 반환
          */
         return new PaymentCompleteResponse(
 
