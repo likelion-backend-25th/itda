@@ -7,15 +7,15 @@
 
 
 <!--    1. 신규 게시글 등록 작성일은 DEFAULT로 만든 날로 들어가기 때문에 필요 없음  -->
-    <insert id="save" parameterType="net.likelion.bebc25.itda.post.domain.Post"
-            useGeneratedKeys="true" keyProperty="id">
+    <insert id="save" parameterType="net.likelion.bebc25.itda.post.domain.Post" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO post (member_id, category_id, content, image_url, subscriber_only)
         VALUES (#{memberId},#{categoryId},#{content},#{imageUrl},#{subscriberOnly})
     </insert>
 
 <!--    2. 게시글 단건 상세 조회(ID) -->
     <select id="findById" parameterType="long" resultType="net.likelion.bebc25.itda.post.domain.Post">
-        SELECT p.id, p.member_id, m.nickname, p.category_id, c.name AS category_name, p.content, p.image_url, p.like_count, p.view_count, p.subscriber_only, p.created_at, p.updated_at
+        SELECT p.id, p.member_id, m.nickname, m.profile_image, p.category_id, c.name AS category_name, p.content, p.image_url,
+        p.reply_count, p.like_count, p.view_count, p.subscriber_only, p.created_at, p.updated_at
         FROM post p
         JOIN member m
         ON p.member_id = m.id
@@ -23,15 +23,19 @@
         ON p.category_id = c.id
         WHERE p.id = #{id}
     </select>
-<!--    3. 비로그인시 보며주는 게시글(일반 게시글만)-->
+<!--    3. 비로그인시 보여주는 게시글(일반 게시글만)-->
     <select id="findPublicPostsByCursor" resultType="net.likelion.bebc25.itda.post.domain.Post">
-        SELECT p.id, p.member_id, m.nickname, p.category_id, c.name AS category_name, p.content, p.image_url, p.like_count, p.view_count, p.subscriber_only, p.created_at, p.updated_at
+        SELECT p.id, p.member_id, m.nickname, m.profile_image, p.category_id, c.name AS category_name, p.content, p.image_url,
+        p.reply_count, p.like_count, p.view_count, p.subscriber_only, p.created_at, p.updated_at
         FROM post p
         JOIN member m
         ON p.member_id = m.id
         JOIN common_code c
         ON p.category_id = c.id
         WHERE p.subscriber_only = FALSE
+        <if test="categoryId != null">
+            AND p.category_id = #{categoryId}
+        </if>
         <if test="cursor != null">
 <!--           마크업언어에서 CDATA로 문자열들을 감싸게 되면 이 문자열들을 사이의 데이터는 마크업으로 해석하지 않아야하는 데이터를 포함한다는 것을 의미-->
             AND p.id <![CDATA[ < ]]> #{cursor}
@@ -42,7 +46,8 @@
     
 <!--    4. 로그인시 보여주는 게시글 구독자 전용 게시글 -->
     <select id="findSubscribedPostsByCursor" resultType="net.likelion.bebc25.itda.post.domain.Post">
-        SELECT p.id, p.member_id, m.nickname, p.category_id, c.name AS category_name, p.content, p.image_url, p.like_count, p.view_count, p.subscriber_only, p.created_at, p.updated_at
+        SELECT p.id, p.member_id, m.nickname, m.profile_image, p.category_id, c.name AS category_name, p.content, p.image_url,
+        p.reply_count, p.like_count, p.view_count, p.subscriber_only, p.created_at, p.updated_at
         FROM post p
         INNER JOIN subscription s
         ON s.target_id = p.member_id
@@ -50,9 +55,15 @@
         ON p.member_id = m.id
         JOIN common_code c
         ON p.category_id = c.id
+        JOIN common_code ss
+        ON s.status_id = ss.id
         WHERE s.member_id = #{memberId}
-        AND s.status_id = 15
+        AND ss.type = 4
+        AND ss.code = 'SS01'
         AND p.subscriber_only = TRUE
+        <if test="categoryId != null">
+            AND p.category_id = #{categoryId}
+        </if>
         <if test="cursor != null">
 <!--           마크업언어에서 CDATA로 문자열들을 감싸게 되면 이 문자열들을 사이의 데이터는 마크업으로 해석하지 않아야하는 데이터를 포함한다는 것을 의미-->
             AND p.id <![CDATA[ < ]]> #{cursor}
@@ -96,6 +107,18 @@
         WHERE id =  #{postId}
     </update>
 
+<!--    10. 댓글 수 + 1 -->
+    <update id="increaseReplyCount">
+        UPDATE post
+        SET reply_count = reply_count + 1
+        WHERE id = #{postId}
+    </update>
 
+<!--    11. 댓글 수 - 1 -->
+    <delete id="decreaseReplyCount">
+        UPDATE post
+        SET reply_count = GREATEST(reply_count - 1, 0)
+        WHERE id = #{postId}
+    </delete>
 
 </mapper>

@@ -152,7 +152,7 @@ public class SecurityConfig {
         // 운영: 실제 배포된 프론트엔드 도메인
         // 개발: 로컬에서 실행하는 Vite 개발 서버
         config.setAllowedOrigins(List.of(
-                "https://itda-web.netlify.app",
+                "https://itda-sns.netlify.app",
                 "http://localhost:5173"
         ));
         // 허용할 HTTP 메서드
