@@ -6,11 +6,13 @@ import net.likelion.bebc25.itda.exception.ErrorCode;
 import net.likelion.bebc25.itda.payment.client.PortOneClient;
 import net.likelion.bebc25.itda.payment.dto.*;
 import net.likelion.bebc25.itda.payment.mapper.PaymentMapper;
-import net.likelion.bebc25.itda.subscription.service.SubscriptionServiceImpl;
 import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
@@ -22,7 +24,6 @@ public class PaymentServiceImpl implements PaymentService {
 
     private final PaymentMapper paymentMapper;
     private final PortOneClient portOneClient;
-    private final SubscriptionServiceImpl subscriptionServiceImpl;
 
 
     /**
@@ -498,6 +499,225 @@ public class PaymentServiceImpl implements PaymentService {
                 payment.getAmount(),
 
                 portOnePayment.transactionId()
+        );
+    }
+
+    /**
+     * payment 조회
+     * 본인 결제인지 확인
+     * 결제 완료 상태인지(PS02) 인지 확인
+     * 결제 유형에 따른 환불 금액 계산
+     * PortOne 취소 api 호출
+     * PortOne 취소 성공 여부 확인
+     * payment_refound 저장
+     * payment 상태 PS02 결제 완료 -> PS04 환불 완료
+     * 구독인 경우 SUBSCRIPTION 상태 SS02로 변경 구독 취소
+     * @return 환불 결과 반환
+     */
+    @Override
+    @Transactional
+    public PaymentRefundResponse refundPayment(
+            Long memberId,
+            String paymentId,
+            PaymentRefundRequest request
+    ){
+        // 환불 요청 시점
+        LocalDateTime requestedAt = LocalDateTime.now();
+        Payment payment = paymentMapper.findByPaymentId(paymentId);
+
+        // 결제 정보를 찾을 수가 없는 에러처리
+        if(payment == null){
+            throw new NoSuchElementException(
+                    ErrorCode.RESOURCE_NOT_FOUND.getMessage() + " 결제가 없습니다."
+            );
+        }
+        // 본인의 결제가 맞는지 확인
+        if(!payment.getMemberId().equals(memberId)){
+            throw new AuthorizationDeniedException(
+                    ErrorCode.FORBIDDEN_OPERATION.getCode() + "회원님의 결제가 아닙니다."
+            );
+        }
+        Long paidStatusId = paymentMapper.findCommonCodeId(
+                1,
+                "PS02"
+        );
+
+        /**
+         * PS01, PS03, PS04인 상태에서 환불은 불가능
+         */
+        if (!paidStatusId.equals(payment.getStatusId())) {
+            throw new IllegalArgumentException(
+                    "환불 가능한 결제 상태가 아닙니다."
+            );
+        }
+
+
+        long refundAmount; // 최종 실제 환불 금액
+        long deductionAmount; // 차감된 금액
+
+        if(paidStatusId == null){
+            throw new IllegalStateException(
+                    "결제 완료 상태 코드가 아닙니다."
+            );
+        }
+
+        if("THEME".equals(payment.getPaymentType())) {
+            // 테마인경우
+            Boolean isUsed = paymentMapper.findThemeIsUsed(payment.getId());
+            if(isUsed == null) {
+                throw new IllegalStateException(
+                        "테마 사용 여부를 알 수 없습니다."
+                );
+            } else if (isUsed) {
+                throw new IllegalArgumentException(
+                        "이미 사용하셨습니다."
+                );
+            } else {
+                refundAmount = payment.getAmount();
+                deductionAmount = 0L;
+            }
+
+
+        } else if ("SUBSCRIPTION".equals(payment.getPaymentType())) {
+            // 구독인경우
+            // 구독 시작 날짜 조회
+            LocalDateTime startedAt = paymentMapper.findSubscriptionStartedAt(payment.getId());
+
+            if (startedAt == null) {
+                throw new IllegalStateException(
+                        "구독을 찾을 수 없습니다."
+                );
+            }
+            // 구독 기간은 30일을 기준으로 차감
+            long totalDays = 30L;
+            // 사용한 날짜
+            long usedDays = ChronoUnit.DAYS.between(
+                            startedAt.toLocalDate(),
+                            LocalDate.now()
+                    );
+            long remainingDays = totalDays - usedDays; // 남은 일수
+
+            if (remainingDays <= 0 || remainingDays > 30) {
+                throw new IllegalArgumentException(
+                        "구독 잔여 기간 정보가 올바르지 않습니다."
+                );
+            }
+            // 남는 가격은 금액에 날짜 만큼 차감
+            long remainingAmount = payment.getAmount() * remainingDays / totalDays;
+            // 위약금은 남는 금액의 10%
+            deductionAmount = remainingAmount * 10 / 100;
+            // 총 환불 금액은 남는 가격 - 위약금
+            refundAmount = remainingAmount - deductionAmount;
+
+        } else {
+            throw new IllegalArgumentException(
+                    "지원하지 않는 기능입니다."
+            );
+        }
+
+        // PortOne 서버에 실제 환불 요청
+        PortOneCancelResponse cancelResponse = portOneClient.cancelResponse(
+                payment.getPaymentId(),
+                request.reason(),
+                refundAmount
+        );
+        //  PortOne 응답 여부 확인
+        if (cancelResponse == null || cancelResponse.cancellation() == null) {
+            throw new IllegalStateException(
+                    "PortOne 환불 응답이 없습니다."
+            );
+        }
+        // 실제 환불 성공 여부 확인
+        if (!"SUCCEEDED".equals(cancelResponse.cancellation().status() // PortOne에서 보내주는 고정값
+        )) {
+            throw new IllegalStateException(
+                    "PortOne 환불이 완료되지 않았습니다."
+            );
+        }
+        // 환불 고유 ID 생성 여부
+        String cancellationId = cancelResponse.cancellation().id();
+        if (cancellationId == null || cancellationId.isBlank()) {
+            throw new IllegalStateException(
+                    "PortOne이 전달한 cancellationId가 없습니다."
+            );
+        }
+
+        // 환불 완료 시간
+        LocalDateTime refundedAt = LocalDateTime.now();
+        // 환불 내역 저장
+        int insertedRefund = paymentMapper.insertPaymentRefund(
+                        payment.getId(),
+                        cancellationId,
+                        refundAmount,
+                        deductionAmount,
+                        request.reason(),
+                        requestedAt,
+                        refundedAt
+                );
+
+        // 환불 내역 저장 테이블 확인
+        if (insertedRefund != 1) {
+            throw new IllegalStateException(
+                    "환불 내역 저장에 실패했습니다."
+            );
+        }
+
+        // code PS02 결제 완료 -> PS04 환불 완료
+        Long refundedStatusId = paymentMapper.findCommonCodeId(
+                        1,
+                        "PS04"
+                );
+
+        // 환불 후 결제 상태 갱신
+        int updatedRefund = paymentMapper.updateRefunded(
+                        payment.getPaymentId(),
+                        paidStatusId,
+                        refundedStatusId
+                );
+
+        if (updatedRefund != 1) {
+            throw new IllegalStateException(
+                    "결제 환불 상태 변경에 실패했습니다."
+            );
+        }
+
+        if("SUBSCRIPTION".equals(
+                payment.getPaymentType()
+        )){
+            /*
+             * SS01 = 현재 활성 구독 상태
+             */
+            Long activeStatusId = paymentMapper.findCommonCodeId(
+                            4,
+                            "SS01"
+                    );
+
+
+            /*
+             * SS02 = 구독 취소 상태
+             */
+            Long cancelledStatusId = paymentMapper.findCommonCodeId(
+                            4,
+                            "SS02"
+                    );
+
+            int updatedSubscription = paymentMapper.updateSubscriptionCancelled(
+                    payment.getId(),
+                    activeStatusId,
+                    cancelledStatusId
+            );
+        } else if ("THEME".equals(
+                payment.getPaymentType()
+        )) {
+            // 환불 후 테마 결제 내역에서 삭제
+            int deletedThemePurchase = paymentMapper.deleteThemePurchaseByPaymentId(payment.getId()
+            );
+        }
+        return new PaymentRefundResponse(
+                payment.getPaymentId(),
+                cancellationId,
+                refundAmount,
+                deductionAmount
         );
     }
 }

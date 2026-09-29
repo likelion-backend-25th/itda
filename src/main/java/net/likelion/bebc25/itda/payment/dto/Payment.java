@@ -73,6 +73,21 @@ public class Payment {
      */
     private LocalDateTime paidAt;
 
+    /**
+     * 환불 요청 성공 후 발급되는 취소 ID
+     */
+    private String cancellationId;
+
+    /**
+     * 사용자가 입력하는 환불 사유
+     */
+    private String refundReason;
+
+    /**
+     *
+     */
+    private LocalDateTime refundedAt;
+
     // getter가 없는경우 @NoArgsConstructor에 의해 Lombok에서 자동생성
     public Payment(Long memberId, String paymentType, Long targetId, String paymentId, Long amount, Long statusId, Long payMethodId) {
         this.memberId = memberId;

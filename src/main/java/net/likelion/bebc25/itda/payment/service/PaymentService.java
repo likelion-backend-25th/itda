@@ -1,9 +1,6 @@
 package net.likelion.bebc25.itda.payment.service;
 
-import net.likelion.bebc25.itda.payment.dto.PaymentCompleteRequest;
-import net.likelion.bebc25.itda.payment.dto.PaymentCompleteResponse;
-import net.likelion.bebc25.itda.payment.dto.PaymentPrepareRequest;
-import net.likelion.bebc25.itda.payment.dto.PaymentPrepareResponse;
+import net.likelion.bebc25.itda.payment.dto.*;
 
 public interface PaymentService {
     // 결제 준비
@@ -21,5 +18,11 @@ public interface PaymentService {
     PaymentCompleteResponse completePayment(
             Long memberId,
             PaymentCompleteRequest request
+    );
+
+    PaymentRefundResponse refundPayment(
+            Long memberId,
+            String paymentId,
+            PaymentRefundRequest request
     );
 }
