@@ -51,7 +51,8 @@ jobs:
           KAKAO_CLIENT_SECRET: ${{ secrets.KAKAO_CLIENT_SECRET }}
           # PortOne 환경 변수 추가
           PORTONE_STORE_ID: ${{ secrets.PORTONE_STORE_ID }}
-          PORTONE_CHANNEL_KEY: ${{ secrets.PORTONE_CHANNEL_KEY }}
+          PORTONE_KAKAOPAY_CHANNEL_KEY: ${{ secrets.PORTONE_KAKAOPAY_CHANNEL_KEY }}
+          PORTONE_TOSSPAY_CHANNEL_KEY: ${{ secrets.PORTONE_TOSSPAY_CHANNEL_KEY }}
           PORTONE_API_SECRET: ${{ secrets.PORTONE_API_SECRET }}
           PORTONE_WEBHOOK_SECRET: ${{ secrets.PORTONE_WEBHOOK_SECRET }}
           # AWS S3
@@ -134,7 +135,8 @@ jobs:
             KAKAO_CLIENT_SECRET=${{ secrets.KAKAO_CLIENT_SECRET }}
 
             PORTONE_STORE_ID=${{ secrets.PORTONE_STORE_ID }}
-            PORTONE_CHANNEL_KEY=${{ secrets.PORTONE_CHANNEL_KEY }}
+            PORTONE_KAKAOPAY_CHANNEL_KEY=${{ secrets.PORTONE_KAKAOPAY_CHANNEL_KEY }}
+            PORTONE_TOSSPAY_CHANNEL_KEY=${{ secrets.PORTONE_TOSSPAY_CHANNEL_KEY }}
             PORTONE_API_SECRET=${{ secrets.PORTONE_API_SECRET }}
             PORTONE_WEBHOOK_SECRET=${{ secrets.PORTONE_WEBHOOK_SECRET }}
             
