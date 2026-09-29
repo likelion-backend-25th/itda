@@ -25,8 +25,6 @@ public record MemberProfileResponse(
                 member.getRole(),
                 member.getIntroduction(),
                 member.getThemeId(),
-                member.getCreatedAt()
-                member.getTheme_id(),
                 member.getCreatedAt(),
                 member.getStatus()
         );
