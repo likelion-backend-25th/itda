@@ -30,6 +30,13 @@ public record PaymentPrepareRequest(
                 example = "1"
         )
         @NotNull(message = "결제 대상 ID는 필수입니다.")
-        Long targetId
+        Long targetId,
+
+
+        @Schema(description = "결제 수단",
+                example = "토스페이"
+        )
+        @NotNull
+        String payMethod
 ) {
 }

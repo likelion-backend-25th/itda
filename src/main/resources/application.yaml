@@ -84,7 +84,11 @@ jwt:
 
 portone:
   store-id: ${PORTONE_STORE_ID}
-  channel-key: ${PORTONE_CHANNEL_KEY}
+
+  channel-key:
+    kakaopay: ${PORTONE_KAKAOPAY_CHANNEL_KEY}
+    tosspay: ${PORTONE_TOSSPAY_CHANNEL_KEY}
+
   api-secret: ${PORTONE_API_SECRET}
   webhook-secret: ${PORTONE_WEBHOOK_SECRET}
 

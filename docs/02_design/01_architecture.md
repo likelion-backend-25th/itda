@@ -1,7 +1,7 @@
-# 1. 시스템 아키텍처 설계서 (사자그램 SNS)
+# 1. 시스템 아키텍처 설계서 (ITDA SNS)
 
 ## 목차
-- [1. 시스템 아키텍처 설계서 (사자그램 SNS)](#1-시스템-아키텍처-설계서-사자그램-sns)
+- [1. 시스템 아키텍처 설계서 (사자그램 SNS)](#1-시스템-아키텍처-설계서-ITDA-sns)
 - [1.1 시스템 아키텍처 개요](#11-시스템-아키텍처-개요)
 - [1.2 AWS 인프라 및 배포 아키텍처](#12-aws-인프라-및-배포-아키텍처)
 - [1.3 결제/구독 및 데이터 흐름도](#13-결제구독-및-데이터-흐름도)
@@ -10,63 +10,69 @@
 
 ## 1.1 시스템 아키텍처 개요
 
-사자그램 플랫폼은 클라이언트와 서버가 물리적으로 완전히 분리된 계층형 REST API 아키텍처 채택.
+ITDA 플랫폼은 클라이언트와 서버가 물리적으로 완전히 분리된 계층형 REST API 아키텍처 채택.
 
 ```mermaid
 graph TD
-    Client["React SPA 클라이언트 (브라우저)"]
-    CloudFront["AWS CloudFront (CDN)"]
-    S3_Static["AWS S3 정적 웹 호스팅"]
-    S3_Media["AWS S3 미디어 버킷 (/uploads)"]
-    EC2["AWS EC2 (Ubuntu 24.04)"]
-    Docker_App["Spring Boot API 서버 (컨테이너)"]
-    Docker_DB["MySQL 9.x 데이터베이스 (컨테이너)"]
-    PG_Gateway["결제/구독 게이트웨이 (PG)"]
+    Client["React SPA 클라이언트 (Netlify)"]
+    Netlify["Netlify 프론트엔드 배포"]
+    S3_Media["AWS S3 미디어 버킷"]
+    EC2["AWS EC2"]
+    Docker_App["Spring Boot API 서버 (Docker 컨테이너)"]
+    RDS["AWS RDS MySQL 데이터베이스"]
+    PG_Gateway["PortOne 결제 게이트웨이"]
 
-    Client -->|정적 리소스 요청| CloudFront
-    CloudFront -->|오리진 페치| S3_Static
-    Client -->|이미지 스트리밍/조회| CloudFront
-    CloudFront -->|미디어 파일 페치| S3_Media
+    Client -->|정적 리소스 요청| Netlify
+    Netlify -->|React SPA 제공| Client
 
     Client -->|REST API 요청| EC2
     EC2 --> Docker_App
-    Docker_App -->|MyBatis 쿼리| Docker_DB
-    Docker_App -->|이미지 파일 직접 업로드| S3_Media
+    Docker_App -->|MyBatis 쿼리| RDS
+    Docker_App -->|이미지 업로드/삭제| S3_Media
+    Client -->|이미지 조회| S3_Media
 
     Client -->|결제창 SDK 호출| PG_Gateway
     PG_Gateway -->|결제 결과 응답| Client
     Client -->|결제 사후검증 요청| Docker_App
-    Docker_App -->|REST API 검증 및 빌링키 요청| PG_Gateway
-    PG_Gateway -->|비동기 웹훅 Webhook| Docker_App
+    Docker_App -->|결제 정보 검증| PG_Gateway
+    PG_Gateway -->|Webhook| Docker_App
 ```
 
 ---
 
 ## 1.2 AWS 인프라 및 배포 아키텍처
 
-### 1.2.1 프론트엔드 호스팅 (AWS S3 + CloudFront)
+### 1.2.1 프론트엔드 호스팅 (Netlify)
 - 정적 사이트 빌드 배포:
-  - React 애플리케이션을 빌드한 정적 결과물(HTML, JS, CSS, Asset)을 AWS S3 버킷에 업로드.
-  - S3 버킷 앞단에 AWS CloudFront를 구성하여 SSL/TLS(HTTPS) 인증서 적용 및 글로벌 엣지 캐싱 제공.
-  - SPA 특성에 맞춰 라우팅 경로 새로고침 시 404 에러 대신 index.html을 반환하도록 CloudFront 사용자 정의 오류 응답(Error Response) 200 설정.
-
+  - React 애플리케이션을 빌드하여 Netlify를 통해 정적 프론트엔드로 배포.
+  - Git 저장소와 Netlify를 연동하여 프론트엔드 코드 변경 시 자동 빌드 및 배포.
+  - 별도의 백엔드 서버와 분리된 환경에서 React SPA를 제공하여 프론트엔드와 백엔드의 배포 환경을 독립적으로 구성.
+  - 배포된 프론트엔드는 백엔드 API 서버의 도메인 (https://api.eony.site) 을 통해 REST API와 통신.
 ### 1.2.2 백엔드 및 데이터베이스 배포 (AWS EC2 + Docker Compose)
 - 백엔드 컨테이너 환경:
   - AWS EC2 t3.medium 인스턴스에 Docker 및 Docker Compose 구성.
   - Spring Boot API 서버 애플리케이션 컨테이너(8080 포트)와 MySQL 9.x 데이터베이스 컨테이너(3306 포트) 내부 도커 네트워크 격리 연동.
   - 호스트 80/443 포트로 유입되는 API 트래픽을 컨테이너 8080 포트로 포워딩.
-
+  - Docker Compose를 이용하여 Spring Boot 애플리케이션 컨테이너를 관리하고 이미지 업데이트 및 재배포를 수행.
+  - 데이터베이스는 AWS RDS MySQL을 사용하며, RDS는 별도의 네트워크 환경에 구성하여 EC2의 Spring Boot 애플리케이션에서 접근하도록 구성.
+  - EC2와 RDS 간의 데이터베이스 통신은 사설 네트워크를 통해 이루어지며, 데이터베이스를 외부에 직접 노출하지 않는 구조로 구성.
 ### 1.2.3 미디어 스토리지 및 파일 업로드 (AWS S3)
 - 이미지 업로드 파이프라인:
   - 회원이 피드 이미지나 프로필 이미지를 등록할 때, 프론트엔드의 Multipart/form-data 요청을 Spring Boot 서버가 수신.
   - Spring Boot 서버는 AWS SDK for Java 2.x를 사용하여 S3 버킷의 `uploads/posts/` 및 `uploads/profiles/` 경로에 고유 UUID 파일명으로 안전하게 업로드.
   - 업로드 완료 후 생성된 S3 퍼블릭 객체 URL 또는 CloudFront 미디어 배포 URL을 DB의 `image_url` 컬럼에 영속화.
+  - 업로드 파일은 용도에 따라 posts/, profiles/, themes/ 등의 디렉터리로 구분하여 저장.
+  - 업로드 파일명은 UUID를 기반으로 생성하여 파일명 충돌을 방지.
+  - 서버에서 이미지 파일의 크기와 Content-Type 및 실제 이미지 여부를 검증한 후 S3에 업로드.
+  - DB에는 S3의 실제 파일 경로(Key)를 저장하고, 클라이언트에 이미지를 제공할 때 Presigned URL을 생성하여 전달.
+  - 이미지 삭제 또는 교체 시 서버에서 기존 S3 객체를 삭제하여 불필요한 파일이 남지 않도록 처리.
 
 ### 1.2.4 도메인 간 리소스 공유 (CORS 정책)
 - React 클라이언트(CloudFront 도메인)와 Spring Boot API 서버(EC2 도메인) 간 통신을 위해 Spring Security WebConfig에 CORS 정책 적용.
-- 허용 오리진: 프론트엔드 CloudFront 배포 도메인 및 로컬 개발 주소
-- 허용 헤더: Authorization, Content-Type, X-Requested-With
-- 노출 헤더: Authorization, Location
+- 허용 오리진:
+    - https://itda-web.netlify.app
+    - http://localhost:5173
+- 허용 헤더: Authorization, Content-Type, X-Requested-With 등
 - 허용 메서드: GET, POST, PUT, PATCH, DELETE, OPTIONS
 
 ---
