@@ -5,6 +5,7 @@
 
 <mapper namespace="net.likelion.bebc25.itda.customer.payment.mapper.MyPaymentMapper">
 
+    <!-- 내 결제 내역 조회 -->
     <select id="findMyPayments"
             resultType="net.likelion.bebc25.itda.customer.payment.dto.MyPaymentResponse">
 
@@ -18,10 +19,22 @@
         p.paid_at AS paidAt,
         p.created_at AS createdAt,
         CASE
+        -- 테마: 결제 완료 + 미사용일 때 환불 가능
         WHEN c.code = 'PS02'
-        AND p.paid_at IS NOT NULL
-        AND p.paid_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)
+        AND p.payment_type = 'THEME'
+        AND EXISTS (
+        SELECT 1
+        FROM theme_purchase tp
+        WHERE tp.payment_id = p.id
+        AND tp.is_used = FALSE
+        )
         THEN TRUE
+
+        -- 구독: 결제 완료 상태라면 언제든 환불 가능
+        WHEN c.code = 'PS02'
+        AND p.payment_type = 'SUBSCRIPTION'
+        THEN TRUE
+
         ELSE FALSE
         END AS refundAvailable
         FROM payment p
@@ -35,6 +48,7 @@
 
     </select>
 
+    <!-- 환불 신청 -->
     <update id="requestRefund">
         UPDATE payment
         SET status_id = (
@@ -52,8 +66,18 @@
         WHERE type = 1
         AND code = 'PS02'
         )
-        AND paid_at IS NOT NULL
-        AND paid_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)
+        AND (
+        (
+        payment_type = 'THEME'
+        AND EXISTS (
+        SELECT 1
+        FROM theme_purchase tp
+        WHERE tp.payment_id = payment.id
+        AND tp.is_used = FALSE
+        )
+        )
+        OR payment_type = 'SUBSCRIPTION'
+        )
     </update>
 
 </mapper>
