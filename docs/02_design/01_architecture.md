@@ -47,7 +47,7 @@ graph TD
   - React 애플리케이션을 빌드하여 Netlify를 통해 정적 프론트엔드로 배포.
   - Git 저장소와 Netlify를 연동하여 프론트엔드 코드 변경 시 자동 빌드 및 배포.
   - 별도의 백엔드 서버와 분리된 환경에서 React SPA를 제공하여 프론트엔드와 백엔드의 배포 환경을 독립적으로 구성.
-  - 배포된 프론트엔드는 백엔드 API 서버의 도메인(https://api.eony.site)을 통해 REST API와 통신.
+  - 배포된 프론트엔드는 백엔드 API 서버의 도메인 (https://api.eony.site) 을 통해 REST API와 통신.
 ### 1.2.2 백엔드 및 데이터베이스 배포 (AWS EC2 + Docker Compose)
 - 백엔드 컨테이너 환경:
   - AWS EC2 t3.medium 인스턴스에 Docker 및 Docker Compose 구성.
