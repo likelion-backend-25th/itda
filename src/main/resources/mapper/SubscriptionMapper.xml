@@ -174,4 +174,11 @@
         )
 
     </select>
+
+    <delete id="deleteSubscription">
+        DELETE FROM subscription
+        WHERE member_id = #{memberId}
+        AND target_id = #{targetId}
+    </delete>
+
 </mapper>

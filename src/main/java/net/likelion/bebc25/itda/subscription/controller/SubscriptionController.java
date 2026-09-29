@@ -107,4 +107,20 @@ public class SubscriptionController {
                 new MonthlyIncomeResponse(monthlyIncome)
         );
     }
+
+    // 구독 삭제
+    @DeleteMapping("/{targetId}")
+    public ResponseEntity<Void> deleteSubscription(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PathVariable Long targetId
+    ) {
+        Long memberId = userDetails.getMember().getId();
+
+        subscriptionService.deleteSubscription(
+                memberId,
+                targetId
+        );
+
+        return ResponseEntity.ok().build();
+    }
 }

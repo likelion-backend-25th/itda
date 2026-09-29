@@ -16,7 +16,8 @@ public record MemberProfileResponse(
         LocalDateTime createdAt,
         int followerCount,
         int followingCount,
-        int postCount
+        int postCount,
+        String status
 ) {
     public static MemberProfileResponse from(
             Member member,
@@ -32,11 +33,12 @@ public record MemberProfileResponse(
                 profileImageUrl,
                 member.getRole(),
                 member.getIntroduction(),
-                member.getTheme_id(),
+                member.getThemeId(),
                 member.getCreatedAt(),
                 followerCount,
                 followingCount,
-                postCount
+                postCount,
+                member.getStatus()
         );
     }
 }

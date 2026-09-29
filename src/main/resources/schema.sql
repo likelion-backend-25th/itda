@@ -48,6 +48,7 @@ CREATE TABLE theme (
                         price INT NOT NULL DEFAULT 0,
                         thumbnail_url VARCHAR(255),
                         theme_code VARCHAR(255) NOT NULL UNIQUE,
+                        css_text TEXT NULL,
                         status VARCHAR(255) NOT NULL DEFAULT 'ON_SALE',  -- ON_SALE: 상점에서 판매중
                         is_default BOOLEAN NOT NULL DEFAULT FALSE,
                         updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,   -- 현재 시간으로 저장하고 해당 행이 수정될 때마다 자동으로 수정 시작을 현재 시간으로 갱신

@@ -35,5 +35,7 @@ public interface SubscriptionService {
     int getSubscriberCount(Long targetId);
 
     int getMonthlyIncome(Long targetId);
+
+    void deleteSubscription(Long memberId, Long targetId);
 }
 

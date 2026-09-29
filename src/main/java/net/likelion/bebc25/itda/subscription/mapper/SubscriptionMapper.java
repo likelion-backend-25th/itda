@@ -41,4 +41,9 @@ public interface SubscriptionMapper {
     int getMonthlyIncome(
             @Param("targetId") Long targetId
     );
+
+    int deleteSubscription(
+            @Param("memberId") Long memberId,
+            @Param("targetId") Long targetId
+    );
 }
