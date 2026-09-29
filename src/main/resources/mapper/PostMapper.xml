@@ -179,7 +179,7 @@
         LIMIT #{size}
     </select>
 
-<!--    -->
+<!-- 15. 실제 구독 여부   -->
     <select id="existSubscription" resultType="boolean">
         SELECT EXISTS (SELECT 1
         FROM subscription s
