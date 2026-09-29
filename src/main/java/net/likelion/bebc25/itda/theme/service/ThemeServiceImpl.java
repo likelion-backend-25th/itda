@@ -1,11 +1,10 @@
 package net.likelion.bebc25.itda.theme.service;
 
 import net.likelion.bebc25.itda.dto.PageResponse;
-import net.likelion.bebc25.itda.post.domain.Post;
-import net.likelion.bebc25.itda.post.dto.PostResponse;
 import net.likelion.bebc25.itda.theme.dto.ThemeDetailResponse;
 import net.likelion.bebc25.itda.theme.dto.ThemeResponse;
 import net.likelion.bebc25.itda.theme.mapper.ThemeMapper;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,7 +22,13 @@ public class ThemeServiceImpl implements ThemeService{
     }
 
     @Override
-    public PageResponse<ThemeResponse> getAllThemesById(Long memberId, int page, int size) {
+    public Long getDefaultThemeId(){
+        Long themeId = themeMapper.findDefaultThemeId();
+
+        return themeId;
+    }
+    @Override
+    public PageResponse<ThemeResponse> getAllThemes(Long memberId, int page, int size) {
         if(page < 1) page = 1;
         if(size < 1) size = 6;
 
@@ -31,19 +36,34 @@ public class ThemeServiceImpl implements ThemeService{
         List<ThemeResponse> content = themeMapper.findAllThemes(memberId,size,offset);
         long total = themeMapper.countThemes();
 
-        int totalPages = (int) Math.ceil((double) total / size);
-
-        return new PageResponse<>(content, page, size, total, totalPages);
+        return PageResponse.of(content, page, size, total);
     }
 
     @Override
-    public ThemeDetailResponse getThemeById(Long id) {
-//        Post post = postMapper.findById(id);
-//        if (post == null) {
-//            throw new NoSuchElementException("존재하지 않는 게시글입니다. ID: " + id);
-//        }
-//        return PostResponse.from(post);
+    public ThemeDetailResponse getThemeById(Long memberId, Long themeId) {
+        ThemeDetailResponse theme = themeMapper.findById(memberId, themeId);
+        if (theme == null) {
+            throw new NoSuchElementException("존재하지 않는 테마입니다. ID: " + themeId);
+        }
+        return theme;
+    }
 
-        return null;
+    @Override
+    public void insertDefaultTheme(Long memberId, Long themeId) {
+
+        themeMapper.insertDefaultTheme(memberId, themeId);
+    }
+
+    @Override
+    public PageResponse<ThemeResponse> getOwnedThemes(Long memberId, int page, int size) {
+        if(page < 1) page = 1;
+        if(size < 1) size = 6;
+
+        int offset = (page - 1) * size;
+
+        List<ThemeResponse> themes = themeMapper.findOwnedThemes(memberId, size, offset);
+        long totalCount = themeMapper.countOwnedThemes(memberId);
+
+        return PageResponse.of(themes, page, size, totalCount);
     }
 }

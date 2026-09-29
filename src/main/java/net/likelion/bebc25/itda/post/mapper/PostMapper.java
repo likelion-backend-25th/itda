@@ -16,11 +16,14 @@ public interface PostMapper {
     Post findById(long id);
 
     // 3. 비로그인 시 보이는 메인 게시글(구독자 전용 게시글을 제외한 모든 게시글만 보임)
-    List<Post> findPublicPostsByCursor(@Param("cursor") Long cursor, @Param("size") int size);
+    List<Post> findPublicPostsByCursor(@Param("cursor") Long cursor,
+                                       @Param("categoryId") Long categoryId,
+                                       @Param("size") int size);
 
     // 3.1 로그인 시 보이는 메인 게시글(구독자 전용 게시글 + 일반 게시글, size = 게시글수)
     List<Post> findSubscribedPostsByCursor(@Param("memberId")Long memberId,
                                        @Param("cursor") Long cursor,
+                                       @Param("categoryId") Long categoryId,
                                        @Param("size")int size);
 
 
@@ -29,4 +32,20 @@ public interface PostMapper {
 
     // 5. 게시글 삭제
     void deleteById(long id);
+
+    // 6. 게시글 좋아요 + 1
+    void increaseLikeCount(Long postId);
+
+    // 7. 게시글 좋아요 - 1
+    void decreaseLikeCount(Long postId);
+
+    // 8. 조회수 증가
+    void increaseViewCount(Long postId);
+
+    // 9. 댓글 수 + 1
+    void increaseReplyCount(long postId);
+
+    // 10. 댓글 수 - 1
+    void decreaseReplyCount(long postId);
+
 }

@@ -73,6 +73,7 @@ public class Payment {
      */
     private LocalDateTime paidAt;
 
+    // getter가 없는경우 @NoArgsConstructor에 의해 Lombok에서 자동생성
     public Payment(Long memberId, String paymentType, Long targetId, String paymentId, Long amount, Long statusId, Long payMethodId) {
         this.memberId = memberId;
         this.paymentType = paymentType;

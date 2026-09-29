@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="net.likelion.bebc25.itda.admin.post.mapper.AdminPostMapper">
+
+    <select id="findAllPosts"
+            resultType="net.likelion.bebc25.itda.admin.post.dto.AdminPostResponse">
+
+        SELECT
+        p.id,
+        m.nickname,
+        m.email,
+        CASE
+        WHEN CHAR_LENGTH(p.content) > 10
+        THEN CONCAT(LEFT(p.content, 10), '...')
+        ELSE p.content
+        END AS content,
+        p.created_at AS createdAt
+        FROM post p
+        JOIN member m
+        ON p.member_id = m.id
+        ORDER BY p.created_at DESC
+
+    </select>
+
+    <delete id="deletePost">
+        DELETE FROM post
+        WHERE id = #{postId}
+    </delete>
+
+</mapper>

@@ -61,16 +61,15 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         // 구독 생성 전 검증
         validateSubscription(memberId, request);
 
-        // 지금 구독중인지
+        // 현재 구독 중인지 확인
         Subscription activeSubscription =
                 subscriptionMapper.findActiveSubscription(
                         memberId,
                         request.getTargetId()
                 );
 
-        //이미 구독중이라면 연장
+        // 이미 구독 중이라면 연장
         if (activeSubscription != null) {
-
             subscriptionMapper.extendSubscription(
                     memberId,
                     request.getTargetId()
@@ -78,11 +77,13 @@ public class SubscriptionServiceImpl implements SubscriptionService {
             return;
         }
 
+        // 신규 구독 생성
         Subscription subscription = Subscription.builder()
                 .member_id(memberId)
                 .target_id(request.getTargetId())
-                .customer_uid(customerUid)
+                .billing_key(null)
                 .price_id(request.getPriceId())
+                .payment_id(null)
                 .build();
 
         subscriptionMapper.save(subscription);

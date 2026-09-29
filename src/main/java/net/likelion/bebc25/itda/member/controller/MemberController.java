@@ -1,5 +1,6 @@
 package net.likelion.bebc25.itda.member.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -13,6 +14,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.net.URI;
 import java.util.List;
@@ -29,35 +31,65 @@ public class MemberController {
     }
 
     // 회원가입
+    @Operation(
+            summary = "회원가입",
+            description = "회원정보를 입력하여 회원가입을 한다."
+    )
     @PostMapping
     public ResponseEntity<Void> signup(
-            @RequestBody SignupRequest request
+            @Valid @RequestPart("request") SignupRequest request,
+            @RequestPart(value = "profileImage", required = false)
+            MultipartFile profileImage
     ) {
-        memberService.signup(request);
+        memberService.signup(request, profileImage);
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    // 마이 페이지
+    // 내 프로필 정보 조회
+    @Operation(
+            summary = "내 프로필 정보 조회",
+            description = "나의 프로필 정보를 조회한다."
+    )
     @GetMapping("/me")
     public ResponseEntity<MemberProfileResponse> getMyProfile(
             @AuthenticationPrincipal CustomUserDetails userDetails //SecurityContext에서 인증된 사용자 정보를 반환한다.
     ) {
-        // 인증된 사용자 정보를 꺼내서 반환한다.
         Member member = userDetails.getMember();
-        return ResponseEntity.ok(MemberProfileResponse.from(member));
+        MemberProfileResponse profile = memberService.getProfile(member);
+
+        return ResponseEntity.ok(profile);
     }
 
-    // 내 팔로워 목록 조회
-    @GetMapping("/followers")
-    public ResponseEntity<List<FollowerResponse>> getFollowers(
-            @AuthenticationPrincipal CustomUserDetails userDetails
-    ) {
-        Long memberId = userDetails.getMember().getId();
+    // 프로필 정보 조회
+    @Operation(
+            summary = "프로필 정보 조회",
+            description = "id에 해당하는 사용자의 프로필 정보를 조회한다."
+    )
+    @GetMapping("/{memberId}")
+    public ResponseEntity<MemberProfileResponse> getProfile(@PathVariable Long memberId) {
+        Member member = memberService.findById(memberId);
 
-        List<FollowerResponse> followers =
-                memberService.getFollowers(memberId);
+        return ResponseEntity.ok(memberService.getProfile(member));
+    }
+
+    // 특정 회원의 팔로워 목록 조회
+    @GetMapping("/{id}/followers")
+    public ResponseEntity<List<FollowerResponse>> getFollowers(
+            @PathVariable Long id
+    ) {
+        List<FollowerResponse> followers = memberService.getFollowers(id);
 
         return ResponseEntity.ok(followers);
+    }
+
+    // 특정 회원의 팔로잉 목록 조회
+    @GetMapping("/{id}/followings")
+    public ResponseEntity<List<FollowingResponse>> getFollowings(
+            @PathVariable Long id
+    ) {
+        List<FollowingResponse> followings = memberService.getFollowings(id);
+
+        return ResponseEntity.ok(followings);
     }
 }

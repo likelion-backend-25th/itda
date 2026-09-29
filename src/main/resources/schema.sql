@@ -1,7 +1,7 @@
 -- 0. 기존 테이블 삭제 (외래 키 참조 역순으로 삭제)
 DROP TABLE IF EXISTS theme_purchase;
-DROP TABLE IF EXISTS payment;
 DROP TABLE IF EXISTS subscription;
+DROP TABLE IF EXISTS payment;
 DROP TABLE IF EXISTS post_reaction;
 DROP TABLE IF EXISTS reply;
 DROP TABLE IF EXISTS post;
@@ -30,11 +30,14 @@ CREATE TABLE common_code (
                         name VARCHAR(30) NOT NULL,
                         -- 관리자에게 코드에 대한 설명
                         description VARCHAR(255),
+                        -- name의 int_value 값
+                        numeric_value bigint default null,
                         -- 정렬 순서
                         sort INT,
                         -- 활성화 여부
                         is_active BOOLEAN NOT NULL DEFAULT TRUE,
                         UNIQUE (type, code)
+
 );
 
 -- 2. 사이트 등록 테마 테이블
@@ -57,6 +60,7 @@ CREATE TABLE member (
                         password VARCHAR(255) NOT NULL,
                         nickname VARCHAR(50) NOT NULL DEFAULT '철수',
                         role VARCHAR(20) NOT NULL DEFAULT 'ROLE_USER',  -- ROLE_USER 회원, ROLE_ADMIN 관리자
+                        status VARCHAR(20) NOT NULL DEFAULT 'ACTIVE',    -- ACTIVE 정상, SUSPENDED 이용 제한
                         -- default 기본 이미지 주소 추가
                         profile_image VARCHAR(255),
                         theme_id BIGINT NOT NULL DEFAULT 1,
@@ -66,6 +70,7 @@ CREATE TABLE member (
                         updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
                         created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
                         FOREIGN KEY (theme_id) REFERENCES theme(id)
+
 );
 
 -- 4. 회원 관심 테이블
@@ -96,6 +101,7 @@ CREATE TABLE post (
                         category_id BIGINT NOT NULL,
                         content TEXT NOT NULL,
                         image_url VARCHAR(255),
+                        reply_count INT NOT NULL DEFAULT 0,
                         like_count INT NOT NULL DEFAULT 0,
                         view_count INT NOT NULL DEFAULT 0,
                         subscriber_only BOOLEAN NOT NULL DEFAULT FALSE,    -- 구독자 전용 여부
@@ -156,20 +162,25 @@ CREATE TABLE subscription (
                         member_id BIGINT NOT NULL,
                           -- 구독 대상 회원
                         target_id BIGINT NOT NULL,
-                        customer_uid VARCHAR(100) NOT NULL,
+                          -- 단건 결제에서는 사용 안함
+                        billing_key VARCHAR(255) DEFAULT NULL,
                         price_id BIGINT NOT NULL,
                           -- ACTIVE / CANCELLED / EXPIRED 등
                           -- DEFAULT를 둘지 말지 고민
                         status_id BIGINT NOT NULL,
-                        next_billing_at DATETIME NOT NULL,
+                          -- 단건 결제에서는 사용 안함
+                        next_billing_at DATETIME DEFAULT NULL,
                           -- 실제 구독 종료일
-                        ended_at DATETIME,
                         started_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                        ended_at DATETIME DEFAULT (started_at + INTERVAL 1 MONTH),
+                        payment_id BIGINT,
                         FOREIGN KEY (member_id) REFERENCES member(id) ON DELETE CASCADE,
                         FOREIGN KEY (target_id) REFERENCES member(id) ON DELETE CASCADE,
                         FOREIGN KEY (price_id) REFERENCES common_code(id),
                         FOREIGN KEY (status_id) REFERENCES common_code(id),
-                          -- 자기 자신 구독 방지
+                        FOREIGN KEY (payment_id) REFERENCES payment(id),
+
+    -- 자기 자신 구독 방지
                         CHECK ( member_id <> target_id)
 );
 
@@ -179,7 +190,7 @@ CREATE TABLE theme_purchase (
                         member_id BIGINT NOT NULL,
                         theme_id BIGINT NOT NULL,
                         payment_id BIGINT,
-                        is_used BOOLEAN,
+                        is_used BOOLEAN DEFAULT 0,
                         created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
                         FOREIGN KEY (member_id) REFERENCES member(id) ON DELETE CASCADE,
                         FOREIGN KEY (theme_id) REFERENCES theme(id),

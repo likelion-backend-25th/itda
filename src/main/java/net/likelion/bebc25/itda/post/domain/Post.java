@@ -12,10 +12,14 @@ import java.time.LocalDateTime;
 public class Post {
     private Long id;
     private Long memberId;
+    private String nickname;
+    /** member.profile_image S3 key (JOIN 조회) */
+    private String profileImage;
     private Long categoryId;
     private String categoryName;
     private String content;
     private String imageUrl;
+    private int replyCount;
     private int likeCount;
     private int viewCount;
     // 구독자 전용 여부

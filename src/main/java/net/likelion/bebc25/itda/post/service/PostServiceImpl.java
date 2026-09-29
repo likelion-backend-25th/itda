@@ -7,9 +7,12 @@ import net.likelion.bebc25.itda.post.dto.PostCreateRequest;
 import net.likelion.bebc25.itda.post.dto.PostFeedResponse;
 import net.likelion.bebc25.itda.post.dto.PostResponse;
 import net.likelion.bebc25.itda.post.mapper.PostMapper;
+import net.likelion.bebc25.itda.post.mapper.PostReactionMapper;
+import net.likelion.bebc25.itda.s3.S3Service;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -22,53 +25,95 @@ import java.util.NoSuchElementException;
 public class PostServiceImpl implements PostService {
 
     private final PostMapper postMapper;
+    private final PostReactionMapper postReactionMapper;
+    private final S3Service s3Service;
 
+    private PostResponse toResponse(Post post, boolean liked, boolean scrapped) {
+        return PostResponse.from(
+                post,
+                s3Service.getPresignedUrl(post.getProfileImage()),
+                s3Service.getPresignedUrl(post.getImageUrl()),
+                liked,
+                scrapped
+        );
+    }
+
+    // 게시글 등록
     @Override
     @Transactional
-    public PostResponse createPost(Long memberId, PostCreateRequest request) {
+    public PostResponse createPost(Long memberId, PostCreateRequest request, MultipartFile postImage) {
+        // 게시글 이미지 S3 업로드
+        String postImageKey = null;
+
+        if (postImage != null && !postImage.isEmpty()) {
+            postImageKey = s3Service.upload(postImage, "posts");
+        }
+
+        // 게시글 정보 저장
         Post post = Post.builder()
                 .memberId(memberId)
                 .categoryId(request.categoryId())
                 .content(request.content())
-                .imageUrl(request.imageUrl())
+                .imageUrl(postImageKey)
                 .subscriberOnly(request.subscriberOnly())
                 .build();
 
         postMapper.save(post);
         Post savedPost = postMapper.findById(post.getId());
-        return PostResponse.from(savedPost);
+        // 게시글 등록 직후에 이 게시글에 대해 현재 사용자가 아직 좋아요와 스크랩을 등록하지 않음
+        return toResponse(savedPost, false, false);
     }
 
+    // 게시글 단건 조회
     @Override
-    public PostResponse getPostById(Long id) {
+    @Transactional(rollbackFor = Exception.class)
+    public PostResponse getPostById(Long id, Long memberId, boolean alreadyViewed) {
         Post post = postMapper.findById(id);
         if (post == null) {
             throw new NoSuchElementException("존재하지 않는 게시글입니다. ID: " + id);
         }
-        return PostResponse.from(post);
+
+        // 조회수 1 증가
+        // 처음 본 게시글 일 때만 조회수 증가
+        if (!alreadyViewed) {
+            postMapper.increaseViewCount(id);
+        }
+
+        // 증가된 조회수를 반영하기 위해 다시 조회
+        Post updatedPost = postMapper.findById(id);
+
+        boolean liked = false;
+        boolean scrapped = false;
+
+        if (memberId != null) {
+            liked = postReactionMapper.countLike(memberId, id) > 0;
+            scrapped = postReactionMapper.countScrap(memberId, id) > 0;
+        }
+
+        return toResponse(updatedPost, liked, scrapped);
     }
 
+    // 게시글 가져오기
     @Override
-    public PostFeedResponse getPosts(Long memberId, Long publicCursor, Long subscribedCursor, int size) {
+    public PostFeedResponse getPosts(Long memberId, Long publicCursor, Long subscribedCursor, Long categoryId, int size) {
 
         // 비로그인시
-        if(memberId == null){
-            List<Post> publicPosts = postMapper.findPublicPostsByCursor(publicCursor,size + 1);
+        if (memberId == null) {
+            List<Post> publicPosts = postMapper.findPublicPostsByCursor(publicCursor, categoryId, size + 1);
             // size보다 많이 조회됐다면 다음 게시글이 있다는 걸 확인
             boolean hasNext = publicPosts.size() > size;
 
             // 더 가져온 1개는 이번 응답에선 제외
-            if(hasNext){
+            if (hasNext) {
                 publicPosts.remove(publicPosts.size() - 1);
             }
 
-            Long nextPublicCursor = publicPosts.isEmpty() ? null : publicPosts.get(publicPosts.size()-1).getId();
+            Long nextPublicCursor = publicPosts.isEmpty() ? null : publicPosts.get(publicPosts.size() - 1).getId();
 
             // Post를 PostResponse로 변환한다.
             List<PostResponse> responses = new ArrayList<>();
             for (Post post : publicPosts) {
-                PostResponse response = PostResponse.from(post);
-                responses.add(response);
+                responses.add(toResponse(post, false, false));
             }
 
             return new PostFeedResponse(responses, nextPublicCursor, null, hasNext);
@@ -79,9 +124,9 @@ public class PostServiceImpl implements PostService {
         int subscribedSize = size - publicSize;
 
         // 공개글
-        List<Post> publicPosts = postMapper.findPublicPostsByCursor(publicCursor,publicSize + 1);
+        List<Post> publicPosts = postMapper.findPublicPostsByCursor(publicCursor, categoryId, publicSize + 1);
         // 구독글
-        List<Post> subscribedPosts = postMapper.findSubscribedPostsByCursor(memberId,subscribedCursor,subscribedSize + 1);
+        List<Post> subscribedPosts = postMapper.findSubscribedPostsByCursor(memberId, subscribedCursor, categoryId, subscribedSize + 1);
 
         // 각각 다음 데이터가 있는지 판단
         boolean hasNextPublic = publicPosts.size() > publicSize;
@@ -98,7 +143,7 @@ public class PostServiceImpl implements PostService {
         }
 
         Long nextPublicCursor = publicPosts.isEmpty() ? null : publicPosts.get(publicPosts.size() - 1).getId();
-        Long nextSubscribedCursor = subscribedPosts.isEmpty() ? null : subscribedPosts.get(subscribedPosts.size()-1).getId();
+        Long nextSubscribedCursor = subscribedPosts.isEmpty() ? null : subscribedPosts.get(subscribedPosts.size() - 1).getId();
 
         // 공개글  + 구독글 합치기
         List<Post> posts = new ArrayList<>();
@@ -112,9 +157,10 @@ public class PostServiceImpl implements PostService {
         List<PostResponse> responses = new ArrayList<>();
         // posts에서 Post하나를 꺼내고 PostResponse.from(post)로 변환
         // responses 리스트에 추가
-        for(Post post : posts) {
-            PostResponse response = PostResponse.from(post);
-            responses.add(response);
+        for (Post post : posts) {
+            boolean liked = postReactionMapper.countLike(memberId, post.getId()) > 0;
+            boolean scrapped = postReactionMapper.countScrap(memberId, post.getId()) > 0;
+            responses.add(toResponse(post, liked, scrapped));
         }
 
         // 공개글이나 구독글 둘 중 하나라도 더 있으면 true
@@ -129,22 +175,29 @@ public class PostServiceImpl implements PostService {
 
     }
 
+    // 게시글 수정
+    // 작성자 본인만 수정 가능하게끔
     @Override
     @Transactional(rollbackFor = Exception.class)
     @PreAuthorize("@postServiceImpl.isAuthor(#postId, authentication.principal.id)")
-    public PostResponse updatePost(Long memberId, Long postId, PostUpdateRequest request) {
+    public PostResponse updatePost(Long memberId, Long postId, PostUpdateRequest request, MultipartFile postImage) {
 
         // 게시글 존재 여부 확인
         Post post = postMapper.findById(postId);
 
-        if(post == null){
+        if (post == null) {
             throw new NoSuchElementException("존재하지 않는 게시글입니다. id: " + postId);
         }
 
-        // 작성자 본인인지 확인
-//        if(!post.getMemberId().equals(memberId)){
-//            throw new IllegalArgumentException("본인이 작성한 게시글만 수정할 수 있습니다.");
-//        }
+        String oldImageKey = post.getImageUrl();
+        // 새 파일이 없으면 기존 S3 키 유지
+        String postImageKey = oldImageKey;
+        boolean imageReplaced = false;
+
+        if (postImage != null && !postImage.isEmpty()) {
+            postImageKey = s3Service.upload(postImage, "posts");
+            imageReplaced = true;
+        }
 
         // 수정할 값으로 Post 객체 생성
         Post updatedPost = Post.builder()
@@ -152,35 +205,48 @@ public class PostServiceImpl implements PostService {
                 .memberId(memberId)
                 .categoryId(request.categoryId())
                 .content(request.content())
-                .imageUrl(request.imageUrl())
+                .imageUrl(postImageKey)
                 .subscriberOnly(request.subscriberOnly())
                 .build();
 
         // DB 수정
         postMapper.update(updatedPost);
 
+        // 이미지가 교체된 경우에만 이전 S3 객체 삭제
+        if (imageReplaced && oldImageKey != null && !oldImageKey.isBlank() && !oldImageKey.equals(postImageKey)) {
+            s3Service.delete(oldImageKey);
+        }
+
         // 수정된 게시글 다시 조회
         Post savedPost = postMapper.findById(postId);
 
-        return PostResponse.from(savedPost);
+        // 현재 사용자의 좋아요/스크랩 여부 확인
+        boolean liked = postReactionMapper.countLike(memberId, postId) > 0;
+        boolean scrapped = postReactionMapper.countScrap(memberId, postId) > 0;
 
+        return toResponse(savedPost, liked, scrapped);
     }
 
+    // 게시글 삭제
+    // 관리자랑 해당 글 작성자만 게시글 삭제 가능하게끔
     @Override
     @Transactional(rollbackFor = Exception.class)
     @PreAuthorize("hasRole('ADMIN') or @postServiceImpl.isAuthor(#postId, authentication.principal.id)")
     public void deletePost(Long postId) {
         Post post = postMapper.findById(postId);
 
-        if(post == null){
+        if (post == null) {
             throw new NoSuchElementException("존재하지 않는 게시글입니다. id: " + postId);
         }
 
+        String imageKey = post.getImageUrl(); // DB에 저장된 S3 키
         postMapper.deleteById(postId);
+        // DB 삭제 후 S3 정리 (키가 있을 때만)
+        s3Service.delete(imageKey);
     }
 
     // 게시글 작성자 본인 여부를 검증하는 헬퍼 메서드
-    public boolean isAuthor (Long postId, Long memberId){
+    public boolean isAuthor(Long postId, Long memberId) {
         Post post = postMapper.findById(postId);
 
         return post != null && post.getMemberId().equals(memberId);

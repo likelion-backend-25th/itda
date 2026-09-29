@@ -5,7 +5,7 @@
 
 <mapper namespace="net.likelion.bebc25.itda.payment.mapper.PaymentMapper">
     <!--결제 정보 저장 -->
-    <insert id="insert" parameterType="Payment">
+    <insert id="insertPayment" parameterType="Payment">
         INSERT INTO payment (
         member_id, payment_type, target_id,
         payment_id, transaction_id, amount,
@@ -18,7 +18,17 @@
         )
     </insert>
 
-    <!-- 나중에 결제 검증에서 사용 -->
+    <!-- 결제 상태 / 수단 코드 조회 -->
+    <select id="findCommonCodeId" resultType="java.lang.Long">
+
+        SELECT id
+        FROM common_code
+        WHERE type = #{type}
+        AND code = #{code}
+        AND is_active = TRUE
+    </select>
+
+    <!-- paymentId를 이용해 우리 서비스의 결제 정보 조회 -->
     <select id="findByPaymentId" resultType="net.likelion.bebc25.itda.payment.dto.Payment">
 
         SELECT
@@ -38,15 +48,144 @@
         WHERE payment_id = #{paymentId}
 
     </select>
-        <!-- 결제 상태 / 수단 코드 조회 -->
-        <select id="findCommonCodeId" resultType="java.lang.Long">
 
-            SELECT id
-            FROM common_code
-            WHERE type = #{type}
-            AND code = #{code}
-            AND is_active = TRUE
+    <!-- payment에서 테마/구독 결제에 따라 가격을 조회-->
+    <select id="findAmount"
+            resultType="java.lang.Long">
+        <!-- 둘 중 null값이 아닌것만 조회-->
+        SELECT COALESCE(
+        <!-- 테마 결제 가격 -->
+        (
+        SELECT price
+        FROM theme
+        WHERE id = #{targetId}
+        AND #{paymentType} = 'THEME'
+        ),
 
-        </select>
+        <!-- 구독 결제 가격 조회 -->
+        (
+        SELECT cc.numeric_value
+        FROM subscription s
+        <!-- 실제 구독 금액(numeric_value)을 조회 -->
+        INNER JOIN common_code cc
+        ON s.price_id = cc.id
+        WHERE s.target_id = #{targetId}
+        <!-- 현재 결제 유형이 SUBSCRIPTION인 경우에만 구독 가격 조회 쿼리가 동작 -->
+        AND #{paymentType} = 'SUBSCRIPTION'
+        <!-- type = 5는 구독 가격 코드 -->
+        AND cc.type = 5
+
+        <!-- 현재 신규 구독에 사용 가능한 가격만 조회 -->
+        AND cc.is_active = TRUE
+
+        <!-- 활성화된 가격 코드가 여러 개 존재할 경우 값이 가장 큰 최신 가격을 우선 사용 -->
+        ORDER BY cc.sort DESC
+        LIMIT 1
+        )
+        )
+    </select>
+
+    <!--
+    실제 결제 완료 처리
+    PortOne 서버 검증까지 성공한 경우에만 호출
+    변경되는 값:
+    transaction_id : 실제 PortOne 결제 시도 ID
+    status_id      : PS01 → PS02
+    paid_at        : 실제 결제 완료 시간
+    -->
+    <update id="updatePaid">
+
+        UPDATE payment
+
+        SET
+        transaction_id = #{transactionId},
+        status_id = #{statusId},
+        paid_at = #{paidAt}
+
+        WHERE payment_id = #{paymentId}
+
+    </update>
+
+    <!-- 테마 결제 완료 후 구매 내역 자장 -->
+    <insert id="insertThemePurchase">
+        INSERT INTO theme_purchase (
+        member_id, theme_id, payment_id, is_used )
+        VALUES (
+        #{memberId}, #{themeId}, #{paymentId}, FALSE )
+    </insert>
+
+    <!-- 구독 결제 완료 후 구독 정보 저장 -->
+    <insert id="insertSubscription">
+        INSERT INTO subscription (
+        member_id, target_id, price_id, status_id, payment_id
+        )
+        SELECT
+        #{memberId}, #{targetId}, common_code.id, #{statusId}, #{paymentId}
+
+        FROM common_code
+        WHERE common_code.type = 5
+        AND common_code.is_active = TRUE
+        ORDER BY common_code.sort DESC
+        LIMIT 1
+
+
+    </insert>
+
+    <!--  회원의 결제  목록 조회 -->
+    <select id="findPaymentsByMemberId" resultType="net.likelion.bebc25.itda.payment.dto.PaymentManagementResponse">
+
+        SELECT
+        p.payment_id AS paymentId,
+        p.member_id AS memberId,
+        p.target_id AS targetId,
+        p.paid_at AS paidAt,
+
+        <!-- SUBSCRIPTION 결제일 경우에만 만료일 조회 -->
+        s.ended_at AS endedAt,
+
+        <!-- 카드, 카카오페이 등 -->
+        cc.name AS payMethod
+
+        FROM payment p
+
+        <!-- 구독 결제인 경우 subscription 정보 연결 -->
+        LEFT JOIN subscription s
+        ON p.payment_type = 'SUBSCRIPTION'
+        AND p.member_id = s.member_id
+        AND p.target_id = s.target_id
+
+        <!-- 결제 수단 이름 조회 -->
+        LEFT JOIN common_code cc
+        ON p.pay_method_id = cc.id
+
+        ORDER BY p.paid_at DESC
+
+    </select>
+
+    <!-- 관리자 전체 결제 이력 조회 -->
+    <select id="findAllPayments"
+            resultType="net.likelion.bebc25.itda.payment.dto.PaymentManagementResponse">
+
+        SELECT
+        p.payment_id AS paymentId,
+        p.member_id AS memberId,
+        p.target_id AS targetId,
+        p.paid_at AS paidAt,
+        s.ended_at AS endedAt,
+        cc.name AS payMethod
+
+        FROM payment p
+
+        <!-- 구독 결제인 경우 구독 만료일 조회 -->
+        LEFT JOIN subscription s
+        ON s.payment_id = p.id
+
+        <!-- 결제 수단 이름 조회 -->
+        LEFT JOIN common_code cc
+        ON cc.id = p.pay_method_id
+
+        ORDER BY p.paid_at DESC
+
+    </select>
 
 </mapper>

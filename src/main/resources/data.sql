@@ -4,37 +4,37 @@
 -- =========================================================
 
 -- 1. 공통 코드
-INSERT INTO common_code (id, type, code, name, description, sort, is_active)
+INSERT INTO common_code (id, type, code, name, description, numeric_value, sort, is_active)
 VALUES
 -- 결제 상태
-(1, 1, 'PS01', '결제 대기', '결제 대기 상태', 1, TRUE),
-(2, 1, 'PS02', '결제 완료', '결제가 정상적으로 완료된 상태', 2, TRUE),
-(3, 1, 'PS03', '결제 취소', '결제가 취소된 상태', 3, TRUE),
-(4, 1, 'PS04', '환불 완료', '결제가 환불된 상태', 4, TRUE),
+(1, 1, 'PS01', '결제 대기', '결제 대기 상태',null, 1, TRUE),
+(2, 1, 'PS02', '결제 완료', '결제가 정상적으로 완료된 상태',null,2, TRUE),
+(3, 1, 'PS03', '결제 취소', '결제가 취소된 상태',null, 3, TRUE),
+(4, 1, 'PS04', '환불 완료', '결제가 환불된 상태', null, 4, TRUE),
 -- 결제 수단
-(5, 2, 'PM01', '카드', '신용카드 및 체크카드', 1, TRUE),
-(6, 2, 'PM02', '카카오페이', '카카오페이 결제', 2, TRUE),
-(7, 2, 'PM03', '토스페이', '토스페이 결제', 3, TRUE),
+(5, 2, 'PM01', '카드', '신용카드 및 체크카드', null, 1, TRUE),
+(6, 2, 'PM02', '카카오페이', '카카오페이 결제', null, 2, TRUE),
+(7, 2, 'PM03', '토스페이', '토스페이 결제', null, 3, TRUE),
 -- 게시글 카테고리
-(8, 3, 'CA01', '독서', '독서 및 책 관련 취미', 1, TRUE),
-(9, 3, 'CA02', '음악', '음악 관련 취미', 2, TRUE),
-(10, 3, 'CA03', '요리', '요리 및 베이킹 관련 취미', 3, TRUE),
-(11, 3, 'CA04', '공예', '공예 및 만들기 관련 취미', 4, TRUE),
-(12, 3, 'CA05', '쥬얼리', '쥬얼리 및 액세서리 관련 취미', 5, TRUE),
-(13, 3, 'CA06', '그림', '그림 및 미술 관련 취미', 6, TRUE),
-(14, 3, 'CA07', '기타', '기타 취미', 7, TRUE),
+(8, 3, 'CA01', '독서', '독서 및 책 관련 취미', null, 1, TRUE),
+(9, 3, 'CA02', '음악', '음악 관련 취미', null, 2, TRUE),
+(10, 3, 'CA03', '요리', '요리 및 베이킹 관련 취미', null, 3, TRUE),
+(11, 3, 'CA04', '공예', '공예 및 만들기 관련 취미', null, 4, TRUE),
+(12, 3, 'CA05', '쥬얼리', '쥬얼리 및 액세서리 관련 취미', null, 5, TRUE),
+(13, 3, 'CA06', '그림', '그림 및 미술 관련 취미', null, 6, TRUE),
+(14, 3, 'CA07', '기타', '기타 취미', null, 7, TRUE),
 -- 구독 상태
-(15, 4, 'SS01', 'ACTIVE', '현재 구독 중인 상태', 1, TRUE),
-(16, 4, 'SS02', 'CANCELLED', '구독이 취소된 상태', 2, TRUE),
-(17, 4, 'SS03', 'EXPIRED', '구독 기간이 종료된 상태', 3, TRUE),
-(18, 4, 'SS04', 'PAUSED', '구독이 일시 정지된 상태', 4, TRUE),
+(15, 4, 'SS01', 'ACTIVE', '현재 구독 중인 상태', null, 1, TRUE),
+(16, 4, 'SS02', 'CANCELLED', '구독이 취소된 상태', null, 2, TRUE),
+(17, 4, 'SS03', 'EXPIRED', '구독 기간이 종료된 상태', null, 3, TRUE),
+(18, 4, 'SS04', 'PAUSED', '구독이 일시 정지된 상태', null, 4, TRUE),
 -- 구독 가격
-(19, 5, 'PR01', '월 3,000원', '월 구독 3,000원', 1, TRUE),
-(20, 5, 'PR02', '월 5,000원', '월 구독 5,000원', 2, TRUE),
-(21, 5, 'PR03', '월 10,000원', '월 구독 10,000원', 3, TRUE),
+(19, 5, 'PR01', '월 3,000원', '월 구독 3,000원',3000, 1, TRUE),
+(20, 5, 'PR02', '월 5,000원', '월 구독 5,000원',5000, 2, TRUE),
+(21, 5, 'PR03', '월 10,000원', '월 구독 10,000원',10000, 3, TRUE),
 -- 게시글 반응
-(22, 6, 'RT01', 'LIKE', '게시글 좋아요', 1, TRUE),
-(23, 6, 'RT02', 'SCRAP', '게시글 스크랩', 2, TRUE);
+(22, 6, 'RT01', 'LIKE', '게시글 좋아요', null, 1, TRUE),
+(23, 6, 'RT02', 'SCRAP', '게시글 스크랩', null, 2, TRUE);
 
 
 -- 2. 테마 (ON_SALE 8개 → size=6이면 2페이지 / HIDDEN 1개)
@@ -58,19 +58,19 @@ INSERT INTO member (
 )
 VALUES
     (1, 'user1@itda.com', '$2a$10$e4dlYcuksXo57vvps8oPaeyDcD0keCuSwPIHBuYDn5oIGZD1PpHrq',
-     '책읽는사람', 'ROLE_USER', '책과 독서를 좋아합니다.', '/images/profile/user1.png', 2, 'LOCAL', 0),
+     '책읽는사람', 'ROLE_USER', '책과 독서를 좋아합니다.', 'profile/user1_profile.png', 2, 'LOCAL', 0),
     (2, 'user2@itda.com', '$2a$10$e4dlYcuksXo57vvps8oPaeyDcD0keCuSwPIHBuYDn5oIGZD1PpHrq',
-     '요리하는사람', 'ROLE_USER', '맛있는 요리를 만드는 것을 좋아합니다.', '/images/profile/user2.png', 3, 'LOCAL', 0),
+     '요리하는사람', 'ROLE_USER', '맛있는 요리를 만드는 것을 좋아합니다.', 'profile/user2_profile.png', 3, 'LOCAL', 0),
     (3, 'creator@itda.com', '$2a$10$e4dlYcuksXo57vvps8oPaeyDcD0keCuSwPIHBuYDn5oIGZD1PpHrq',
-     '오늘의취미', 'ROLE_USER', '취미를 함께 나누고 있습니다.', '/images/profile/creator.png', 1, 'LOCAL', 50000),
+     '오늘의취미', 'ROLE_USER', '취미를 함께 나누고 있습니다.', 'profile/creator_profile.png', 1, 'LOCAL', 50000),
     (4, 'artist@itda.com', '$2a$10$e4dlYcuksXo57vvps8oPaeyDcD0keCuSwPIHBuYDn5oIGZD1PpHrq',
-     '그림그리는사람', 'ROLE_USER', '그림과 드로잉을 공유합니다.', '/images/profile/artist.png', 1, 'LOCAL', 30000),
+     '그림그리는사람', 'ROLE_USER', '그림과 드로잉을 공유합니다.', 'profile/artist_profile.png', 1, 'LOCAL', 30000),
     (5, 'music@itda.com', '$2a$10$e4dlYcuksXo57vvps8oPaeyDcD0keCuSwPIHBuYDn5oIGZD1PpHrq',
-     '멜로디유저', 'ROLE_USER', '플레이리스트를 모으는 중입니다.', '/images/profile/music.png', 1, 'LOCAL', 0),
+     '멜로디유저', 'ROLE_USER', '플레이리스트를 모으는 중입니다.', 'profile/music_profile.png', 1, 'LOCAL', 0),
     (6, 'craft@itda.com', '$2a$10$e4dlYcuksXo57vvps8oPaeyDcD0keCuSwPIHBuYDn5oIGZD1PpHrq',
-     '손뜨개러', 'ROLE_USER', '뜨개질과 공예를 좋아합니다.', '/images/profile/craft.png', 6, 'LOCAL', 10000),
+     '손뜨개러', 'ROLE_USER', '뜨개질과 공예를 좋아합니다.', 'profile/craft_profile.png', 6, 'LOCAL', 10000),
     (7, 'admin@itda.com', '$2a$10$e4dlYcuksXo57vvps8oPaeyDcD0keCuSwPIHBuYDn5oIGZD1PpHrq',
-     '관리자', 'ROLE_ADMIN', 'ITDA 관리자 계정입니다.', '/images/profile/admin.png', 1, 'LOCAL', 0);
+     '관리자', 'ROLE_ADMIN', 'ITDA 관리자 계정입니다.', 'profile/admin_profile.png', 1, 'LOCAL', 0);
 
 
 -- 4. 회원 관심 카테고리
@@ -87,40 +87,40 @@ VALUES
 
 -- 5. 게시글
 INSERT INTO post (
-    id, member_id, category_id, content, image_url,
+    id, member_id, category_id, content, image_url, reply_count,
     like_count, view_count, subscriber_only
 )
 VALUES
     (1, 1, 8, '오늘 읽은 책이 정말 재미있었어요. 오랜만에 시간 가는 줄 모르고 읽었습니다.',
-     '/images/posts/book1.png', 3, 25, FALSE),
+     'posts/book1.png', 2, 3, 25, FALSE),
     (2, 1, 8, '요즘 읽고 있는 책입니다. 비슷한 책을 좋아한다면 추천해요.',
-     '/images/posts/book2.png', 5, 41, FALSE),
+     'posts/book2.png', 0, 5, 41, FALSE),
     (3, 2, 10, '주말에 직접 만든 파스타입니다. 생각보다 만들기 어렵지 않았어요.',
-     '/images/posts/pasta.png', 7, 56, FALSE),
+     'posts/pasta.png', 1, 7, 56, FALSE),
     (4, 3, 9, '이번 주에 들었던 음악들을 정리해봤어요. 구독자분들과 공유합니다.',
-     '/images/posts/music.png', 10, 83, TRUE),
+     'posts/music.png', 1, 10, 83, TRUE),
     (5, 3, 10, '제가 자주 사용하는 홈카페 레시피를 정리했습니다.',
-     '/images/posts/cafe.png', 8, 72, TRUE),
+     'posts/cafe.png', 1, 8, 72, TRUE),
     (6, 4, 13, '최근에 그린 그림입니다. 새로운 재료를 사용해봤어요.',
-     '/images/posts/drawing.png', 4, 31, FALSE),
+     'posts/drawing.png', 1, 4, 31, FALSE),
     (7, 4, 13, '그림을 그릴 때 사용하는 도구들을 소개해볼게요.',
-     '/images/posts/tools.png', 6, 48, TRUE),
+     'posts/tools.png', 0, 6, 48, TRUE),
     (8, 5, 9, '비 오는 날 듣기 좋은 플레이리스트를 모아봤습니다.',
-     '/images/posts/playlist.png', 9, 60, FALSE),
+     'posts/playlist.png', 2, 9, 60, FALSE),
     (9, 5, 9, '구독자 전용: 이번 달 추천 앨범 리스트입니다.',
-     '/images/posts/album.png', 12, 90, TRUE),
+     'posts/album.png', 0, 12, 90, TRUE),
     (10, 6, 11, '첫 코바늘 작품이에요. 실패도 많았지만 완성하니 뿌듯합니다.',
-     '/images/posts/knit.png', 5, 33, FALSE),
+     'posts/knit.png', 2, 5, 33, FALSE),
     (11, 6, 12, '비즈로 만든 간단한 팔찌 튜토리얼을 남겨둡니다.',
-     '/images/posts/bead.png', 7, 44, FALSE),
+     'posts/bead.png', 1, 7, 44, FALSE),
     (12, 2, 10, '초간단 김치볶음밥 레시피. 자취생도 바로 따라할 수 있어요.',
-     '/images/posts/friedrice.png', 11, 70, FALSE),
+     'posts/friedrice.png', 2, 11, 70, FALSE),
     (13, 1, 8, '서점 나들이 후기. 신간 코너에서 발견한 책들입니다.',
-     '/images/posts/bookstore.png', 2, 18, FALSE),
+     'posts/bookstore.png', 0, 2, 18, FALSE),
     (14, 3, 14, '취미를 꾸준히 하는 루틴을 공유합니다. (구독자 전용)',
-     '/images/posts/routine.png', 15, 120, TRUE),
+     'posts/routine.png', 0, 15, 120, TRUE),
     (15, 4, 13, '스케치북 한 권을 다 채웠습니다. 과정 사진 모음.',
-     '/images/posts/sketch.png', 8, 55, FALSE);
+     'posts/sketch.png', 2, 8, 55, FALSE);
 
 
 -- 6. 댓글
@@ -199,14 +199,14 @@ VALUES
 
 -- 11. 정기 구독
 INSERT INTO subscription (
-    id, member_id, target_id, customer_uid,
-    price_id, status_id, next_billing_at, started_at, ended_at
+    id, member_id, target_id, billing_key,
+    price_id, status_id, next_billing_at, started_at, ended_at, payment_id
 ) VALUES
       (1, 1, 3, 'customer_test_001', 20, 15,
-       DATE_ADD(CURRENT_TIMESTAMP, INTERVAL 1 MONTH), CURRENT_TIMESTAMP, NULL),
+       DATE_ADD(CURRENT_TIMESTAMP, INTERVAL 1 MONTH), CURRENT_TIMESTAMP, NULL,6),
       (2, 2, 3, 'customer_test_002', 20, 15,
-       DATE_ADD(CURRENT_TIMESTAMP, INTERVAL 1 MONTH), CURRENT_TIMESTAMP, NULL),
+       DATE_ADD(CURRENT_TIMESTAMP, INTERVAL 1 MONTH), CURRENT_TIMESTAMP, NULL,7),
       (3, 4, 3, 'customer_test_003', 19, 15,
-       DATE_ADD(CURRENT_TIMESTAMP, INTERVAL 1 MONTH), CURRENT_TIMESTAMP, NULL),
+       DATE_ADD(CURRENT_TIMESTAMP, INTERVAL 1 MONTH), CURRENT_TIMESTAMP, NULL,8),
       (4, 5, 4, 'customer_test_004', 20, 16,
-       DATE_SUB(CURRENT_TIMESTAMP, INTERVAL 1 DAY), DATE_SUB(CURRENT_TIMESTAMP, INTERVAL 2 MONTH),DATE_SUB(CURRENT_TIMESTAMP, INTERVAL 1 DAY));
+       DATE_SUB(CURRENT_TIMESTAMP, INTERVAL 1 DAY), DATE_SUB(CURRENT_TIMESTAMP, INTERVAL 2 MONTH),DATE_SUB(CURRENT_TIMESTAMP, INTERVAL 1 DAY),9);

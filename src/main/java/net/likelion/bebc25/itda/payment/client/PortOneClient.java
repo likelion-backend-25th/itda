@@ -1,5 +1,6 @@
 package net.likelion.bebc25.itda.payment.client;
 
+import net.likelion.bebc25.itda.payment.dto.PortOnePaymentResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -69,5 +70,18 @@ public class PortOneClient {
             String storeId,
             Long totalAmount
     ) {
+    }
+    public PortOnePaymentResponse getPayment(String paymentId){
+        return restClient
+                // PortOne V2 결제 단건 조회 API
+                .get().uri(
+                        "/payments/{paymentId}",
+                        paymentId
+                )
+                // HTTP 요청 실행
+                // JSON 응답을 DTO로 변환
+                .retrieve().body(
+                        PortOnePaymentResponse.class
+                );
     }
 }

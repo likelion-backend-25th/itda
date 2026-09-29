@@ -54,6 +54,9 @@ jobs:
           PORTONE_CHANNEL_KEY: ${{ secrets.PORTONE_CHANNEL_KEY }}
           PORTONE_API_SECRET: ${{ secrets.PORTONE_API_SECRET }}
           PORTONE_WEBHOOK_SECRET: ${{ secrets.PORTONE_WEBHOOK_SECRET }}
+          # AWS S3
+          BUCKET: ${{secrets.AWS_S3_BUCKET}}
+          REGION: ${{secrets.AWS_REGION}}
 
   # 2. 지속적 제공 (Continuous Delivery) - 2단원 Docker Hub 이미지 빌드 및 푸시
   docker-build-and-push:
@@ -132,6 +135,9 @@ jobs:
             PORTONE_CHANNEL_KEY: ${{ secrets.PORTONE_CHANNEL_KEY }}
             PORTONE_API_SECRET: ${{ secrets.PORTONE_API_SECRET }}
             PORTONE_WEBHOOK_SECRET: ${{ secrets.PORTONE_WEBHOOK_SECRET }}
+            
+            BUCKET: ${{secrets.AWS_S3_BUCKET}}
+            REGION: ${{secrets.AWS_REGION}}
             EOF
 
             echo ">>> 2. 최신 Docker 이미지 다운로드"
