@@ -1,5 +1,6 @@
 package net.likelion.bebc25.itda.payment.client;
 
+import lombok.Getter;
 import net.likelion.bebc25.itda.payment.dto.PortOnePaymentResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -7,11 +8,14 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
+@Getter
 @Component
 public class PortOneClient {
 
     private final RestClient restClient;
     private final String storeId;
+    private final String kakaoPayChannelKey;
+    private final String tossPayChannelKey;
 
     /**
      * PortOne 서버 통신 설정
@@ -22,9 +26,13 @@ public class PortOneClient {
     public PortOneClient(
             RestClient.Builder builder,
             @Value("${portone.api-secret}") String apiSecret,
-            @Value("${portone.store-id}") String storeId
+            @Value("${portone.store-id}") String storeId,
+            @Value("${PORTONE_KAKAOPAY_CHANNEL_KEY}") String kakaoPayChannelKey,
+            @Value("${PORTONE_TOSSPAY_CHANNEL_KEY}") String  tossPayChannelKey
     ) {
         this.storeId = storeId;
+        this.kakaoPayChannelKey = kakaoPayChannelKey;
+        this.tossPayChannelKey = tossPayChannelKey;
 
         this.restClient = builder
                 .baseUrl("https://api.portone.io")

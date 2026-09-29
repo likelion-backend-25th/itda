@@ -128,10 +128,11 @@ CREATE TABLE post_reaction (
                         id BIGINT AUTO_INCREMENT PRIMARY KEY,
                         member_id BIGINT NOT NULL,
                         post_id BIGINT NOT NULL,
-                        type INT NOT NULL,
+                        type BIGINT NOT NULL,
                         created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
                         FOREIGN KEY (member_id) REFERENCES member(id) ON DELETE CASCADE,
                         FOREIGN KEY (post_id) REFERENCES post(id) ON DELETE CASCADE,
+                        FOREIGN KEY (type) REFERENCES common_code(id),
                         UNIQUE (member_id, post_id, type)   -- 같은 게시글에 같은 reaction 중복방지
 );
 -- 9. 결제 테이블
