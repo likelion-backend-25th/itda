@@ -117,10 +117,10 @@
     <!-- 구독 결제 완료 후 구독 정보 저장 -->
     <insert id="insertSubscription">
         INSERT INTO subscription (
-        member_id, target_id, price_id, status_id, payment_id
+        member_id, target_id, price_id, status_id, payment_id, started_at, ended_at
         )
         SELECT
-        #{memberId}, #{targetId}, common_code.id, #{statusId}, #{paymentId}
+        #{memberId}, #{targetId}, common_code.id, #{statusId}, #{paymentId}, CURRENT_TIMESTAMP, DATE_ADD(CURRENT_TIMESTAMP, INTERVAL 1 MONTH)
 
         FROM common_code
         WHERE common_code.type = 5
@@ -131,7 +131,7 @@
 
     </insert>
 
-    <!--  회원의 결제  목록 조회 -->
+    <!--  회원의 결제 목록 조회 -->
     <select id="findPaymentsByMemberId" resultType="net.likelion.bebc25.itda.payment.dto.PaymentManagementResponse">
 
         SELECT
