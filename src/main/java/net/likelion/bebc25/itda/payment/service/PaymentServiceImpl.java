@@ -121,6 +121,12 @@ public class PaymentServiceImpl implements PaymentService {
             );
         }
 
+        // PortOne은 totalAmount > 0 필수. 0원 테마는 /themes/{id}/claim 사용
+        if (amount <= 0) {
+            throw new IllegalArgumentException(
+                    "0원 상품은 결제가 불가능합니다. 무료 수령 API를 사용하세요."
+            );
+        }
 
         // 결제 대기 정보 생성
         Payment payment =

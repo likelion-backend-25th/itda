@@ -42,18 +42,20 @@ VALUES
 (27, 1, 'PS05', '환불 대기','환불 신청 후 환불 처리를 기다리는 상태', NULL, 5, TRUE);
 
 -- 2. 테마 (ON_SALE 8개 → size=6이면 2페이지 / HIDDEN 1개)
-INSERT INTO theme (id, theme_name, description, price, thumbnail_url, theme_code, status, is_default)
+INSERT INTO theme (id, theme_name, description, price, thumbnail_url, theme_code, css_text, status, is_default)
 VALUES
-    (1, '기본 테마',     'ITDA 기본 테마 (무료, is_default)', 0,    'themes/default.png',  'DEFAULT',  'ON_SALE', TRUE),
-    (2, '오션 블루',     '시원한 바다 느낌의 테마',           3000, 'themes/ocean.png',    'OCEAN',    'ON_SALE', FALSE),
-    (3, '포레스트 그린', '차분한 숲 느낌의 테마',             3000, 'themes/forest.png',   'FOREST',   'ON_SALE', FALSE),
-    (4, '선셋 코랄',     '따뜻한 노을 느낌의 테마',           5000, 'themes/sunset.png',   'SUNSET',   'ON_SALE', FALSE),
-    (5, '라벤더 나이트', '보랏빛 밤 느낌의 테마',             5000, 'themes/lavender.png', 'LAVENDER', 'ON_SALE', FALSE),
-    (6, '미드나잇 다크', '눈 편한 다크 테마',                 4000, 'themes/dark.png',     'DARK',     'ON_SALE', FALSE),
-    (7, '코튼 크림',     '부드러운 크림톤 테마',             2000, 'themes/cream.png',    'CREAM',    'ON_SALE', FALSE),
-    (8, '스카이 라이트', '맑은 하늘 느낌의 테마',             2000, 'themes/sky.png',      'SKY',      'ON_SALE', FALSE),
-    (9, '숨김 테마',     '관리자 비공개 테마 (목록 제외)',     9999, 'themes/hidden.png',   'HIDDEN',   'HIDDEN',  FALSE);
+    (1, '기본 테마',     'ITDA 기본 테마', 0,    'themes/default.png',  'DEFAULT', NULL, 'ON_SALE', TRUE),
+    (2, '미드나잇 다크',     '눈 편한 다크 테마',0, 'themes/dark.png',     'DARK',':root[data-theme=''dark'']{--bg:#0c121c;--surface:#161e2b;--text:#d8e2ef;--text-soft:#b9c7d8;--muted:#96a6b9;--line:#2a384a;--blue:#6b9ae8;--blue-deep:#4a7fd0;--blue-soft:#1a2838;--shadow:0 14px 34px rgba(0,0,0,.38);--search-bg:#101826;--on-accent:#0b1220;--radius:20px;}:root[data-theme=''dark''] body,:root[data-theme=''dark''] .page{background-color:var(--bg);background-image:radial-gradient(ellipse 55% 30% at 18% 0%,rgba(45,85,135,.12),transparent 58%),radial-gradient(ellipse 45% 28% at 92% 6%,rgba(30,65,110,.08),transparent 52%),linear-gradient(180deg,#0a1018 0%,#0e1520 50%,#0c121c 100%);}:root[data-theme=''dark''] .topbar,:root[data-theme=''dark''] .sidebar,:root[data-theme=''dark''] .post,:root[data-theme=''dark''] .empty{background:linear-gradient(180deg,#171f2c 0%,#131b27 100%);border-color:rgba(107,154,232,.16);box-shadow:0 12px 28px rgba(0,0,0,.34);}:root[data-theme=''dark''] .search{border:1px solid var(--line);}:root[data-theme=''dark''] .write-btn{color:var(--on-accent);box-shadow:0 6px 16px rgba(74,127,208,.22);}:root[data-theme=''dark''] .logo,:root[data-theme=''dark''] .stat{color:var(--blue);}','ON_SALE', FALSE),
+    (3, '오션 블루',     '시원한 바다 느낌의 테마',           3000, 'themes/ocean.png',    'OCEAN', ':root[data-theme=''ocean'']{--bg:#d9f0f8;--surface:#f4fbff;--text:#0c2f3f;--text-soft:#3a6b80;--muted:#6a93a6;--line:#bfe0ee;--blue:#0a8dbf;--blue-deep:#06729e;--blue-soft:#cfeff9;--shadow:0 14px 36px rgba(8,110,150,.14);--search-bg:#e3f5fb;--on-accent:#fff;--radius:22px;}:root[data-theme=''ocean''] body,:root[data-theme=''ocean''] .page{background-color:var(--bg);background-image:radial-gradient(ellipse 90% 55% at 15% 0%,rgba(120,210,240,.55),transparent 58%),radial-gradient(ellipse 70% 50% at 90% 10%,rgba(70,180,220,.35),transparent 55%),linear-gradient(180deg,#c8ebf6 0%,#e4f4fb 42%,#dff2f9 100%);}:root[data-theme=''ocean''] .topbar,:root[data-theme=''ocean''] .sidebar,:root[data-theme=''ocean''] .post,:root[data-theme=''ocean''] .empty{border-color:rgba(10,141,191,.18);box-shadow:0 12px 32px rgba(8,110,150,.12);backdrop-filter:saturate(1.05);}:root[data-theme=''ocean''] .sidebar{background:linear-gradient(180deg,#f7fdff 0%,#eef8fc 100%);}:root[data-theme=''ocean''] .post{background:linear-gradient(165deg,#ffffff 0%,#f3fbfe 100%);}:root[data-theme=''ocean''] .logo,:root[data-theme=''ocean''] .stat{color:var(--blue);}','ON_SALE', FALSE),
+    (4, '포레스트 그린', '차분한 숲 느낌의 테마',             3000, 'themes/forest.png',   'FOREST',':root[data-theme=''forest'']{--bg:#eef3e6;--surface:#f8faf4;--text:#24331c;--text-soft:#556848;--muted:#7f9170;--line:#d5e0c8;--blue:#738a4d;--blue-deep:#5c703c;--blue-soft:#e6efd8;--shadow:0 14px 34px rgba(70,95,40,.12);--search-bg:#e9f0df;--on-accent:#fff;--radius:20px;}:root[data-theme=''forest''] body,:root[data-theme=''forest''] .page{background-color:var(--bg);background-image:radial-gradient(ellipse 80% 45% at 10% 0%,rgba(170,200,120,.4),transparent 60%),radial-gradient(ellipse 60% 40% at 95% 5%,rgba(120,150,80,.25),transparent 55%),linear-gradient(185deg,#e8efdc 0%,#f3f6ec 50%,#eef3e6 100%);}:root[data-theme=''forest''] .topbar,:root[data-theme=''forest''] .sidebar,:root[data-theme=''forest''] .post,:root[data-theme=''forest''] .empty{border-color:rgba(115,138,77,.28);box-shadow:0 10px 28px rgba(70,95,40,.1);}:root[data-theme=''forest''] .sidebar{background:linear-gradient(180deg,#fbfcf7 0%,#f1f5e8 100%);border-width:1.5px;}:root[data-theme=''forest''] .post{border-color:rgba(115,138,77,.22);background:#fffcf7;}:root[data-theme=''forest''] .write-btn{border-radius:999px;}', 'ON_SALE', FALSE),
+    (5, '선셋 코랄',     '따뜻한 노을 느낌의 테마',           5000, 'themes/sunset.png',   'SUNSET',':root[data-theme=''sunset'']{--bg:#ffe8dc;--surface:#fff8f3;--text:#3d241c;--text-soft:#8a5a4a;--muted:#b08474;--line:#f0d5c8;--blue:#e56a45;--blue-deep:#c84e34;--blue-soft:#ffe0d4;--shadow:0 14px 36px rgba(200,90,50,.14);--search-bg:#ffefe6;--on-accent:#fff;--radius:22px;}:root[data-theme=''sunset''] body,:root[data-theme=''sunset''] .page{background-color:var(--bg);background-image:radial-gradient(ellipse 85% 55% at 20% -5%,rgba(255,180,120,.65),transparent 55%),radial-gradient(ellipse 70% 45% at 100% 0%,rgba(255,140,100,.45),transparent 50%),linear-gradient(180deg,#ffd4c0 0%,#ffe9df 40%,#fff3ec 100%);}:root[data-theme=''sunset''] .topbar,:root[data-theme=''sunset''] .sidebar,:root[data-theme=''sunset''] .post,:root[data-theme=''sunset''] .empty{border-color:rgba(229,106,69,.2);box-shadow:0 12px 30px rgba(200,90,50,.12);}:root[data-theme=''sunset''] .sidebar{background:linear-gradient(180deg,#fffaf6 0%,#fff0e8 100%);}:root[data-theme=''sunset''] .post{background:linear-gradient(160deg,#ffffff 0%,#fff6f1 100%);}:root[data-theme=''sunset''] .nav-item.active,:root[data-theme=''sunset''] .write-btn{box-shadow:0 8px 18px rgba(229,106,69,.28);}', 'ON_SALE', FALSE),
+    (6, '라벤더 나이트', '보랏빛 밤 느낌의 테마',             5000, 'themes/lavender.png', 'LAVENDER', ':root[data-theme=''lavender'']{--bg:#efe8fb;--surface:#fbf8ff;--text:#2c2344;--text-soft:#5c5278;--muted:#8d84a8;--line:#ddd2f0;--blue:#7c5cbf;--blue-deep:#62469e;--blue-soft:#ece3ff;--shadow:0 14px 36px rgba(90,60,150,.14);--search-bg:#f0e9ff;--on-accent:#fff;--radius:22px;}:root[data-theme=''lavender''] body,:root[data-theme=''lavender''] .page{background-color:var(--bg);background-image:radial-gradient(ellipse 80% 50% at 12% 0%,rgba(190,160,240,.5),transparent 58%),radial-gradient(ellipse 65% 45% at 95% 8%,rgba(160,130,220,.35),transparent 55%),linear-gradient(180deg,#e8dff8 0%,#f3eefc 45%,#efeaf8 100%);}:root[data-theme=''lavender''] .topbar,:root[data-theme=''lavender''] .sidebar,:root[data-theme=''lavender''] .post,:root[data-theme=''lavender''] .empty{border-color:rgba(124,92,191,.2);box-shadow:0 12px 32px rgba(90,60,150,.12);}:root[data-theme=''lavender''] .sidebar{background:linear-gradient(180deg,#fffcff 0%,#f5f0fc 100%);}:root[data-theme=''lavender''] .post{background:linear-gradient(165deg,#ffffff 0%,#f8f4ff 100%);}:root[data-theme=''lavender''] .logo{letter-spacing:-0.05em;}', 'ON_SALE', FALSE),
+    (7, '코튼 크림',     '부드러운 크림톤 테마',             2000, 'themes/cream.png',    'CREAM',':root[data-theme=''cream'']{--bg:#f5efe6;--surface:#fffdf9;--text:#3d342c;--text-soft:#7a6c5e;--muted:#a89786;--line:#e5dbcf;--blue:#c4a574;--blue-deep:#a88655;--blue-soft:#f3ebdf;--shadow:0 14px 34px rgba(120,90,50,.12);--search-bg:#efe7db;--on-accent:#fff;--radius:20px;}:root[data-theme=''cream''] body,:root[data-theme=''cream''] .page{background-color:var(--bg);background-image:radial-gradient(ellipse 75% 45% at 15% 0%,rgba(230,210,180,.55),transparent 58%),radial-gradient(ellipse 60% 40% at 100% 0%,rgba(210,180,140,.3),transparent 55%),linear-gradient(180deg,#efe6d8 0%,#f7f1e8 48%,#f5efe6 100%);}:root[data-theme=''cream''] .topbar,:root[data-theme=''cream''] .sidebar,:root[data-theme=''cream''] .post,:root[data-theme=''cream''] .empty{border-color:rgba(196,165,116,.28);box-shadow:0 12px 28px rgba(120,90,50,.1);}:root[data-theme=''cream''] .sidebar{background:linear-gradient(180deg,#fffefb 0%,#f8f2e9 100%);}:root[data-theme=''cream''] .post{background:#fffefb;}:root[data-theme=''cream''] .write-btn{border-radius:14px;}','ON_SALE', FALSE),
+    (8, '스카이 라이트', '맑은 하늘 느낌의 테마',             2000, 'themes/sky.png',      'SKY',':root[data-theme=''sky'']{--bg:#e6f1ff;--surface:#f7fbff;--text:#1a3550;--text-soft:#4a6d8c;--muted:#7f9cb8;--line:#cfe2f6;--blue:#4aa3ff;--blue-deep:#2f86e0;--blue-soft:#dcebff;--shadow:0 14px 34px rgba(50,120,200,.12);--search-bg:#e2efff;--on-accent:#fff;--radius:22px;}:root[data-theme=''sky''] body,:root[data-theme=''sky''] .page{background-color:var(--bg);background-image:radial-gradient(ellipse 80% 50% at 25% -5%,rgba(160,205,255,.55),transparent 55%),radial-gradient(ellipse 65% 40% at 95% 0%,rgba(120,180,255,.35),transparent 50%),linear-gradient(180deg,#d8e9ff 0%,#eef6ff 45%,#e6f1ff 100%);}:root[data-theme=''sky''] .topbar,:root[data-theme=''sky''] .sidebar,:root[data-theme=''sky''] .post,:root[data-theme=''sky''] .empty{border-color:rgba(74,163,255,.22);box-shadow:0 12px 30px rgba(50,120,200,.11);}:root[data-theme=''sky''] .sidebar{background:linear-gradient(180deg,#ffffff 0%,#f0f7ff 100%);}:root[data-theme=''sky''] .post{background:linear-gradient(165deg,#ffffff 0%,#f5faff 100%);}','ON_SALE', FALSE),
+    (9, '숨김 테마',     '관리자 비공개 테마 (목록 제외)',     9999, 'themes/hidden.png',   'HIDDEN',':root[data-theme=''hidden'']{--bg:#e8e6ec;--surface:#f6f5f7;--text:#3a3840;--text-soft:#6b6774;--muted:#9a96a3;--line:#d5d1db;--blue:#7a7488;--blue-deep:#5f596c;--blue-soft:#ebe8ef;--shadow:0 12px 30px rgba(60,50,80,.1);--search-bg:#e4e2e8;--on-accent:#fff;--radius:18px;}:root[data-theme=''hidden''] body,:root[data-theme=''hidden''] .page{background-color:var(--bg);background-image:radial-gradient(ellipse 70% 45% at 20% 0%,rgba(170,165,185,.35),transparent 58%),linear-gradient(180deg,#e2e0e7 0%,#eceaef 50%,#e8e6ec 100%);}:root[data-theme=''hidden''] .topbar,:root[data-theme=''hidden''] .sidebar,:root[data-theme=''hidden''] .post,:root[data-theme=''hidden''] .empty{border-color:rgba(122,116,136,.22);box-shadow:0 10px 26px rgba(60,50,80,.09);}:root[data-theme=''hidden''] .sidebar{background:linear-gradient(180deg,#faf9fb 0%,#f0eef3 100%);}:root[data-theme=''hidden''] .post{background:#faf9fb;}', 'HIDDEN', FALSE);
 
+
+SELECT theme_code, LEFT(css_text, 40) AS css_head FROM theme;
 
 -- 3. 회원
 INSERT INTO member (
@@ -62,9 +64,9 @@ INSERT INTO member (
 )
 VALUES
     (1, 'user1@itda.com', '$2a$10$e4dlYcuksXo57vvps8oPaeyDcD0keCuSwPIHBuYDn5oIGZD1PpHrq',
-     '책읽는사람', 'ROLE_USER', '책과 독서를 좋아합니다.', 'profile/user1_profile.png', 2, 'LOCAL', 0),
+     '책읽는사람', 'ROLE_USER', '책과 독서를 좋아합니다.', 'profile/user1_profile.png', 3, 'LOCAL', 0),
     (2, 'user2@itda.com', '$2a$10$e4dlYcuksXo57vvps8oPaeyDcD0keCuSwPIHBuYDn5oIGZD1PpHrq',
-     '요리하는사람', 'ROLE_USER', '맛있는 요리를 만드는 것을 좋아합니다.', 'profile/user2_profile.png', 3, 'LOCAL', 0),
+     '요리하는사람', 'ROLE_USER', '맛있는 요리를 만드는 것을 좋아합니다.', 'profile/user2_profile.png', 4, 'LOCAL', 0),
     (3, 'creator@itda.com', '$2a$10$e4dlYcuksXo57vvps8oPaeyDcD0keCuSwPIHBuYDn5oIGZD1PpHrq',
      '오늘의취미', 'ROLE_USER', '취미를 함께 나누고 있습니다.', 'profile/creator_profile.png', 1, 'LOCAL', 50000),
     (4, 'artist@itda.com', '$2a$10$e4dlYcuksXo57vvps8oPaeyDcD0keCuSwPIHBuYDn5oIGZD1PpHrq',
@@ -72,7 +74,7 @@ VALUES
     (5, 'music@itda.com', '$2a$10$e4dlYcuksXo57vvps8oPaeyDcD0keCuSwPIHBuYDn5oIGZD1PpHrq',
      '멜로디유저', 'ROLE_USER', '플레이리스트를 모으는 중입니다.', 'profile/music_profile.png', 1, 'LOCAL', 0),
     (6, 'craft@itda.com', '$2a$10$e4dlYcuksXo57vvps8oPaeyDcD0keCuSwPIHBuYDn5oIGZD1PpHrq',
-     '손뜨개러', 'ROLE_USER', '뜨개질과 공예를 좋아합니다.', 'profile/craft_profile.png', 6, 'LOCAL', 10000),
+     '손뜨개러', 'ROLE_USER', '뜨개질과 공예를 좋아합니다.', 'profile/craft_profile.png', 2, 'LOCAL', 10000),
     (7, 'admin@itda.com', '$2a$10$e4dlYcuksXo57vvps8oPaeyDcD0keCuSwPIHBuYDn5oIGZD1PpHrq',
      '관리자', 'ROLE_ADMIN', 'ITDA 관리자 계정입니다.', 'profile/admin_profile.png', 1, 'LOCAL', 0);
 
@@ -182,11 +184,11 @@ INSERT INTO payment (
     payment_id, transaction_id, amount, status_id, pay_method_id, paid_at
 )
 VALUES
-    (1, 1, 'THEME', 2, 'imp_test_theme_001', 'merchant_theme_001', 3000, 2, 5, CURRENT_TIMESTAMP),
-    (2, 1, 'THEME', 4, 'imp_test_theme_002', 'merchant_theme_002', 5000, 2, 6, CURRENT_TIMESTAMP),
-    (3, 2, 'THEME', 3, 'imp_test_theme_003', 'merchant_theme_003', 3000, 2, 5, CURRENT_TIMESTAMP),
-    (4, 4, 'THEME', 5, 'imp_test_theme_004', 'merchant_theme_004', 5000, 2, 7, CURRENT_TIMESTAMP),
-    (5, 6, 'THEME', 6, 'imp_test_theme_005', 'merchant_theme_005', 4000, 2, 5, CURRENT_TIMESTAMP),
+    (1, 1, 'THEME', 3, 'imp_test_theme_001', 'merchant_theme_001', 3000, 2, 5, CURRENT_TIMESTAMP),
+    (2, 1, 'THEME', 5, 'imp_test_theme_002', 'merchant_theme_002', 5000, 2, 6, CURRENT_TIMESTAMP),
+    (3, 2, 'THEME', 4, 'imp_test_theme_003', 'merchant_theme_003', 3000, 2, 5, CURRENT_TIMESTAMP),
+    (4, 4, 'THEME', 6, 'imp_test_theme_004', 'merchant_theme_004', 5000, 2, 7, CURRENT_TIMESTAMP),
+    (5, 6, 'THEME', 2, 'imp_test_theme_005', 'merchant_theme_005', 0, 2, 5, CURRENT_TIMESTAMP),
     (6, 1, 'SUBSCRIPTION', 3, 'imp_test_subscription_001', 'merchant_subscription_001', 5000, 2, 5, CURRENT_TIMESTAMP),
     (7, 2, 'SUBSCRIPTION', 3, 'imp_test_subscription_002', 'merchant_subscription_002', 5000, 2, 6, CURRENT_TIMESTAMP),
     (8, 4, 'SUBSCRIPTION', 3, 'imp_test_subscription_003', 'merchant_subscription_003', 3000, 2, 7, CURRENT_TIMESTAMP),
@@ -195,11 +197,26 @@ VALUES
 -- 10. 테마 구매
 INSERT INTO theme_purchase (id, member_id, theme_id, payment_id, is_used)
 VALUES
-    (1, 1, 2, 1, TRUE),   -- user1 오션 적용
-    (2, 1, 4, 2, FALSE),  -- user1 선셋 보유만
-    (3, 2, 3, 3, TRUE),   -- user2 포레스트 적용
-    (4, 4, 5, 4, FALSE),  -- artist 라벤더 보유만
-    (5, 6, 6, 5, TRUE);   -- craft 다크 적용
+    -- 기본 테마 (전 회원) — 회원가입과 동일하게 무료 지급
+    (1, 1, 1, NULL, FALSE),  -- user1: 오션 적용 중
+    (2, 2, 1, NULL, FALSE),  -- user2: 포레스트 적용 중
+    (3, 3, 1, NULL, TRUE),   -- creator: 기본 적용
+    (4, 4, 1, NULL, TRUE),   -- artist: 기본 적용
+    (5, 5, 1, NULL, TRUE),   -- music: 기본 적용
+    (6, 6, 1, NULL, FALSE),  -- craft: 미드나잇 다크 적용 중
+    (7, 7, 1, NULL, TRUE),   -- admin: 기본 적용
+    -- 유료 구매 (payment 1~5 와 연결)
+    (8,  1, 3, 1, TRUE),     -- user1 오션 블루 적용
+    (9,  1, 5, 2, FALSE),    -- user1 선셋 코랄 보유만
+    (10, 2, 4, 3, TRUE),     -- user2 포레스트 그린 적용
+    (11, 4, 6, 4, FALSE),    -- artist 라벤더 나이트 보유만
+    (12, 6, 2, 5, TRUE),     -- craft 미드나잇 다크 적용
+    -- 추가 보유(시드용 무료 지급) — styles/보유 목록 테스트용
+    (13, 1, 7, NULL, FALSE), -- user1 코튼 크림 보유
+    (14, 2, 8, NULL, FALSE), -- user2 스카이 라이트 보유
+    (15, 3, 7, NULL, FALSE), -- creator 코튼 크림 보유
+    (16, 5, 8, NULL, FALSE), -- music 스카이 라이트 보유
+    (17, 7, 3, NULL, FALSE); -- admin 오션 블루 보유
 
 -- 11. 정기 구독
 INSERT INTO subscription (

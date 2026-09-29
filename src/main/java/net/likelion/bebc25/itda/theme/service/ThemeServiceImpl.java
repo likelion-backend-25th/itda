@@ -4,6 +4,7 @@ import net.likelion.bebc25.itda.dto.PageResponse;
 import net.likelion.bebc25.itda.s3.S3Service;
 import net.likelion.bebc25.itda.theme.dto.ThemeDetailResponse;
 import net.likelion.bebc25.itda.theme.dto.ThemeResponse;
+import net.likelion.bebc25.itda.theme.dto.ThemeStylesResponse;
 import net.likelion.bebc25.itda.theme.mapper.ThemeMapper;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -85,5 +86,82 @@ public class ThemeServiceImpl implements ThemeService{
         long totalCount = themeMapper.countOwnedThemes(memberId);
 
         return PageResponse.of(responses, page, size, totalCount);
+    }
+
+    @Override
+    public ThemeStylesResponse getThemeStyles(Long memberId, Long themeId) {
+        if (memberId == null) {
+            // GlobalRestExceptionHandler: IllegalStateException → 403
+            // 미인증은 Security가 401로 막는 게 정석. 방어 코드.
+            throw new IllegalStateException("로그인이 필요합니다.");
+        }
+        ThemeStylesResponse.ThemeStyleRow row = themeMapper.findStyleById(themeId);
+        if (row == null) {
+            throw new NoSuchElementException("존재하지 않는 테마입니다. ID: " + themeId);
+        }
+
+        boolean owned = Boolean.TRUE.equals(row.isDefault()) || themeMapper.existsPurchase(memberId, themeId);
+        if (!owned) {
+            throw new IllegalStateException("보유하지 않은 테마입니다.");
+        }
+
+        if (row.cssText() == null || row.cssText().isBlank()) {
+            throw new NoSuchElementException("테마 스타일이 등록되지 않았습니다. ID: " + themeId);
+        }
+
+        return ThemeStylesResponse.of(row);
+    }
+
+    @Override
+    @Transactional
+    public ThemeDetailResponse applyTheme(Long memberId, Long themeId) {
+        if (memberId == null) {
+            throw new IllegalStateException("로그인이 필요합니다.");
+        }
+        ThemeStylesResponse.ThemeStyleRow row = themeMapper.findStyleById(themeId);
+
+        if (row == null) {
+            throw new NoSuchElementException("존재하지 않는 테마입니다. ID: " + themeId);
+        }
+
+        boolean owned = Boolean.TRUE.equals(row.isDefault()) || themeMapper.existsPurchase(memberId, themeId);
+        if (!owned) {
+            throw new IllegalStateException("보유하지 않은 테마입니다.");
+        }
+
+        // 1) 현재 적용 테마만 교체
+        themeMapper.updateMemberThemeId(memberId, themeId);
+        // 2) 구매 이력이 있으면 "사용함" 플래그 ON (이미 true면 그대로)
+        //    다른 테마 is_used 는 절대 초기지 않음
+        if (themeMapper.existsPurchase(memberId, themeId)) {
+            themeMapper.markThemeUsedIfNeeded(memberId, themeId);
+        }
+        return getThemeById(memberId, themeId);
+    }
+
+    @Override
+    @Transactional
+    public ThemeDetailResponse claimFreeTheme(Long memberId, Long themeId) {
+        if (memberId == null) {
+            throw new IllegalStateException("로그인이 필요합니다.");
+        }
+
+        Integer price = themeMapper.findPriceById(themeId);
+        String status = themeMapper.findStatusById(themeId);
+        if (price == null || status == null) {
+            throw new NoSuchElementException("존재하지 않는 테마입니다. ID: " + themeId);
+        }
+        if (!"ON_SALE".equals(status)) {
+            throw new IllegalStateException("판매 중이 아닌 테마입니다.");
+        }
+        if (price > 0) {
+            throw new IllegalArgumentException("유료 테마는 PortOne 결제가 필요합니다.");
+        }
+
+        // 이미 보유면 그대로 상세 반환 (멱등)
+        if (!themeMapper.existsPurchase(memberId, themeId)) {
+            themeMapper.insertFreeThemePurchase(memberId, themeId);
+        }
+        return getThemeById(memberId, themeId);
     }
 }
