@@ -14,4 +14,6 @@ public interface AdminPaymentMapper {
     List<AdminRefundResponse> findAllRefunds();
 
     int refundPayment(Long paymentId);
+
+    int rejectRefund(Long paymentId);
 }

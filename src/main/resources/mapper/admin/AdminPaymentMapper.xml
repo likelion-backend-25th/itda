@@ -5,6 +5,7 @@
 
 <mapper namespace="net.likelion.bebc25.itda.admin.payment.mapper.AdminPaymentMapper">
 
+    <!-- 전체 결제 내역 -->
     <select id="findAllPayments"
             resultType="net.likelion.bebc25.itda.admin.payment.dto.AdminPaymentResponse">
 
@@ -33,6 +34,7 @@
 
     </select>
 
+    <!-- 환불 대기 목록 -->
     <select id="findAllRefunds"
             resultType="net.likelion.bebc25.itda.admin.payment.dto.AdminRefundResponse">
 
@@ -57,11 +59,12 @@
         LEFT JOIN common_code pm
         ON p.pay_method_id = pm.id
         WHERE c.type = 1
-        AND c.code = 'PS04'
+        AND c.code = 'PS05'
         ORDER BY p.created_at DESC
 
     </select>
 
+    <!-- 환불 수락: 환불 대기 -> 환불 완료 -->
     <update id="refundPayment">
         UPDATE payment
         SET status_id = (
@@ -76,7 +79,27 @@
         SELECT id
         FROM common_code
         WHERE type = 1
+        AND code = 'PS05'
+        AND is_active = TRUE
+        )
+    </update>
+
+    <!-- 환불 거부: 환불 대기 -> 결제 완료 -->
+    <update id="rejectRefund">
+        UPDATE payment
+        SET status_id = (
+        SELECT id
+        FROM common_code
+        WHERE type = 1
         AND code = 'PS02'
+        AND is_active = TRUE
+        )
+        WHERE id = #{paymentId}
+        AND status_id = (
+        SELECT id
+        FROM common_code
+        WHERE type = 1
+        AND code = 'PS05'
         AND is_active = TRUE
         )
     </update>
