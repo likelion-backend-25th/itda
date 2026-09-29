@@ -119,7 +119,15 @@ jobs:
           script: |
             set -e
             cd /home/ec2-user
+            # nginx/default.conf 는 직접 SCP로 관리 (디렉터리로 잘못 생기면 제거)
+            if [ -d nginx/default.conf ]; then
+              rm -rf nginx/default.conf
+            fi
             mkdir -p nginx certbot/conf certbot/www
+            if [ ! -f nginx/default.conf ]; then
+              echo "nginx/default.conf 가 없습니다. SCP로 올린 뒤 다시 배포하세요."
+              exit 1
+            fi
             echo ">>> 1. GitHub Secrets 기반 운영 환경 변수(.env) 자동 동기화"
             cat << 'EOF' > .env
             DB_HOST=${{ secrets.DB_HOST }}
@@ -148,7 +156,7 @@ jobs:
             docker compose pull itda-sns-app
 
             echo ">>> 3. 컨테이너 갱신 및 백그라운드 구동"
-            docker compose up -d
+            docker compose up -d --remove-orphans
 
             echo ">>> 4. 사용되지 않는 구버전 이미지 정리"
             docker image prune -f
