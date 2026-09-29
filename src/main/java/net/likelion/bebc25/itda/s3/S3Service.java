@@ -22,23 +22,16 @@ public class S3Service {
 
     private final S3Client s3Client;
     private final S3Presigner s3Presigner;
+    private final ImageValidator imageValidator;
 
     @Value("${aws.s3.bucket}")
     private String bucket;
 
     public String upload(MultipartFile file, String directory) {
 
-        if (file == null || file.isEmpty()) {
-            throw new IllegalArgumentException("업로드할 파일이 없습니다.");
-        }
+        imageValidator.validate(file);
 
-        String originalFilename = file.getOriginalFilename();
-
-        String extension = "";
-
-        if (originalFilename != null && originalFilename.contains(".")) {
-            extension = originalFilename.substring(originalFilename.lastIndexOf("."));
-        }
+        String extension = getExtension(file.getContentType());
 
         String key = directory + "/" + UUID.randomUUID() + extension;
 
@@ -95,5 +88,15 @@ public class S3Service {
                 .build();
 
         s3Client.deleteObject(request);
+    }
+
+    private String getExtension(String contentType) {
+        return switch (contentType) {
+            case "image/jpeg" -> ".jpg";
+            case "image/png" -> ".png";
+            default -> throw new IllegalArgumentException(
+                    "지원하지 않는 이미지 형식입니다."
+            );
+        };
     }
 }
