@@ -121,4 +121,11 @@
         WHERE id = #{postId}
     </delete>
 
+    <!-- 프로필 - 해당 회원이 작성한 게시글 수 -->
+    <select id="countPosts" resultType="int">
+        SELECT COUNT(*)
+        FROM post
+        WHERE member_id = #{memberId}
+    </select>
+
 </mapper>
