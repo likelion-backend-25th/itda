@@ -39,11 +39,19 @@ public class ReplyController {
 
     }
 
+    // 비로그인도 허용
     // 2. 해당 게시글의 댓글들 조회
     @GetMapping
     public ResponseEntity<List<ReplyResponse>> getReplies(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
             @PathVariable Long postId){
-        List<ReplyResponse> replies = replyService.getRepliesByPostId(postId);
+
+        Long memberId = null;
+
+        if (userDetails != null) {
+            memberId = userDetails.getId();
+        }
+        List<ReplyResponse> replies = replyService.getRepliesByPostId(memberId, postId);
 
         return ResponseEntity.ok(replies);
     }

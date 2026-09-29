@@ -17,16 +17,24 @@ public class PostScrapServiceImpl implements PostScrapService {
 
     private final PostMapper postMapper;
     private final PostReactionMapper postReactionMapper;
+    private final PostService postService;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public PostScrapResponse toggleScrap(Long memberId, Long postId) {
 
-        // 1. 게시글 존재 여부 확인
+        // 게시글 존재 여부 확인
         Post post  =  postMapper.findById(postId);
 
         if(post == null) {
             throw new NoSuchElementException("존재하지 않는 게시글입니다. id: " + postId);
+        }
+        // 검증 먼저
+        postService.validatePostAccess(post, memberId);
+
+        // 내 게시글에는 좋아요 불가능
+        if(post.getMemberId().equals(memberId)) {
+            throw new IllegalArgumentException("본인 게시글입니다.");
         }
 
         // 스크랩 여부

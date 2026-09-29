@@ -54,5 +54,4 @@
         AND type = 26
     </delete>
 
-
 </mapper>

@@ -17,6 +17,7 @@ public class PostLikeServiceImpl implements PostLikeService {
 
     private final PostMapper postMapper;
     private final PostReactionMapper postReactionMapper;
+    private final PostService postService;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -27,6 +28,15 @@ public class PostLikeServiceImpl implements PostLikeService {
         // 해당 게시글이 존재하지 않으면
         if(post == null) {
             throw new NoSuchElementException("존재하지 않는 게시글입니다. id: " + postId);
+        }
+
+        // 검증 먼저
+        postService.validatePostAccess(post, memberId);
+
+        // 내 게시글에는 스크랩 불가능
+        // 엑스에서 내 게시글 스크랩 가능
+        if(post.getMemberId().equals(memberId)) {
+            throw new IllegalArgumentException("본인 게시글입니다.");
         }
 
         // 2. 현재 사용자의 좋아요 등록 여부 확인

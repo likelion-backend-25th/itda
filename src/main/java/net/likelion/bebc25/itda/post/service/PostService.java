@@ -1,6 +1,7 @@
 package net.likelion.bebc25.itda.post.service;
 
 import net.likelion.bebc25.itda.member.dto.PostUpdateRequest;
+import net.likelion.bebc25.itda.post.domain.Post;
 import net.likelion.bebc25.itda.post.dto.PostCreateRequest;
 import net.likelion.bebc25.itda.post.dto.PostFeedResponse;
 import net.likelion.bebc25.itda.post.dto.PostResponse;
@@ -22,5 +23,8 @@ public interface PostService {
 
     // 5. 게시글 삭제
     void  deletePost(Long postId);
+
+    // 6. 검증된 접근
+    void validatePostAccess(Post post, Long memberId);
 
 }
