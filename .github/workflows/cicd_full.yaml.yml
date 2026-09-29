@@ -37,7 +37,7 @@ jobs:
         run: chmod +x gradlew
 
       - name: 4. 단위 및 통합 테스트 수행
-        run: ./gradlew test
+        run: ./gradlew test --stacktrace
         env:
           DB_HOST: localhost
           DB_PORT: 3306

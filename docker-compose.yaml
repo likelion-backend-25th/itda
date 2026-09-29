@@ -4,7 +4,7 @@ services:
     container_name: itda-sns-app
     restart: always
     ports:
-      - "80:8080"
+      - "8080:8080"
     env_file:
       - .env
   mysql:
