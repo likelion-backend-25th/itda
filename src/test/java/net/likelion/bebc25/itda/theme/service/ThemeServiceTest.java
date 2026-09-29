@@ -1,16 +1,19 @@
 package net.likelion.bebc25.itda.theme.service;
 
 import net.likelion.bebc25.itda.dto.PageResponse;
+import net.likelion.bebc25.itda.s3.S3Service;
 import net.likelion.bebc25.itda.theme.dto.ThemeResponse;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 @SpringBootTest
 @Transactional
@@ -18,6 +21,20 @@ public class ThemeServiceTest {
 
     @Autowired
     private ThemeService ThemeService;
+
+    @MockitoBean
+    private S3Service s3Service;
+
+    @BeforeEach
+    void setUp() {
+        when(s3Service.getPresignedUrl(any())).thenAnswer(invocation -> {
+            String key = invocation.getArgument(0);
+            if (key == null || key.isBlank()) {
+                return null;
+            }
+            return "https://example.com/" + key;
+        });
+    }
 
     @Test
     @DisplayName("게시글 상세 복합 조인 조회 테스트")
