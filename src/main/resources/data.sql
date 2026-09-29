@@ -43,15 +43,15 @@ VALUES
 -- 2. 테마 (ON_SALE 8개 → size=6이면 2페이지 / HIDDEN 1개)
 INSERT INTO theme (id, theme_name, description, price, thumbnail_url, theme_code, status, is_default)
 VALUES
-    (1, '기본 테마',     'ITDA 기본 테마 (무료, is_default)', 0,    '/images/themes/default.png',  'DEFAULT',  'ON_SALE', TRUE),
-    (2, '오션 블루',     '시원한 바다 느낌의 테마',           3000, '/images/themes/ocean.png',    'OCEAN',    'ON_SALE', FALSE),
-    (3, '포레스트 그린', '차분한 숲 느낌의 테마',             3000, '/images/themes/forest.png',   'FOREST',   'ON_SALE', FALSE),
-    (4, '선셋 코랄',     '따뜻한 노을 느낌의 테마',           5000, '/images/themes/sunset.png',   'SUNSET',   'ON_SALE', FALSE),
-    (5, '라벤더 나이트', '보랏빛 밤 느낌의 테마',             5000, '/images/themes/lavender.png', 'LAVENDER', 'ON_SALE', FALSE),
-    (6, '미드나잇 다크', '눈 편한 다크 테마',                 4000, '/images/themes/dark.png',     'DARK',     'ON_SALE', FALSE),
-    (7, '코튼 크림',     '부드러운 크림톤 테마',             2000, '/images/themes/cream.png',    'CREAM',    'ON_SALE', FALSE),
-    (8, '스카이 라이트', '맑은 하늘 느낌의 테마',             2000, '/images/themes/sky.png',      'SKY',      'ON_SALE', FALSE),
-    (9, '숨김 테마',     '관리자 비공개 테마 (목록 제외)',     9999, '/images/themes/hidden.png',   'HIDDEN',   'HIDDEN',  FALSE);
+    (1, '기본 테마',     'ITDA 기본 테마 (무료, is_default)', 0,    'themes/default.png',  'DEFAULT',  'ON_SALE', TRUE),
+    (2, '오션 블루',     '시원한 바다 느낌의 테마',           3000, 'themes/ocean.png',    'OCEAN',    'ON_SALE', FALSE),
+    (3, '포레스트 그린', '차분한 숲 느낌의 테마',             3000, 'themes/forest.png',   'FOREST',   'ON_SALE', FALSE),
+    (4, '선셋 코랄',     '따뜻한 노을 느낌의 테마',           5000, 'themes/sunset.png',   'SUNSET',   'ON_SALE', FALSE),
+    (5, '라벤더 나이트', '보랏빛 밤 느낌의 테마',             5000, 'themes/lavender.png', 'LAVENDER', 'ON_SALE', FALSE),
+    (6, '미드나잇 다크', '눈 편한 다크 테마',                 4000, 'themes/dark.png',     'DARK',     'ON_SALE', FALSE),
+    (7, '코튼 크림',     '부드러운 크림톤 테마',             2000, 'themes/cream.png',    'CREAM',    'ON_SALE', FALSE),
+    (8, '스카이 라이트', '맑은 하늘 느낌의 테마',             2000, 'themes/sky.png',      'SKY',      'ON_SALE', FALSE),
+    (9, '숨김 테마',     '관리자 비공개 테마 (목록 제외)',     9999, 'themes/hidden.png',   'HIDDEN',   'HIDDEN',  FALSE);
 
 
 -- 3. 회원
