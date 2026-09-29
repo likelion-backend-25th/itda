@@ -13,4 +13,5 @@ public interface AdminPaymentService {
 
     void refundPayment(Long paymentId);
 
+    void rejectRefund(Long paymentId);
 }
