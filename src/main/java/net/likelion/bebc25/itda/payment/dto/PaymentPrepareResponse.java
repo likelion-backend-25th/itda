@@ -28,5 +28,11 @@ public record PaymentPrepareResponse(
                 description = "결제 금액",
                 example = "3000"
         )
-        Long amount
+        Long amount,
+
+        // PortOne 상점 ID
+        String storeId,
+
+        // 결제 수단을 선택
+        String channelKey
 ) {}
