@@ -1,7 +1,9 @@
 package net.likelion.bebc25.itda.post.service;
 
 import lombok.RequiredArgsConstructor;
+import net.likelion.bebc25.itda.domain.Member;
 import net.likelion.bebc25.itda.member.dto.PostUpdateRequest;
+import net.likelion.bebc25.itda.member.mapper.MemberMapper;
 import net.likelion.bebc25.itda.post.domain.Post;
 import net.likelion.bebc25.itda.post.dto.PostCreateRequest;
 import net.likelion.bebc25.itda.post.dto.PostFeedResponse;
@@ -27,6 +29,15 @@ public class PostServiceImpl implements PostService {
     private final PostMapper postMapper;
     private final PostReactionMapper postReactionMapper;
     private final S3Service s3Service;
+    private final MemberMapper memberMapper;
+
+    /** 활동 정지 회원은 글 작성·수정이 불가능하다 */
+    private void rejectIfSuspended(Long memberId) {
+        Member member = memberMapper.findById(memberId);
+        if (member != null && "SUSPENDED".equals(member.getStatus())) {
+            throw new IllegalArgumentException("활동 정지된 회원은 글을 작성할 수 없습니다.");
+        }
+    }
 
     private PostResponse toResponse(Post post, boolean liked, boolean scrapped) {
         return PostResponse.from(
@@ -42,6 +53,7 @@ public class PostServiceImpl implements PostService {
     @Override
     @Transactional
     public PostResponse createPost(Long memberId, PostCreateRequest request, MultipartFile postImage) {
+        rejectIfSuspended(memberId);
         // 게시글 이미지 S3 업로드
         String postImageKey = null;
 
@@ -181,6 +193,7 @@ public class PostServiceImpl implements PostService {
     @Transactional(rollbackFor = Exception.class)
     @PreAuthorize("@postServiceImpl.isAuthor(#postId, authentication.principal.id)")
     public PostResponse updatePost(Long memberId, Long postId, PostUpdateRequest request, MultipartFile postImage) {
+        rejectIfSuspended(memberId);
 
         // 게시글 존재 여부 확인
         Post post = postMapper.findById(postId);

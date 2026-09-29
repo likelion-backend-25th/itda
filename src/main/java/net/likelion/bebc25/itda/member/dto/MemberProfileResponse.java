@@ -13,7 +13,8 @@ public record MemberProfileResponse(
         String role,
         String introduction,
         Long themeId,
-        LocalDateTime createdAt
+        LocalDateTime createdAt,
+        String status
 ) {
     public static MemberProfileResponse from(Member member, String profileImageUrl) {
         return new MemberProfileResponse(
@@ -25,6 +26,9 @@ public record MemberProfileResponse(
                 member.getIntroduction(),
                 member.getThemeId(),
                 member.getCreatedAt()
+                member.getTheme_id(),
+                member.getCreatedAt(),
+                member.getStatus()
         );
     }
 }
