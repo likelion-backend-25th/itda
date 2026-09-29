@@ -128,7 +128,7 @@ CREATE TABLE post_reaction (
                         id BIGINT AUTO_INCREMENT PRIMARY KEY,
                         member_id BIGINT NOT NULL,
                         post_id BIGINT NOT NULL,
-                        type INT NOT NULL,
+                        type BIGINT NOT NULL,
                         created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
                         FOREIGN KEY (member_id) REFERENCES member(id) ON DELETE CASCADE,
                         FOREIGN KEY (post_id) REFERENCES post(id) ON DELETE CASCADE,
