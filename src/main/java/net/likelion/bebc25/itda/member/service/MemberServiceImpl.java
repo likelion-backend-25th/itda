@@ -58,7 +58,7 @@ public class MemberServiceImpl implements MemberService {
                 .role("ROLE_USER")
                 .profileImage(profileImageKey)
                 .authmethod("LOCAL")
-                .theme_id(defaultThemeId)
+                .themeId(defaultThemeId)
                 .build();
         memberMapper.save(member);
 

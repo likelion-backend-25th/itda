@@ -27,17 +27,9 @@
     <insert id="insertTheme"
             parameterType="net.likelion.bebc25.itda.admin.theme.dto.AdminThemeRequest">
         INSERT INTO theme (
-        theme_name,
-        description,
-        price,
-        thumbnail_url,
-        theme_code
+        theme_name, description, price, thumbnail_url, theme_code, css_text
         ) VALUES (
-        #{themeName},
-        #{description},
-        #{price},
-        #{thumbnailUrl},
-        #{themeCode}
+        #{themeName}, #{description}, #{price}, #{thumbnailUrl}, #{themeCode}, #{cssText}
         )
     </insert>
 
@@ -49,7 +41,8 @@
         description = #{request.description},
         price = #{request.price},
         thumbnail_url = #{request.thumbnailUrl},
-        theme_code = #{request.themeCode}
+        theme_code = #{request.themeCode},
+        css_text = #{request.cssText}
         WHERE id = #{themeId}
     </update>
 

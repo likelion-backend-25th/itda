@@ -104,10 +104,13 @@ public class SecurityConfig {
                         // 공지사항 조회(GET)는 비로그인 사용자에게도 공개 허용
                         .requestMatchers(HttpMethod.GET, "/api/v1/notices/**").permitAll()
 
+                        .requestMatchers(HttpMethod.POST, "/api/v1/themes/*/apply").authenticated()
+                        // 테마 스타일(유료 CSS) — 인증 + 서비스에서 보유 검증
+                        .requestMatchers(HttpMethod.GET, "/api/v1/themes/*/styles").authenticated()
                         // 전체 테마 목록
                         .requestMatchers(HttpMethod.GET, "/api/v1/themes").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/themes/owned").authenticated()
-                        // 테마 상세
+                        // 테마 상세 (한 세그먼트만 — styles보다 뒤에)
                         .requestMatchers(HttpMethod.GET, "/api/v1/themes/*").permitAll()
 
                         // 공지사항 등록, 수정, 삭제(POST, PUT, DELETE 등)는 관리자 또는 매니저 권한 필수
@@ -153,6 +156,7 @@ public class SecurityConfig {
         // 개발: 로컬에서 실행하는 Vite 개발 서버
         config.setAllowedOrigins(List.of(
                 "https://itda-sns.netlify.app",
+                "https://itda.likelion.shop",
                 "http://localhost:5173"
         ));
         // 허용할 HTTP 메서드

@@ -23,5 +23,7 @@ public record AdminThemeRequest(
 
         @NotBlank(message = "테마 코드는 필수입니다.")
         @Size(max = 255, message = "테마 코드는 255자 이하여야 합니다.")
-        String themeCode
+        String themeCode,
+
+        String cssText
 ) {}

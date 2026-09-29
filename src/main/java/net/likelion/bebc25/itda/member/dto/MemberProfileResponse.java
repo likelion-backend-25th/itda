@@ -23,7 +23,7 @@ public record MemberProfileResponse(
                 profileImageUrl,
                 member.getRole(),
                 member.getIntroduction(),
-                member.getTheme_id(),
+                member.getThemeId(),
                 member.getCreatedAt()
         );
     }
