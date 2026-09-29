@@ -41,6 +41,10 @@ services:
     depends_on:
       - itda-sns-app
 
+  # 최초 발급은 EC2에서 한 번:
+  #   docker compose run --rm --entrypoint certbot certbot certonly --webroot -w /var/www/certbot \
+  #     -d api.eony.site --email YOUR_EMAIL --agree-tos --no-eff-email
+  # 이후 이 서비스가 12시간마다 renew
   certbot:
     image: certbot/certbot
     container_name: itda-sns-certbot
