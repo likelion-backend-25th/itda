@@ -49,13 +49,10 @@ public class MyPageController {
     public ResponseEntity<MyPagePostResponse> getScrappedPosts(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @RequestParam(required = false) Long cursor,
-            @RequestParam(defaultValue = "5") int size
-    ) {
-
+            @RequestParam(defaultValue = "5") int size){
         Long memberId = userDetails.getId();
 
-        MyPagePostResponse response =
-                myPageService.getScrappedPosts(memberId, cursor, size);
+        MyPagePostResponse response = myPageService.getScrappedPosts(memberId, cursor, size);
 
         return ResponseEntity.ok(response);
     }
