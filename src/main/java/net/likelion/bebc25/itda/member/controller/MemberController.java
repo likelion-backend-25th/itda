@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import net.likelion.bebc25.itda.domain.Member;
 import net.likelion.bebc25.itda.member.dto.*;
+import net.likelion.bebc25.itda.member.service.FollowService;
 import net.likelion.bebc25.itda.member.service.MemberService;
 import net.likelion.bebc25.itda.security.principal.CustomUserDetails;
 import org.springframework.http.HttpStatus;
@@ -25,9 +26,14 @@ import java.util.List;
 public class MemberController {
 
     private final MemberService memberService;
+    private final FollowService followService;
 
-    public MemberController(MemberService memberService) {
+    public MemberController(
+            MemberService memberService,
+            FollowService followService
+    ) {
         this.memberService = memberService;
+        this.followService = followService;
     }
 
     // 회원가입
@@ -91,5 +97,31 @@ public class MemberController {
         List<FollowingResponse> followings = memberService.getFollowings(id);
 
         return ResponseEntity.ok(followings);
+    }
+
+    // 회원 팔로우
+    @PostMapping("/{id}/follow")
+    public ResponseEntity<Void> follow(
+            @PathVariable Long id,
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        Long fromId = userDetails.getMember().getId();
+
+        followService.follow(fromId, id);
+
+        return ResponseEntity.ok().build();
+    }
+
+    // 회원 언팔로우
+    @DeleteMapping("/{id}/follow")
+    public ResponseEntity<Void> unfollow(
+            @PathVariable Long id,
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        Long fromId = userDetails.getMember().getId();
+
+        followService.unfollow(fromId, id);
+
+        return ResponseEntity.ok().build();
     }
 }
