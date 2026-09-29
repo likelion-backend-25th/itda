@@ -9,6 +9,7 @@ import net.likelion.bebc25.itda.member.dto.SignupRequest;
 import net.likelion.bebc25.itda.member.mapper.FollowerMapper;
 import net.likelion.bebc25.itda.member.mapper.FollowingMapper;
 import net.likelion.bebc25.itda.member.mapper.MemberMapper;
+import net.likelion.bebc25.itda.post.mapper.PostMapper;
 import net.likelion.bebc25.itda.s3.S3Service;
 import net.likelion.bebc25.itda.theme.mapper.ThemeMapper;
 import net.likelion.bebc25.itda.theme.service.ThemeService;
@@ -27,6 +28,7 @@ public class MemberServiceImpl implements MemberService {
     private final MemberMapper memberMapper;
     private final FollowerMapper followerMapper;
     private final FollowingMapper followingMapper;
+    private final PostMapper postMapper;
     private final PasswordEncoder passwordEncoder;
     private final ThemeService themeService;
     private final S3Service s3Service;
@@ -93,9 +95,21 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public MemberProfileResponse getProfile(Member member) {
 
+        Long memberId = member.getId();
+
+        int followerCount = followerMapper.countFollowers(memberId);
+        int followingCount = followingMapper.countFollowings(memberId);
+        int postCount = postMapper.countPosts(memberId);
+
         String profileImageUrl = s3Service.getPresignedUrl(member.getProfileImage());
 
-        return MemberProfileResponse.from(member, profileImageUrl);
+        return MemberProfileResponse.from(
+                member,
+                profileImageUrl,
+                followerCount,
+                followingCount,
+                postCount
+        );
     }
 
     @Override

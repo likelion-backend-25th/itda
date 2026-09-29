@@ -14,9 +14,18 @@ public record MemberProfileResponse(
         String introduction,
         Long themeId,
         LocalDateTime createdAt,
+        int followerCount,
+        int followingCount,
+        int postCount,
         String status
 ) {
-    public static MemberProfileResponse from(Member member, String profileImageUrl) {
+    public static MemberProfileResponse from(
+            Member member,
+            String profileImageUrl,
+            int followerCount,
+            int followingCount,
+            int postCount
+    ) {
         return new MemberProfileResponse(
                 member.getId(),
                 member.getEmail(),
@@ -26,6 +35,9 @@ public record MemberProfileResponse(
                 member.getIntroduction(),
                 member.getThemeId(),
                 member.getCreatedAt(),
+                followerCount,
+                followingCount,
+                postCount,
                 member.getStatus()
         );
     }

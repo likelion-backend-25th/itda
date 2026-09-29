@@ -22,4 +22,11 @@
 
     </select>
 
+    <!-- 특정 회원의 팔로잉 수 조회 -->
+    <select id="countFollowings" resultType="int">
+        SELECT COUNT(*)
+        FROM follow
+        WHERE from_id = #{fromId}
+    </select>
+
 </mapper>

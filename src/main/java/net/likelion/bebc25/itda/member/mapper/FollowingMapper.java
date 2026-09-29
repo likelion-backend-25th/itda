@@ -11,4 +11,7 @@ public interface FollowingMapper {
 
     // 특정 회원이 팔로우하는 사람들의 목록 조회
     List<FollowingResponse> findFollowings(@Param("fromId") Long fromId);
+
+    // 특정 회원의 팔로잉 수 조회
+    int countFollowings(@Param("fromId") Long fromId);
 }

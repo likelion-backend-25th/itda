@@ -51,4 +51,7 @@ public interface PostMapper {
     // 11. 마이페이지 - 내가 작성한 게시글
     List<Post> findMyPosts(@Param("memberId")Long memberId, @Param("cursor") Long cursor, @Param("size") int size);
 
+    // 프로필 - 해당 회원이 작성한 게시글 수
+    int countPosts(@Param("memberId") Long memberId);
+
 }
