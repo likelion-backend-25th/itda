@@ -21,7 +21,7 @@ public class PaymentController {
 
     @PostMapping("/prepare")
     public ResponseEntity<PaymentPrepareResponse> preparePayment(
-            @RequestBody PaymentPrepareRequest request
+           @Valid @RequestBody PaymentPrepareRequest request
     ) {
 
         // 현재 로그인 회원 정보 연결 전이라면
