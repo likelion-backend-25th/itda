@@ -1,6 +1,8 @@
 package net.likelion.bebc25.itda.payment.client;
 
 import lombok.Getter;
+import net.likelion.bebc25.itda.payment.dto.PortOneCancelRequest;
+import net.likelion.bebc25.itda.payment.dto.PortOneCancelResponse;
 import net.likelion.bebc25.itda.payment.dto.PortOnePaymentResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -91,5 +93,31 @@ public class PortOneClient {
                 .retrieve().body(
                         PortOnePaymentResponse.class
                 );
+    }
+    public PortOneCancelResponse cancelResponse(
+
+            String paymentId,
+            String reason,
+            Long amount
+    ){
+        // PortOne에 전달할 환불 요청 객체 생성
+        PortOneCancelRequest request =
+                new PortOneCancelRequest(
+                        reason,
+                        amount
+                );
+        return restClient
+                .post()
+                .uri(
+                        "payments/{paymentId}/cancel",
+                        paymentId
+
+                ).contentType(MediaType.APPLICATION_JSON)
+                // 환불 사유 + 실제 환불 금액 전달
+                .body(request)
+                // PortOne API 호출
+                .retrieve()
+                // PortOne 응답 DTO 변환
+                .body(PortOneCancelResponse.class);
     }
 }

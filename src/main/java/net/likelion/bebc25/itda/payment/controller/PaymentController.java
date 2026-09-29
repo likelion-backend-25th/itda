@@ -1,11 +1,8 @@
 package net.likelion.bebc25.itda.payment.controller;
 import jakarta.validation.Valid;
-import net.likelion.bebc25.itda.payment.dto.PaymentCompleteRequest;
-import net.likelion.bebc25.itda.payment.dto.PaymentCompleteResponse;
-import net.likelion.bebc25.itda.payment.dto.PaymentPrepareRequest;
+import net.likelion.bebc25.itda.payment.dto.*;
 import net.likelion.bebc25.itda.payment.service.PaymentService;
 import lombok.RequiredArgsConstructor;
-import net.likelion.bebc25.itda.payment.dto.PaymentPrepareResponse;
 import net.likelion.bebc25.itda.security.principal.CustomUserDetails;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -81,6 +78,24 @@ public class PaymentController {
          * 정상적으로 완료되면 HTTP 200 반환
          */
         return ResponseEntity.ok(response);
+    }
+    //
+    @PostMapping("/{paymentId}/refund")
+    public PaymentRefundResponse refundPayment(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PathVariable String paymentId,
+            @RequestBody PaymentRefundRequest request
+    ) {
+
+        // 현재 로그인한 회원 ID
+        Long memberId = userDetails.getId();
+
+        // 실제 환불 처리는 PaymentServiceImpl에서 진행
+        return paymentService.refundPayment(
+                memberId,
+                paymentId,
+                request
+        );
     }
 }
 

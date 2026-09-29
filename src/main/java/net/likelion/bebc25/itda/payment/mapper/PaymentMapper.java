@@ -95,6 +95,50 @@ public interface PaymentMapper {
     );
 
     /**
+     * 테마 사용 여부 조회
+     * @param paymentId theme_purchase 조회
+     * @return 사용하면 1 환불 불가 처리
+     */
+    Boolean findThemeIsUsed(
+            @Param("paymentId") Long paymentId
+    );
+
+    // 구독 시작일 조회
+    LocalDateTime findSubscriptionStartedAt(
+            @Param("paymentId") Long paymentId
+    );
+
+    // 환불 내역 저장
+    int insertPaymentRefund(
+            @Param("paymentId") Long paymentId, // 결제 번호 payment.id
+            @Param("cancellationId") String cancellationId, // PortOne 환불/취소 id
+            @Param("refundAmount") Long refundAmount,   // 실제 고객에게 환불한 금액
+            @Param("deductionAmount") Long deductionAmount, // 차감된 금액
+            @Param("refundReason") String refundReason, // 환불 사유
+            @Param("requestedAt") LocalDateTime requestedAt, // 환불 요청 시간
+            @Param("refundedAt") LocalDateTime refundedAt   // 환불 성공을 확인한 시간
+    );
+    // 환불 상태 변경 PS02 → PS04 변경
+    int updateRefunded(
+            @Param("paymentId") String paymentId,
+            @Param("paidStatusId") Long paidStatusId,
+            @Param("refundedStatusId") Long refundedStatusId
+    );
+    // 환불 후 구독 상태 변경 SS01 → SS02 변경
+    int updateSubscriptionCancelled(
+            @Param("paymentId") Long paymentId,
+            @Param("activeStatusId") Long activeStatusId,
+            @Param("cancelledStatusId") Long cancelledStatusId
+    );
+
+    // 환불 후 결제 테마 내역 삭제
+    int deleteThemePurchaseByPaymentId(
+            @Param("paymentId") Long paymentId
+    );
+
+
+
+    /**
      * 회원의 결제 이력 조회
      * @param memberId 회원 ID
      * @return 결제 이력 목록

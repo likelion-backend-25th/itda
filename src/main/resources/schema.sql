@@ -1,6 +1,7 @@
 -- 0. 기존 테이블 삭제 (외래 키 참조 역순으로 삭제)
 DROP TABLE IF EXISTS theme_purchase;
 DROP TABLE IF EXISTS subscription;
+DROP TABLE IF EXISTS payment_refund;
 DROP TABLE IF EXISTS payment;
 DROP TABLE IF EXISTS post_reaction;
 DROP TABLE IF EXISTS reply;
@@ -214,4 +215,19 @@ CREATE TABLE refresh_token (
                                CONSTRAINT fk_refresh_token_member
                                    FOREIGN KEY (member_id)
                                        REFERENCES member(id)
+);
+
+-- 13. Payment_refund
+CREATE TABLE payment_refund (
+                               id BIGINT AUTO_INCREMENT PRIMARY KEY,
+                               payment_id BIGINT NOT NULL,
+                               cancellation_id VARCHAR(255) NOT NULL,
+                               refund_reason VARCHAR(255) NOT NULL DEFAULT '사용자 요청',
+                               refund_amount BIGINT NOT NULL,
+                               deduction_amount BIGINT NOT NULL DEFAULT 0,
+                               requested_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                               refunded_at DATETIME NULL,
+                               CONSTRAINT fk_payment_refund_payment FOREIGN KEY (payment_id) REFERENCES payment(id),
+                               CONSTRAINT uk_payment_refund_payment UNIQUE (payment_id),
+                               CONSTRAINT uk_payment_refund_cancellation UNIQUE (cancellation_id)
 );
