@@ -17,6 +17,9 @@ public class Member {
     private String profileImage; // s3 key
     @Builder.Default
     private String role = "ROLE_USER";
+    /** ACTIVE 정상, SUSPENDED 활동 정지 */
+    @Builder.Default
+    private String status = "ACTIVE";
     private String introduction;
     private Long theme_id; // 현재 적용중인 테마 id
     private String authmethod; // 로그인 인증 방식 (google/kakao/local)

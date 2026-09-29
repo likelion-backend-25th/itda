@@ -37,8 +37,9 @@ VALUES
 (24, 5, 'PR03', '월 10,000원', '월 구독 10,000원',10000, 3, TRUE),
 -- 게시글 반응
 (25, 6, 'RT01', 'LIKE', '게시글 좋아요', null, 1, TRUE),
-(26, 6, 'RT02', 'SCRAP', '게시글 스크랩', null, 2, TRUE);
-
+(26, 6, 'RT02', 'SCRAP', '게시글 스크랩', null, 2, TRUE),
+-- 환불 신청 대기 상태
+(27, 1, 'PS05', '환불 대기','환불 신청 후 환불 처리를 기다리는 상태', NULL, 5, TRUE);
 
 -- 2. 테마 (ON_SALE 8개 → size=6이면 2페이지 / HIDDEN 1개)
 INSERT INTO theme (id, theme_name, description, price, thumbnail_url, theme_code, status, is_default)
