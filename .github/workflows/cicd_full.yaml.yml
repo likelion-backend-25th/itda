@@ -107,6 +107,7 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           source: "docker-compose.yaml"
           target: "/home/ec2-user"
+          strip_components: 0
 
       - name: SSH를 통한 EC2 원격 접속 및 Docker Compose 배포 실행
         uses: appleboy/ssh-action@v1.2.5
@@ -117,6 +118,7 @@ jobs:
           script: |
             set -e
             cd /home/ec2-user
+            mkdir -p nginx certbot/conf certbot/www
             echo ">>> 1. GitHub Secrets 기반 운영 환경 변수(.env) 자동 동기화"
             cat << 'EOF' > .env
             DB_HOST=${{ secrets.DB_HOST }}

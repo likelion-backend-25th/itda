@@ -1,6 +1,7 @@
 package net.likelion.bebc25.itda.theme.service;
 
 import net.likelion.bebc25.itda.dto.PageResponse;
+import net.likelion.bebc25.itda.s3.S3Service;
 import net.likelion.bebc25.itda.theme.dto.ThemeDetailResponse;
 import net.likelion.bebc25.itda.theme.dto.ThemeResponse;
 import net.likelion.bebc25.itda.theme.mapper.ThemeMapper;
@@ -16,9 +17,11 @@ import java.util.NoSuchElementException;
 public class ThemeServiceImpl implements ThemeService{
 
     private final ThemeMapper themeMapper;
+    private final S3Service s3Service;
 
-    public ThemeServiceImpl(ThemeMapper themeMapper) {
+    public ThemeServiceImpl(ThemeMapper themeMapper, S3Service s3Service) {
         this.themeMapper = themeMapper;
+        this.s3Service = s3Service;
     }
 
     @Override
@@ -27,6 +30,7 @@ public class ThemeServiceImpl implements ThemeService{
 
         return themeId;
     }
+
     @Override
     public PageResponse<ThemeResponse> getAllThemes(Long memberId, int page, int size) {
         if(page < 1) page = 1;
@@ -34,18 +38,27 @@ public class ThemeServiceImpl implements ThemeService{
 
         int offset = (page - 1) * size;
         List<ThemeResponse> content = themeMapper.findAllThemes(memberId,size,offset);
+        List<ThemeResponse> responses = content.stream()
+                .map(theme -> ThemeResponse.from(
+                        theme,
+                        s3Service.getPresignedUrl(theme.thumbnailUrl())
+                ))
+                .toList();
+
         long total = themeMapper.countThemes();
 
-        return PageResponse.of(content, page, size, total);
+        return PageResponse.of(responses, page, size, total);
     }
 
     @Override
     public ThemeDetailResponse getThemeById(Long memberId, Long themeId) {
         ThemeDetailResponse theme = themeMapper.findById(memberId, themeId);
+
         if (theme == null) {
             throw new NoSuchElementException("존재하지 않는 테마입니다. ID: " + themeId);
         }
-        return theme;
+
+        return ThemeDetailResponse.from(theme, s3Service.getPresignedUrl(theme.thumbnailUrl()));
     }
 
     @Override
@@ -62,8 +75,15 @@ public class ThemeServiceImpl implements ThemeService{
         int offset = (page - 1) * size;
 
         List<ThemeResponse> themes = themeMapper.findOwnedThemes(memberId, size, offset);
+        List<ThemeResponse> responses = themes.stream()
+                .map(theme -> ThemeResponse.from(
+                        theme,
+                        s3Service.getPresignedUrl(theme.thumbnailUrl())
+                ))
+                .toList();
+
         long totalCount = themeMapper.countOwnedThemes(memberId);
 
-        return PageResponse.of(themes, page, size, totalCount);
+        return PageResponse.of(responses, page, size, totalCount);
     }
 }
