@@ -48,8 +48,17 @@ public interface PostMapper {
     // 10. 댓글 수 - 1
     void decreaseReplyCount(long postId);
 
-    // 11. 마이페이지 - 내가 작성한 게시글
+    // 11. 마이페이지 - 내가 작성한 게시글 조회
     List<Post> findMyPosts(@Param("memberId")Long memberId, @Param("cursor") Long cursor, @Param("size") int size);
+
+    // 12. 마이페이지 - 내가 좋아요한 게시글 조회
+    List<Post> findMyLikedPosts(@Param("memberId")Long memberId, @Param("cursor") Long cursor, @Param("size") int size);
+
+    // 13. 마이페이지 - 내가 스크랩한 게시글 조회
+    List<Post> findMyScrappedPosts(@Param("memberId")Long memberId, @Param("cursor") Long cursor, @Param("size") int size);
+
+    // 14. 구독자 전용 게시글의 권한 검증
+    boolean existSubscription(@Param("memberId")Long memberId, @Param("targetId")Long targetId);
 
     // 프로필 - 해당 회원이 작성한 게시글 수
     int countPosts(@Param("memberId") Long memberId);

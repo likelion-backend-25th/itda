@@ -156,7 +156,6 @@ public class PostController {
         if(viewedPosts == null || viewedPosts.isBlank()) {
            return false;
         }
-
         return viewedPosts.contains("[" + postId + "]");
     }
 
@@ -164,8 +163,7 @@ public class PostController {
     private void addViewedPostCookie(
             String viewedPosts,
             Long postId,
-            HttpServletResponse response
-    ) {
+            HttpServletResponse response) {
 
         String newViewedPosts;
 
@@ -175,10 +173,7 @@ public class PostController {
             newViewedPosts = viewedPosts + "[" + postId + "]";
         }
 
-        Cookie cookie = new Cookie(
-                "viewedPosts",
-                newViewedPosts
-        );
+        Cookie cookie = new Cookie("viewedPosts", newViewedPosts);
 
         cookie.setPath("/");
         cookie.setMaxAge(60 * 60 * 24); // 24시간

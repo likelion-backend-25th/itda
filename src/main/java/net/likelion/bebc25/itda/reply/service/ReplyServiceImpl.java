@@ -5,6 +5,7 @@ import net.likelion.bebc25.itda.domain.Member;
 import net.likelion.bebc25.itda.member.mapper.MemberMapper;
 import net.likelion.bebc25.itda.post.domain.Post;
 import net.likelion.bebc25.itda.post.mapper.PostMapper;
+import net.likelion.bebc25.itda.post.service.PostService;
 import net.likelion.bebc25.itda.reply.domain.Reply;
 import net.likelion.bebc25.itda.reply.dto.ReplyCreateRequest;
 import net.likelion.bebc25.itda.reply.dto.ReplyResponse;
@@ -25,6 +26,7 @@ public class ReplyServiceImpl implements ReplyService {
     private final ReplyMapper replyMapper;
     private final PostMapper postMapper;
     private final MemberMapper memberMapper;
+    private final PostService postService;
 
     /** 활동 정지 회원은 댓글 작성·수정이 불가능하다 */
     private void rejectIfSuspended(Long memberId) {
@@ -47,6 +49,8 @@ public class ReplyServiceImpl implements ReplyService {
             throw new NoSuchElementException("존재하지 않는 게시글입니다. id: " +postId);
         }
 
+        postService.validatePostAccess(post, memberId);
+
         // 댓글 객체 생성
         Reply reply = Reply.builder().memberId(memberId).postId(postId).content(request.content()).build();
 
@@ -65,13 +69,16 @@ public class ReplyServiceImpl implements ReplyService {
 
     // 2. 해당 게시글의 댓글 조회
     @Override
-    public List<ReplyResponse> getRepliesByPostId(Long postId) {
+    public List<ReplyResponse> getRepliesByPostId(Long memberId, Long postId) {
 
         Post post = postMapper.findById(postId);
 
         if(post == null) {
             throw new NoSuchElementException("존재하지 않는 게시글입니다. id: " + postId);
         }
+
+        postService.validatePostAccess(post, memberId);
+
         // 해당 게시글의 댓글 목록 조회
         List<Reply> replies = replyMapper.findByPostId(postId);
 

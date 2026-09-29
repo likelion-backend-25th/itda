@@ -10,7 +10,7 @@ public interface PostReactionMapper {
     int countLike(@Param("memberId") Long memberId, @Param("postId") Long postId);
 
     // 2. 좋아요 등록
-    int insertLike(@Param("memberId") Long memberId, @Param("postId") Long postId);
+    void insertLike(@Param("memberId") Long memberId, @Param("postId") Long postId);
 
     // 3. 좋아요 취소
     void deleteLike(@Param("memberId") Long memberId, @Param("postId") Long postId);
@@ -19,8 +19,8 @@ public interface PostReactionMapper {
     int countScrap(@Param("memberId")Long memberId, @Param("postId")Long postId);
 
     // 5. 스크랩 등록
-    int insertScrap(@Param("memberId")Long memberId, @Param("postId")Long postId);
+    void insertScrap(@Param("memberId")Long memberId, @Param("postId")Long postId);
 
     // 6. 스크랩 삭제
-    int deleteScrap(@Param("memberId")Long memberId, @Param("postId")Long postId);
+    void deleteScrap(@Param("memberId")Long memberId, @Param("postId")Long postId);
 }
