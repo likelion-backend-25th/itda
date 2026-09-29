@@ -52,6 +52,9 @@ public class PaymentServiceImpl implements PaymentService {
                         "PS01"
                 );
 
+        if (request.payMethod() == null || request.payMethod().isBlank()) {
+            throw new IllegalArgumentException("payMethod가 전달되지 않았습니다.");
+        }
         //  프론트에서 선택한 결제 수단을 DB common_code와 매핑
         String payMethodCode = switch (request.payMethod()) {
             case "KAKAOPAY" -> "PM02";

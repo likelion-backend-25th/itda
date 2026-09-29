@@ -34,7 +34,7 @@ public record PaymentPrepareRequest(
 
 
         @Schema(description = "결제 수단",
-                example = "토스페이"
+                example = "TOSSPAY"
         )
         @NotNull
         String payMethod
