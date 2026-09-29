@@ -25,4 +25,16 @@ public record ThemeResponse(
         @Schema(description = "적용 중인지", example = "true / false")
         Boolean isApplied
 
-) { }
+) {
+        public static ThemeResponse from(ThemeResponse theme, String thumbnailUrl) {
+                return new ThemeResponse(
+                        theme.id(),
+                        theme.themeName(),
+                        theme.price(),
+                        thumbnailUrl,
+                        theme.themeCode(),
+                        theme.isOwned(),
+                        theme.isApplied()
+                );
+        }
+}
