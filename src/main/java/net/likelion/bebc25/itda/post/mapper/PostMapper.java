@@ -48,4 +48,7 @@ public interface PostMapper {
     // 10. 댓글 수 - 1
     void decreaseReplyCount(long postId);
 
+    // 11. 마이페이지 - 내가 작성한 게시글
+    List<Post> findMyPosts(@Param("memberId")Long memberId, @Param("cursor") Long cursor, @Param("size") int size);
+
 }
