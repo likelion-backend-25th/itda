@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import net.likelion.bebc25.itda.admin.theme.dto.AdminThemeRequest;
 import net.likelion.bebc25.itda.admin.theme.dto.AdminThemeResponse;
 import net.likelion.bebc25.itda.admin.theme.mapper.AdminThemeMapper;
+import net.likelion.bebc25.itda.s3.S3Service;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,10 +16,16 @@ import java.util.List;
 public class AdminThemeServiceImpl implements AdminThemeService {
 
     private final AdminThemeMapper adminThemeMapper;
+    private final S3Service s3Service;
 
     @Override
     public List<AdminThemeResponse> getAllThemes() {
-        return adminThemeMapper.findAllThemes();
+        return adminThemeMapper.findAllThemes().stream()
+                .map(theme -> AdminThemeResponse.from(
+                        theme,
+                        s3Service.getPresignedUrl(theme.thumbnailUrl())
+                ))
+                .toList();
     }
 
     @Override
