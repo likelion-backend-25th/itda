@@ -549,11 +549,12 @@ public class PaymentServiceImpl implements PaymentService {
         );
 
         /**
+         * 결제 완료 상태가 아닌경우 환불
          * PS01, PS03, PS04인 상태에서 환불은 불가능
          */
         if (!paidStatusId.equals(payment.getStatusId())) {
             throw new IllegalArgumentException(
-                    "환불 가능한 결제 상태가 아닙니다."
+                    ErrorCode.BUSINESS_RULE_VIOLATION.getMessage() + " 환불 가능한 결제 상태가 아닙니다."
             );
         }
 
@@ -561,24 +562,19 @@ public class PaymentServiceImpl implements PaymentService {
         long refundAmount; // 최종 실제 환불 금액
         long deductionAmount; // 차감된 금액
 
-        if(paidStatusId == null){
-            throw new IllegalStateException(
-                    "결제 완료 상태 코드가 아닙니다."
-            );
-        }
-
         if("THEME".equals(payment.getPaymentType())) {
             // 테마인경우
             Boolean isUsed = paymentMapper.findThemeIsUsed(payment.getId());
             if(isUsed == null) {
                 throw new IllegalStateException(
-                        "테마 사용 여부를 알 수 없습니다."
+                        ErrorCode.INTERNAL_SERVER_ERROR.getMessage() + " 테마 사용 여부를 알 수 없습니다."
                 );
             } else if (isUsed) {
                 throw new IllegalArgumentException(
-                        "이미 사용하셨습니다."
+                        ErrorCode.BUSINESS_RULE_VIOLATION.getMessage() + "이미 사용하셨습니다."
                 );
             } else {
+                // 미사용 테마는 전액 환불
                 refundAmount = payment.getAmount();
                 deductionAmount = 0L;
             }
@@ -590,8 +586,8 @@ public class PaymentServiceImpl implements PaymentService {
             LocalDateTime startedAt = paymentMapper.findSubscriptionStartedAt(payment.getId());
 
             if (startedAt == null) {
-                throw new IllegalStateException(
-                        "구독을 찾을 수 없습니다."
+                throw new NoSuchElementException(
+                        ErrorCode.RESOURCE_NOT_FOUND.getMessage() + " 구독을 찾을 수 없습니다."
                 );
             }
             // 구독 기간은 30일을 기준으로 차감
@@ -605,7 +601,7 @@ public class PaymentServiceImpl implements PaymentService {
 
             if (remainingDays <= 0 || remainingDays > 30) {
                 throw new IllegalArgumentException(
-                        "구독 잔여 기간 정보가 올바르지 않습니다."
+                        ErrorCode.BUSINESS_RULE_VIOLATION.getMessage() + " 구독 잔여 기간 정보가 올바르지 않습니다."
                 );
             }
             // 남는 가격은 금액에 날짜 만큼 차감
@@ -617,7 +613,7 @@ public class PaymentServiceImpl implements PaymentService {
 
         } else {
             throw new IllegalArgumentException(
-                    "지원하지 않는 기능입니다."
+                    ErrorCode.BUSINESS_RULE_VIOLATION.getMessage() + " 지원하지 않는 결제 유형입니다."
             );
         }
 
@@ -630,21 +626,22 @@ public class PaymentServiceImpl implements PaymentService {
         //  PortOne 응답 여부 확인
         if (cancelResponse == null || cancelResponse.cancellation() == null) {
             throw new IllegalStateException(
-                    "PortOne 환불 응답이 없습니다."
+                    ErrorCode.INTERNAL_SERVER_ERROR.getMessage() + " PortOne 환불 응답이 없습니다."
             );
         }
         // 실제 환불 성공 여부 확인
         if (!"SUCCEEDED".equals(cancelResponse.cancellation().status() // PortOne에서 보내주는 고정값
         )) {
             throw new IllegalStateException(
-                    "PortOne 환불이 완료되지 않았습니다."
+                    ErrorCode.INTERNAL_SERVER_ERROR.getMessage() + " PortOne 환불이 완료되지 않았습니다."
             );
         }
+
         // 환불 고유 ID 생성 여부
         String cancellationId = cancelResponse.cancellation().id();
         if (cancellationId == null || cancellationId.isBlank()) {
             throw new IllegalStateException(
-                    "PortOne이 전달한 cancellationId가 없습니다."
+                    ErrorCode.INTERNAL_SERVER_ERROR.getMessage() + " PortOne이 전달한 cancellationId가 없습니다."
             );
         }
 
@@ -664,7 +661,7 @@ public class PaymentServiceImpl implements PaymentService {
         // 환불 내역 저장 테이블 확인
         if (insertedRefund != 1) {
             throw new IllegalStateException(
-                    "환불 내역 저장에 실패했습니다."
+                    ErrorCode.INTERNAL_SERVER_ERROR.getMessage() + " 환불 내역 저장에 실패했습니다."
             );
         }
 
@@ -683,42 +680,39 @@ public class PaymentServiceImpl implements PaymentService {
 
         if (updatedRefund != 1) {
             throw new IllegalStateException(
-                    "결제 환불 상태 변경에 실패했습니다."
+                    ErrorCode.INTERNAL_SERVER_ERROR.getMessage() + " 결제 환불 상태 변경에 실패했습니다."
             );
         }
 
         if("SUBSCRIPTION".equals(
                 payment.getPaymentType()
         )){
-            /*
-             * SS01 = 현재 활성 구독 상태
-             */
-            Long activeStatusId = paymentMapper.findCommonCodeId(
-                            4,
-                            "SS01"
-                    );
-
-
-            /*
-             * SS02 = 구독 취소 상태
-             */
-            Long cancelledStatusId = paymentMapper.findCommonCodeId(
-                            4,
-                            "SS02"
-                    );
-
-            int updatedSubscription = paymentMapper.updateSubscriptionCancelled(
+            // 환불 후 구독 페이지에서 제거
+            int deletedSubscription = paymentMapper.deleteByPaymentId(payment.getId());
+            // 제거 여부 확인
+            log.info("[SUBSCRIPTION DELETE] paymentId={}, deldteCount={}",
                     payment.getId(),
-                    activeStatusId,
-                    cancelledStatusId
+                    deletedSubscription
             );
+
         } else if ("THEME".equals(
                 payment.getPaymentType()
         )) {
             // 환불 후 테마 결제 내역에서 삭제
-            int deletedThemePurchase = paymentMapper.deleteThemePurchaseByPaymentId(payment.getId()
+            int deletedThemePurchase = paymentMapper.deleteThemePurchaseByPaymentId(payment.getId());
+            // 제거 여부 확인
+            log.info("[SUBSCRIPTION DELETE] paymentId={}, deldteCount={}",
+                    payment.getId(),
+                    deletedThemePurchase
             );
         }
+        log.info("[PAYMENT REFUND SUCCESS] paymentId={}, cancellationId={}, refoundAmount={}, deductionAmount={}",
+                payment.getPaymentId(),
+                cancellationId,
+                refundAmount,
+                deductionAmount
+                );
+
         return new PaymentRefundResponse(
                 payment.getPaymentId(),
                 cancellationId,

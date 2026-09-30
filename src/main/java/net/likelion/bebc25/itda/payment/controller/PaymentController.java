@@ -18,12 +18,12 @@ public class PaymentController {
 
     @PostMapping("/prepare")
     public ResponseEntity<PaymentPrepareResponse> preparePayment(
-            // 🟢 추가: 현재 로그인 사용자
+            // 현재 로그인 사용자
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @Valid @RequestBody PaymentPrepareRequest request
     ) {
 
-        // 🟢 JWT 로그인 사용자 ID 사용
+        //  WT 로그인 사용자 ID 사용
         Long memberId = userDetails.getId();
 
         PaymentPrepareResponse response =
