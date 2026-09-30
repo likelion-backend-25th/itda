@@ -100,3 +100,7 @@ aws:
   s3:
     bucket: ${AWS_S3_BUCKET}
     region: ${AWS_REGION}
+
+# OAuth 성공 후 브라우저가 돌아갈 프론트 주소 (로컬: http://localhost:5173)
+app:
+  frontend-base-url: ${FRONTEND_BASE_URL:https://itda.likelion.shop}
