@@ -21,7 +21,8 @@
         c.name AS paymentStatus,
         pm.name AS paymentMethod,
         p.paid_at AS paidAt,
-        p.created_at AS createdAt
+        p.created_at AS createdAt,
+        p.payment_id AS servicePaymentId
         FROM payment p
         JOIN member m
         ON p.member_id = m.id

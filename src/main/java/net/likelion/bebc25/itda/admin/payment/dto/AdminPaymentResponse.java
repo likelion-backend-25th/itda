@@ -14,6 +14,7 @@ public record AdminPaymentResponse(
         String paymentStatus,
         String paymentMethod,
         LocalDateTime paidAt,
-        LocalDateTime createdAt
+        LocalDateTime createdAt,
+        String servicePaymentId
 ) {
 }
