@@ -3,6 +3,7 @@ package net.likelion.bebc25.itda.theme.service;
 import net.likelion.bebc25.itda.dto.PageResponse;
 import net.likelion.bebc25.itda.s3.S3Service;
 import net.likelion.bebc25.itda.theme.dto.ThemeResponse;
+import net.likelion.bebc25.itda.theme.dto.ThemeStylesResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -11,7 +12,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.NoSuchElementException;
+
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -59,5 +63,36 @@ public class ThemeServiceTest {
         ThemeResponse latestTheme = themes.getContent().get(0);
         assertThat(latestTheme.id()).isNotNull();
         // status를 SELECT/DTO에 안 넣었으면 이 assert는 빼세요
+    }
+
+    @Test
+    @DisplayName("보유 테마 스타일 조회 성공")
+    void getThemeStyles_owned_success() {
+        Long memberId = 1L;      // data.sql에 맞게 수정
+        Long ownedThemeId = 2L;  // 구매 이력이 있는 theme id
+
+        ThemeStylesResponse styles = ThemeService.getThemeStyles(memberId, ownedThemeId);
+
+        assertThat(styles.themeId()).isEqualTo(ownedThemeId);
+        assertThat(styles.themeCode()).isNotBlank();
+        assertThat(styles.cssText()).contains(":root[data-theme=");
+    }
+
+    @Test
+    @DisplayName("미보유 테마 스타일 조회 시 403")
+    void getThemeStyles_notOwned_forbidden() {
+        Long memberId = 1L;
+        Long notOwnedThemeId = 9L; // 구매 없는 id로 교체
+
+        assertThatThrownBy(() -> ThemeService.getThemeStyles(memberId, notOwnedThemeId))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessageContaining("보유하지 않은");
+    }
+
+    @Test
+    @DisplayName("없는 테마 스타일 조회 시 404")
+    void getThemeStyles_notFound() {
+        assertThatThrownBy(() -> ThemeService.getThemeStyles(1L, 999999L))
+                .isInstanceOf(NoSuchElementException.class);
     }
 }

@@ -44,4 +44,13 @@ public class AdminPaymentController {
 
         return ResponseEntity.ok().build();
     }
+
+    @PatchMapping("/{paymentId}/refund/reject")
+    public ResponseEntity<Void> rejectRefund(
+            @PathVariable Long paymentId
+    ) {
+        adminPaymentService.rejectRefund(paymentId);
+
+        return ResponseEntity.ok().build();
+    }
 }

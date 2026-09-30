@@ -4,11 +4,13 @@ import lombok.RequiredArgsConstructor;
 import net.likelion.bebc25.itda.admin.post.dto.AdminPostResponse;
 import net.likelion.bebc25.itda.admin.post.mapper.AdminPostMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class AdminPostServiceImpl implements AdminPostService {
 
     private final AdminPostMapper adminPostMapper;
@@ -18,6 +20,7 @@ public class AdminPostServiceImpl implements AdminPostService {
         return adminPostMapper.findAllPosts();
     }
 
+    @Transactional
     @Override
     public void deletePost(Long postId) {
 

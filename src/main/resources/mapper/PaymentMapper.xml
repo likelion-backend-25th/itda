@@ -117,10 +117,10 @@
     <!-- 구독 결제 완료 후 구독 정보 저장 -->
     <insert id="insertSubscription">
         INSERT INTO subscription (
-        member_id, target_id, price_id, status_id, payment_id, started_at, ended_at
+        member_id, target_id, price_id, status_id, payment_id, started_at, next_billing_at, ended_at
         )
         SELECT
-        #{memberId}, #{targetId}, common_code.id, #{statusId}, #{paymentId}, CURRENT_TIMESTAMP, DATE_ADD(CURRENT_TIMESTAMP, INTERVAL 1 MONTH)
+        #{memberId}, #{targetId}, common_code.id, #{statusId}, #{paymentId}, CURRENT_TIMESTAMP, DATE_ADD(CURRENT_TIMESTAMP, INTERVAL 1 MONTH), NULL
 
         FROM common_code
         WHERE common_code.type = 5
@@ -187,5 +187,51 @@
         ORDER BY p.paid_at DESC
 
     </select>
+    <!-- 테마 사용여부 조회-->
+    <select id="findThemeIsUsed" resultType="java.lang.Boolean">
+        SELECT is_used
+        FROM theme_purchase
+        WHERE payment_id = #{paymentId}
+    </select>
+
+    <!-- 구독 시작일 조회-->
+    <select id="findSubscriptionStartedAt" resultType="java.time.LocalDateTime">
+        SELECT started_at
+        FROM subscription
+        WHERE payment_id = #{paymentId}
+    </select>
+
+    <!-- 환불 내역 저장 -->
+    <insert id="insertPaymentRefund">
+        INSERT INTO payment_refund (
+                                    payment_id, cancellation_id, refund_amount, deduction_amount ,
+                                     refund_reason, requested_at, refunded_at )
+        VALUES (
+        #{paymentId}, #{cancellationId}, #{refundAmount}, #{deductionAmount},
+        #{refundReason}, #{requestedAt}, #{refundedAt} )
+    </insert>
+
+    <!-- 환불 상태 갱신 -->
+    <update id="updateRefunded">
+        UPDATE payment
+        SET status_id = #{refundedStatusId}
+        WHERE payment_id = #{paymentId}
+        AND status_id = #{paidStatusId}
+    </update>
+
+    <!-- 환불 후 구독 상태 변경 -->
+    <update id="updateSubscriptionCancelled">
+        UPDATE subscription
+        SET status_id = #{cancelledStatusId}
+        WHERE payment_id = #{paymentId}
+        AND status_id = #{activeStatusId}
+    </update>
+
+    <!-- 환불 후 테마 구매 내역에서 제거 -->
+    <delete id="deleteThemePurchaseByPaymentId">
+        DELETE FROM theme_purchase
+        WHERE payment_id = #{paymentId}
+    </delete>
+
 
 </mapper>

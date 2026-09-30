@@ -49,7 +49,7 @@
     </select>
 
     <select id="findById" resultType="net.likelion.bebc25.itda.theme.dto.ThemeDetailResponse">
-        SELECT t.id, t.theme_name, t.description, t.price, t.thumbnail_url, t.theme_code, t.updated_at, t.created_at,
+        SELECT t.id, t.theme_name, t.description, t.price, t.thumbnail_url, t.theme_code,
         <choose>
             <when test="memberId != null">
                 CASE
@@ -59,13 +59,14 @@
                 CASE
                     WHEN m.theme_id = t.id THEN TRUE
                     ELSE FALSE
-                END AS is_applied
+                END AS is_applied,
             </when>
             <otherwise>
                 FALSE AS is_owned,
-                FALSE AS is_applied
+                FALSE AS is_applied,
             </otherwise>
         </choose>
+        t.updated_at, t.created_at
         FROM theme t
         <if test="memberId != null">
             LEFT JOIN theme_purchase tp
@@ -80,7 +81,31 @@
 <!--    기본 테마 등록-->
     <insert id="insertDefaultTheme">
         INSERT INTO theme_purchase (member_id, theme_id, payment_id, is_used)
-        VALUES (#{memberId}, #{themeId}, NULL, 1)
+        VALUES (#{memberId}, #{themeId}, NULL, TRUE)
+    </insert>
+
+    <select id="findPriceById" resultType="int">
+        SELECT price
+        FROM theme
+        WHERE id = #{themeId}
+    </select>
+
+    <select id="findStatusById" resultType="string">
+        SELECT status
+        FROM theme
+        WHERE id = #{themeId}
+    </select>
+
+    <!-- 0원 테마 무료 수령 (PortOne 우회). 적용 전이라 is_used=FALSE -->
+    <insert id="insertFreeThemePurchase">
+        INSERT INTO theme_purchase (member_id, theme_id, payment_id, is_used)
+        SELECT #{memberId}, #{themeId}, NULL, FALSE
+        WHERE NOT EXISTS (
+            SELECT 1
+            FROM theme_purchase tp
+            WHERE tp.member_id = #{memberId}
+              AND tp.theme_id = #{themeId}
+        )
     </insert>
 
 <!--    보유 테마 목록 조회-->
@@ -107,4 +132,37 @@
             ON t.id = tp.theme_id
         WHERE tp.member_id = #{memberId}
     </select>
+
+    <select id="findStyleById" resultType="net.likelion.bebc25.itda.theme.dto.ThemeStylesResponse$ThemeStyleRow">
+        SELECT
+        t.id          AS id,
+        t.theme_code  AS themeCode,
+        t.css_text    AS cssText,
+        t.is_default  AS isDefault
+        FROM theme t
+        WHERE t.id = #{themeId}
+    </select>
+
+    <select id="existsPurchase" resultType="boolean">
+        SELECT EXISTS (
+        SELECT 1
+        FROM theme_purchase tp
+        WHERE tp.member_id = #{memberId}
+        AND tp.theme_id = #{themeId}
+        )
+    </select>
+
+    <update id="updateMemberThemeId">
+        UPDATE member
+        SET theme_id = #{themeId}
+        WHERE id = #{memberId}
+    </update>
+
+    <update id="markThemeUsedIfNeeded">
+        UPDATE theme_purchase
+        SET is_used = TRUE
+        WHERE member_id = #{memberId}
+        AND theme_id = #{themeId}
+        AND is_used = FALSE
+    </update>
 </mapper>

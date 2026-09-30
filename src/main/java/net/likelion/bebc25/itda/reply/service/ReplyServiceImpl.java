@@ -1,8 +1,11 @@
 package net.likelion.bebc25.itda.reply.service;
 
 import lombok.RequiredArgsConstructor;
+import net.likelion.bebc25.itda.domain.Member;
+import net.likelion.bebc25.itda.member.mapper.MemberMapper;
 import net.likelion.bebc25.itda.post.domain.Post;
 import net.likelion.bebc25.itda.post.mapper.PostMapper;
+import net.likelion.bebc25.itda.post.service.PostService;
 import net.likelion.bebc25.itda.reply.domain.Reply;
 import net.likelion.bebc25.itda.reply.dto.ReplyCreateRequest;
 import net.likelion.bebc25.itda.reply.dto.ReplyResponse;
@@ -22,11 +25,22 @@ public class ReplyServiceImpl implements ReplyService {
 
     private final ReplyMapper replyMapper;
     private final PostMapper postMapper;
+    private final MemberMapper memberMapper;
+    private final PostService postService;
+
+    /** 활동 정지 회원은 댓글 작성·수정이 불가능하다 */
+    private void rejectIfSuspended(Long memberId) {
+        Member member = memberMapper.findById(memberId);
+        if (member != null && "SUSPENDED".equals(member.getStatus())) {
+            throw new IllegalArgumentException("활동 정지된 회원은 댓글을 작성할 수 없습니다.");
+        }
+    }
 
     // 1. 댓글 등록
     @Override
     @Transactional(rollbackFor = Exception.class)
     public ReplyResponse createReply(Long memberId, Long postId, ReplyCreateRequest request) {
+        rejectIfSuspended(memberId);
 
         Post post = postMapper.findById(postId);
 
@@ -34,6 +48,8 @@ public class ReplyServiceImpl implements ReplyService {
         if(post == null) {
             throw new NoSuchElementException("존재하지 않는 게시글입니다. id: " +postId);
         }
+
+        postService.validatePostAccess(post, memberId);
 
         // 댓글 객체 생성
         Reply reply = Reply.builder().memberId(memberId).postId(postId).content(request.content()).build();
@@ -53,13 +69,16 @@ public class ReplyServiceImpl implements ReplyService {
 
     // 2. 해당 게시글의 댓글 조회
     @Override
-    public List<ReplyResponse> getRepliesByPostId(Long postId) {
+    public List<ReplyResponse> getRepliesByPostId(Long memberId, Long postId) {
 
         Post post = postMapper.findById(postId);
 
         if(post == null) {
             throw new NoSuchElementException("존재하지 않는 게시글입니다. id: " + postId);
         }
+
+        postService.validatePostAccess(post, memberId);
+
         // 해당 게시글의 댓글 목록 조회
         List<Reply> replies = replyMapper.findByPostId(postId);
 
@@ -78,6 +97,7 @@ public class ReplyServiceImpl implements ReplyService {
     @Transactional(rollbackFor = Exception.class)   // 해당 기능이 실패하면 전부 롤백
     @PreAuthorize("@replyServiceImpl.isAuthor(#replyId, authentication.principal.id)")
     public ReplyResponse updateReply(Long memberId, Long postId, Long replyId, ReplyUpdateRequest request){
+        rejectIfSuspended(memberId);
 
         Reply reply = replyMapper.findById(replyId);
 

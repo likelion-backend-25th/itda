@@ -11,7 +11,7 @@ public interface ReplyService {
     ReplyResponse createReply(Long memberId, Long postId, ReplyCreateRequest request);
 
     // 2. 해당 게시글의 댓글들 조회
-    List<ReplyResponse> getRepliesByPostId(Long postId);
+    List<ReplyResponse> getRepliesByPostId(Long memberId, Long postId);
 
     // 3. 댓글 수정
     ReplyResponse updateReply(Long memberId, Long postId, Long replyId, ReplyUpdateRequest request);

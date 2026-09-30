@@ -1,7 +1,9 @@
 package net.likelion.bebc25.itda.post.service;
 
 import lombok.RequiredArgsConstructor;
+import net.likelion.bebc25.itda.domain.Member;
 import net.likelion.bebc25.itda.member.dto.PostUpdateRequest;
+import net.likelion.bebc25.itda.member.mapper.MemberMapper;
 import net.likelion.bebc25.itda.post.domain.Post;
 import net.likelion.bebc25.itda.post.dto.PostCreateRequest;
 import net.likelion.bebc25.itda.post.dto.PostFeedResponse;
@@ -9,6 +11,7 @@ import net.likelion.bebc25.itda.post.dto.PostResponse;
 import net.likelion.bebc25.itda.post.mapper.PostMapper;
 import net.likelion.bebc25.itda.post.mapper.PostReactionMapper;
 import net.likelion.bebc25.itda.s3.S3Service;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,6 +30,15 @@ public class PostServiceImpl implements PostService {
     private final PostMapper postMapper;
     private final PostReactionMapper postReactionMapper;
     private final S3Service s3Service;
+    private final MemberMapper memberMapper;
+
+    /** 활동 정지 회원은 글 작성·수정이 불가능하다 */
+    private void rejectIfSuspended(Long memberId) {
+        Member member = memberMapper.findById(memberId);
+        if (member != null && "SUSPENDED".equals(member.getStatus())) {
+            throw new IllegalArgumentException("활동 정지된 회원은 글을 작성할 수 없습니다.");
+        }
+    }
 
     private PostResponse toResponse(Post post, boolean liked, boolean scrapped) {
         return PostResponse.from(
@@ -42,6 +54,7 @@ public class PostServiceImpl implements PostService {
     @Override
     @Transactional
     public PostResponse createPost(Long memberId, PostCreateRequest request, MultipartFile postImage) {
+        rejectIfSuspended(memberId);
         // 게시글 이미지 S3 업로드
         String postImageKey = null;
 
@@ -69,9 +82,13 @@ public class PostServiceImpl implements PostService {
     @Transactional(rollbackFor = Exception.class)
     public PostResponse getPostById(Long id, Long memberId, boolean alreadyViewed) {
         Post post = postMapper.findById(id);
+
+        // 게시글 존재 여부 확인
         if (post == null) {
             throw new NoSuchElementException("존재하지 않는 게시글입니다. ID: " + id);
         }
+
+        validatePostAccess(post, memberId);
 
         // 조회수 1 증가
         // 처음 본 게시글 일 때만 조회수 증가
@@ -181,6 +198,7 @@ public class PostServiceImpl implements PostService {
     @Transactional(rollbackFor = Exception.class)
     @PreAuthorize("@postServiceImpl.isAuthor(#postId, authentication.principal.id)")
     public PostResponse updatePost(Long memberId, Long postId, PostUpdateRequest request, MultipartFile postImage) {
+        rejectIfSuspended(memberId);
 
         // 게시글 존재 여부 확인
         Post post = postMapper.findById(postId);
@@ -236,7 +254,7 @@ public class PostServiceImpl implements PostService {
         Post post = postMapper.findById(postId);
 
         if (post == null) {
-            throw new NoSuchElementException("존재하지 않는 게시글입니다. id: " + postId);
+            throw new IllegalArgumentException("존재하지 않는 게시글입니다. id: " + postId);
         }
 
         String imageKey = post.getImageUrl(); // DB에 저장된 S3 키
@@ -245,10 +263,31 @@ public class PostServiceImpl implements PostService {
         s3Service.delete(imageKey);
     }
 
+    // 구독자만 볼 수 있게
+    @Override
+    public void validatePostAccess(Post post, Long memberId) {
+
+        if(!post.isSubscriberOnly()){
+            return;
+        }
+
+        if(memberId == null){
+            throw new AccessDeniedException("구독자 전용 게시글입니다.");
+        }
+
+        if(post.getMemberId().equals(memberId)){
+            return;
+        }
+        boolean subscribe = postMapper.existSubscription(memberId, post.getMemberId());
+
+        if(!subscribe) {
+            throw new AccessDeniedException("구독자만 볼 수 있습니다.");
+        }
+    }
+
     // 게시글 작성자 본인 여부를 검증하는 헬퍼 메서드
     public boolean isAuthor(Long postId, Long memberId) {
         Post post = postMapper.findById(postId);
-
         return post != null && post.getMemberId().equals(memberId);
     }
 }

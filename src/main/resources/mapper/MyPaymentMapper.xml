@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="net.likelion.bebc25.itda.customer.payment.mapper.MyPaymentMapper">
+
+    <!-- 내 결제 내역 조회 -->
+    <select id="findMyPayments"
+            resultType="net.likelion.bebc25.itda.customer.payment.dto.MyPaymentResponse">
+
+        SELECT
+        p.id AS paymentId,
+        p.payment_type AS paymentType,
+        p.target_id AS targetId,
+        p.amount AS amount,
+        c.name AS paymentStatus,
+        pm.name AS paymentMethod,
+        p.paid_at AS paidAt,
+        p.created_at AS createdAt,
+        CASE
+        -- 테마: 결제 완료 + 미사용일 때 환불 가능
+        WHEN c.code = 'PS02'
+        AND p.payment_type = 'THEME'
+        AND EXISTS (
+        SELECT 1
+        FROM theme_purchase tp
+        WHERE tp.payment_id = p.id
+        AND tp.is_used = FALSE
+        )
+        THEN TRUE
+
+        -- 구독: 결제 완료 상태라면 언제든 환불 가능
+        WHEN c.code = 'PS02'
+        AND p.payment_type = 'SUBSCRIPTION'
+        THEN TRUE
+
+        ELSE FALSE
+        END AS refundAvailable
+        FROM payment p
+        JOIN common_code c
+        ON p.status_id = c.id
+        LEFT JOIN common_code pm
+        ON p.pay_method_id = pm.id
+        WHERE p.member_id = #{memberId}
+        AND c.type = 1
+        ORDER BY p.created_at DESC
+
+    </select>
+
+    <!-- 환불 신청 -->
+    <update id="requestRefund">
+        UPDATE payment
+        SET status_id = (
+        SELECT id
+        FROM common_code
+        WHERE type = 1
+        AND code = 'PS05'
+        AND is_active = TRUE
+        )
+        WHERE id = #{paymentId}
+        AND member_id = #{memberId}
+        AND status_id = (
+        SELECT id
+        FROM common_code
+        WHERE type = 1
+        AND code = 'PS02'
+        )
+        AND (
+        (
+        payment_type = 'THEME'
+        AND EXISTS (
+        SELECT 1
+        FROM theme_purchase tp
+        WHERE tp.payment_id = payment.id
+        AND tp.is_used = FALSE
+        )
+        )
+        OR payment_type = 'SUBSCRIPTION'
+        )
+    </update>
+
+</mapper>

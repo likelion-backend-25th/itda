@@ -1,6 +1,7 @@
 -- 0. 기존 테이블 삭제 (외래 키 참조 역순으로 삭제)
 DROP TABLE IF EXISTS theme_purchase;
 DROP TABLE IF EXISTS subscription;
+DROP TABLE IF EXISTS payment_refund;
 DROP TABLE IF EXISTS payment;
 DROP TABLE IF EXISTS post_reaction;
 DROP TABLE IF EXISTS reply;
@@ -48,6 +49,7 @@ CREATE TABLE theme (
                         price INT NOT NULL DEFAULT 0,
                         thumbnail_url VARCHAR(255),
                         theme_code VARCHAR(255) NOT NULL UNIQUE,
+                        css_text TEXT NULL,
                         status VARCHAR(255) NOT NULL DEFAULT 'ON_SALE',  -- ON_SALE: 상점에서 판매중
                         is_default BOOLEAN NOT NULL DEFAULT FALSE,
                         updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,   -- 현재 시간으로 저장하고 해당 행이 수정될 때마다 자동으로 수정 시작을 현재 시간으로 갱신
@@ -213,4 +215,19 @@ CREATE TABLE refresh_token (
                                CONSTRAINT fk_refresh_token_member
                                    FOREIGN KEY (member_id)
                                        REFERENCES member(id)
+);
+
+-- 13. Payment_refund
+CREATE TABLE payment_refund (
+                               id BIGINT AUTO_INCREMENT PRIMARY KEY,
+                               payment_id BIGINT NOT NULL,
+                               cancellation_id VARCHAR(255) NOT NULL,
+                               refund_reason VARCHAR(255) NOT NULL DEFAULT '사용자 요청',
+                               refund_amount BIGINT NOT NULL,
+                               deduction_amount BIGINT NOT NULL DEFAULT 0,
+                               requested_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                               refunded_at DATETIME NULL,
+                               CONSTRAINT fk_payment_refund_payment FOREIGN KEY (payment_id) REFERENCES payment(id),
+                               CONSTRAINT uk_payment_refund_payment UNIQUE (payment_id),
+                               CONSTRAINT uk_payment_refund_cancellation UNIQUE (cancellation_id)
 );

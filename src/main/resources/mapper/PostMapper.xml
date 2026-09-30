@@ -23,6 +23,7 @@
         ON p.category_id = c.id
         WHERE p.id = #{id}
     </select>
+
 <!--    3. 비로그인시 보여주는 게시글(일반 게시글만)-->
     <select id="findPublicPostsByCursor" resultType="net.likelion.bebc25.itda.post.domain.Post">
         SELECT p.id, p.member_id, m.nickname, m.profile_image, p.category_id, c.name AS category_name, p.content, p.image_url,
@@ -120,5 +121,81 @@
         SET reply_count = GREATEST(reply_count - 1, 0)
         WHERE id = #{postId}
     </delete>
+
+<!--    12. 마이페이지 - 내가 작성한 게시글 목록 조회-->
+    <select id="findMyPosts" resultType="net.likelion.bebc25.itda.post.domain.Post">
+        SELECT p.id, p.member_id, m.nickname, m.profile_image, p.category_id, c.name AS category_name, p.content, p.image_url,
+        p.like_count, p.reply_count, p.view_count, p.subscriber_Only, p.created_at, p.updated_at
+        FROM post p
+        JOIN member m
+        ON p.member_id = m.id
+        JOIN common_code c
+        ON p.category_id = c.id
+        WHERE p.member_id = #{memberId}
+        <if test="cursor != null ">
+            AND p.id <![CDATA[ < ]]> #{cursor}
+        </if>
+        ORDER BY p.id DESC
+        LIMIT #{size}
+    </select>
+
+<!--    13. 마이페이지 - 내가 좋아요한 게시글 목록 조회-->
+    <select id="findMyLikedPosts" resultType="net.likelion.bebc25.itda.post.domain.Post">
+        SELECT p.id, p.member_id, m.nickname, m.profile_image, p.category_id, c.name AS category_name, p.content, p.image_url,
+        p.like_count, p.reply_count, p.view_count, p.subscriber_Only, p.created_at, p.updated_at
+        FROM post_reaction pr
+        JOIN post p
+        ON pr.post_id = p.id
+        JOIN member m
+        ON p.member_id = m.id
+        JOIN common_code c
+        ON p.category_id = c.id
+        WHERE pr.member_id = #{memberId}
+        AND pr.type = 25
+        <if test="cursor != null ">
+            AND p.id <![CDATA[ < ]]> #{cursor}
+        </if>
+        ORDER BY p.id DESC
+        LIMIT #{size}
+    </select>
+
+<!--    14. 마이페이지 - 내가 스크랩한 게시글 목록 조회-->
+    <select id="findMyScrappedPosts" resultType="net.likelion.bebc25.itda.post.domain.Post" >
+        SELECT p.id, p.member_id, m.nickname, m.profile_image, p.category_id, c.name AS category_name, p.content, p.image_url,
+        p.like_count, p.reply_count, p.view_count, p.subscriber_Only, p.created_at, p.updated_at
+        FROM post_reaction pr
+        JOIN post p
+        ON pr.post_id = p.id
+        JOIN member m
+        ON p.member_id = m.id
+        JOIN common_code c
+        ON p.category_id = c.id
+        WHERE pr.member_id = #{memberId}
+        AND pr.type = 26
+        <if test="cursor != null ">
+            AND p.id <![CDATA[ < ]]> #{cursor}
+        </if>
+        ORDER BY p.id DESC
+        LIMIT #{size}
+    </select>
+
+<!-- 15. 실제 구독 여부   -->
+    <select id="existSubscription" resultType="boolean">
+        SELECT EXISTS (SELECT 1
+        FROM subscription s
+        JOIN common_code c
+        ON s.status_id = c.id
+        WHERE s.member_id = #{memberId}
+        AND s.target_id = #{targetId}
+        AND c.type = 4
+        AND c.code = 'SS01')
+    </select>
+
+    <!-- 프로필 - 해당 회원이 작성한 게시글 수 -->
+    <select id="countPosts" resultType="int">
+        SELECT COUNT(*)
+        FROM post
+        WHERE member_id = #{memberId}
+    </select>
 
 </mapper>

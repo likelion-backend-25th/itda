@@ -11,6 +11,7 @@ import net.likelion.bebc25.itda.subscription.dto.SubscriptionInfo;
 import net.likelion.bebc25.itda.subscription.dto.SubscriptionRequest;
 import net.likelion.bebc25.itda.subscription.mapper.SubscriptionMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -18,6 +19,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class SubscriptionServiceImpl implements SubscriptionService {
 
     private final SubscriptionMapper subscriptionMapper;
@@ -53,6 +55,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     }
 
     @Override
+    @Transactional
     public void createSubscription(
             Long memberId,
             SubscriptionRequest request,
@@ -100,11 +103,11 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         return subscriptions.stream()
                 .map(subscription -> {
 
-                    long remainingDays =
-                            ChronoUnit.DAYS.between(
-                                    now,
-                                    subscription.getNextBillingAt()
-                            );
+                    // 결제 완료로 만든 구독은 next_billing_at 이 비어 있을 수 있다. 그때도 목록은 반환한다.
+                    LocalDateTime nextBillingAt = subscription.getNextBillingAt();
+                    long remainingDays = nextBillingAt == null
+                            ? 0
+                            : Math.max(ChronoUnit.DAYS.between(now, nextBillingAt), 0);
 
                     return new MySubscriptionResponse(
                             subscription.getSubscriptionId(),
@@ -112,8 +115,8 @@ public class SubscriptionServiceImpl implements SubscriptionService {
                             subscription.getNickname(),
                             subscription.getProfileImage(),
                             subscription.getPriceId(),
-                            subscription.getNextBillingAt(),
-                            Math.max(remainingDays, 0)
+                            nextBillingAt,
+                            remainingDays
                     );
                 })
                 .toList();
@@ -134,6 +137,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     }
 
     @Override
+    @Transactional
     public void cancelSubscription(
             Long memberId,
             Long targetId
@@ -157,6 +161,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     }
 
     @Override
+    @Transactional
     public void expireSubscriptions() {
         subscriptionMapper.expireSubscriptions();
     }
@@ -169,5 +174,15 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     @Override
     public int getMonthlyIncome(Long targetId) {
         return subscriptionMapper.getMonthlyIncome(targetId);
+    }
+
+    @Override
+    @Transactional
+    public void deleteSubscription(Long memberId, Long targetId) {
+        int result = subscriptionMapper.deleteSubscription(memberId, targetId);
+
+        if (result == 0) {
+            throw new IllegalArgumentException("삭제할 구독 내역이 없습니다.");
+        }
     }
 }
