@@ -17,7 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
-@Tag(name = "회원 API", description = "회원가입 기능")
+@Tag(name = "회원 API", description = "회원 기능")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/members")
@@ -70,6 +70,10 @@ public class MemberController {
     }
 
     // 특정 회원의 팔로워 목록 조회
+    @Operation(
+            summary = "팔로워 목록 조회",
+            description = "특정 회원의 팔로워 목록을 조회한다."
+    )
     @GetMapping("/{id}/followers")
     public ResponseEntity<List<FollowerResponse>> getFollowers(
             @PathVariable Long id
@@ -80,6 +84,10 @@ public class MemberController {
     }
 
     // 특정 회원의 팔로잉 목록 조회
+    @Operation(
+            summary = "팔로잉 목록 조회",
+            description = "특정 회원이 팔로우 중인 목록을 조회한다."
+    )
     @GetMapping("/{id}/followings")
     public ResponseEntity<List<FollowingResponse>> getFollowings(
             @PathVariable Long id
@@ -90,6 +98,10 @@ public class MemberController {
     }
 
     // 회원 팔로우
+    @Operation(
+            summary = "회원 팔로우",
+            description = "특정 회원을 팔로우한다."
+    )
     @PostMapping("/{id}/follow")
     public ResponseEntity<Void> follow(
             @PathVariable Long id,
@@ -103,6 +115,10 @@ public class MemberController {
     }
 
     // 회원 언팔로우
+    @Operation(
+            summary = "회원 언팔로우",
+            description = "특정 회원 팔로우를 해제한다."
+    )
     @DeleteMapping("/{id}/follow")
     public ResponseEntity<Void> unfollow(
             @PathVariable Long id,
@@ -116,6 +132,10 @@ public class MemberController {
     }
 
     // 회원 정보 수정 — signup과 동일하게 multipart (request JSON + profileImage)
+    @Operation(
+            summary = "내 프로필 수정",
+            description = "내 프로필 정보와 프로필 이미지를 수정한다."
+    )
     @PutMapping("/me")
     public ResponseEntity<Void> updateMyProfile(
             @AuthenticationPrincipal CustomUserDetails userDetails,
@@ -131,6 +151,10 @@ public class MemberController {
     }
 
     // 내 관심사 수정 (전체 교체)
+    @Operation(
+            summary = "내 관심사 수정",
+            description = "내 관심사 목록을 전체 교체한다."
+    )
     @PutMapping("/me/interests")
     public ResponseEntity<Void> updateMyInterests(
             @AuthenticationPrincipal CustomUserDetails userDetails,

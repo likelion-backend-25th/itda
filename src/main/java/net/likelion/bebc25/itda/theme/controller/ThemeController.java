@@ -22,7 +22,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 
-@Tag(name = "테마 API", description = "인증 기능")
+@Tag(name = "테마 API", description = "테마 조회·보유·적용·무료 수령")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/themes")
@@ -105,6 +105,10 @@ public class ThemeController {
         return ResponseEntity.ok(styles);
     }
 
+    @Operation(
+            summary = "테마 적용",
+            description = "보유 중인 테마를 현재 적용 테마로 설정합니다."
+    )
     @PostMapping("/{themeId}/apply")
     public ResponseEntity<ThemeDetailResponse> applyTheme(
             @AuthenticationPrincipal CustomUserDetails userDetails,
