@@ -120,7 +120,7 @@
         member_id, target_id, price_id, status_id, payment_id, started_at, next_billing_at, ended_at
         )
         SELECT
-        #{memberId}, #{targetId}, common_code.id, #{statusId}, #{paymentId}, CURRENT_TIMESTAMP, DATE_ADD(CURRENT_TIMESTAMP, INTERVAL 1 MONTH), NULL
+        #{memberId}, #{targetId}, common_code.id, #{statusId}, #{paymentId}, CURRENT_TIMESTAMP, DATE_ADD(CURRENT_TIMESTAMP, INTERVAL 1 MONTH), DATE_ADD(CURRENT_TIMESTAMP, INTERVAL 1 MONTH)
 
         FROM common_code
         WHERE common_code.type = 5
