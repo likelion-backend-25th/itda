@@ -28,16 +28,4 @@ public class MyPaymentController {
 
         return ResponseEntity.ok(payments);
     }
-
-    @PostMapping("/{paymentId}/refund")
-    public ResponseEntity<Void> requestRefund(
-            @AuthenticationPrincipal CustomUserDetails userDetails,
-            @PathVariable Long paymentId
-    ) {
-        Long memberId = userDetails.getMember().getId();
-
-        myPaymentService.requestRefund(memberId, paymentId);
-
-        return ResponseEntity.ok().build();
-    }
 }

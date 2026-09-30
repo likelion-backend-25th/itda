@@ -18,12 +18,13 @@ public class PaymentController {
 
     @PostMapping("/prepare")
     public ResponseEntity<PaymentPrepareResponse> preparePayment(
-           @Valid @RequestBody PaymentPrepareRequest request
+            // 🟢 추가: 현재 로그인 사용자
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @Valid @RequestBody PaymentPrepareRequest request
     ) {
 
-        // 현재 로그인 회원 정보 연결 전이라면
-        // 테스트용 memberId
-        Long memberId = 1L;
+        // 🟢 JWT 로그인 사용자 ID 사용
+        Long memberId = userDetails.getId();
 
         PaymentPrepareResponse response =
                 paymentService.preparePayment(
@@ -80,7 +81,7 @@ public class PaymentController {
         return ResponseEntity.ok(response);
     }
     //
-    @PostMapping("/{paymentId}/refund")
+    @PostMapping("/refund/{paymentId}")
     public PaymentRefundResponse refundPayment(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @PathVariable String paymentId,

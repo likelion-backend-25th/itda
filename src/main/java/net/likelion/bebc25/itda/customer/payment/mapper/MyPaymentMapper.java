@@ -12,9 +12,4 @@ public interface MyPaymentMapper {
     List<MyPaymentResponse> findMyPayments(
             @Param("memberId") Long memberId
     );
-
-    int requestRefund(
-            @Param("memberId") Long memberId,
-            @Param("paymentId") Long paymentId
-    );
 }

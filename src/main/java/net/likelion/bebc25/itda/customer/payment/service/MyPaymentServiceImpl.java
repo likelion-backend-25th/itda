@@ -17,15 +17,4 @@ public class MyPaymentServiceImpl implements MyPaymentService {
     public List<MyPaymentResponse> getMyPayments(Long memberId) {
         return myPaymentMapper.findMyPayments(memberId);
     }
-
-    @Override
-    public void requestRefund(Long memberId, Long paymentId) {
-        int result = myPaymentMapper.requestRefund(memberId, paymentId);
-
-        if (result == 0) {
-            throw new IllegalArgumentException(
-                    "환불 신청이 불가능한 결제입니다."
-            );
-        }
-    }
 }
