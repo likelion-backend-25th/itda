@@ -24,21 +24,41 @@ public class AdminThemeServiceImpl implements AdminThemeService {
     @Override
     @Transactional
     public void createTheme(AdminThemeRequest request) {
-        if (adminThemeMapper.existsByThemeCode(request.themeCode())) {
+        if (request.cssText() == null || request.cssText().isBlank()) {
+            throw new IllegalArgumentException("CSS 텍스트는 필수입니다.");
+        }
+
+        String themeCode = request.themeCode();
+        if (themeCode == null || themeCode.isBlank()) {
+            themeCode = newThemeCode();
+        } else if (adminThemeMapper.existsByThemeCode(themeCode)) {
             throw new IllegalArgumentException("이미 사용 중인 테마 코드입니다.");
         }
 
-        adminThemeMapper.insertTheme(request);
+        adminThemeMapper.insertTheme(new AdminThemeRequest(
+                request.themeName(),
+                request.description(),
+                request.price(),
+                request.thumbnailUrl(),
+                themeCode,
+                request.cssText()
+        ));
+    }
+
+    private String newThemeCode() {
+        String themeCode;
+        do {
+            themeCode = "t" + Long.toString(System.nanoTime(), 36);
+        } while (adminThemeMapper.existsByThemeCode(themeCode));
+        return themeCode;
     }
 
     @Override
     @Transactional
     public void updateTheme(Long themeId, AdminThemeRequest request) {
-        if (!adminThemeMapper.existsByThemeCode(request.themeCode())
-                || adminThemeMapper.findAllThemes().stream()
-                .anyMatch(theme -> theme.themeCode().equals(request.themeCode())
-                        && !theme.id().equals(themeId))) {
-            throw new IllegalArgumentException("이미 사용 중인 테마 코드입니다.");
+        // 수정은 테마 코드를 바꾸지 않고 css_text만 갱신한다.
+        if (request.cssText() == null || request.cssText().isBlank()) {
+            throw new IllegalArgumentException("CSS 텍스트는 필수입니다.");
         }
 
         int updatedCount = adminThemeMapper.updateTheme(themeId, request);

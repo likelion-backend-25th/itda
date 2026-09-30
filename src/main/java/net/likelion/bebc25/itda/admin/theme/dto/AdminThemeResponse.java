@@ -12,5 +12,6 @@ public record AdminThemeResponse(
         String status,
         Boolean isDefault,
         LocalDateTime updatedAt,
-        LocalDateTime createdAt
+        LocalDateTime createdAt,
+        String cssText
 ) {}
