@@ -24,4 +24,23 @@
 
     </select>
 
+    <select id="findActivePostCategory"
+            parameterType="Long"
+            resultType="net.likelion.bebc25.itda.domain.CommonCode">
+
+        SELECT
+        id,
+        type,
+        code,
+        name,
+        description,
+        sort,
+        is_active
+        FROM common_code
+        WHERE id = #{categoryId}
+        AND type = 3
+        AND is_active = TRUE
+
+    </select>
+
 </mapper>

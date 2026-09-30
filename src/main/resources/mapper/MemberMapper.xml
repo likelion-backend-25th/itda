@@ -23,4 +23,20 @@
         VALUES (#{email}, COALESCE(#{password}, ''), #{nickname}, #{role}, #{profileImage}, #{authmethod}, NOW())
     </insert>
 
+    <update id="updateMyProfile">
+        UPDATE member
+        SET nickname = #{nickname},
+            introduction = #{introduction},
+            <choose>
+                <when test="clearProfileImage">
+                    profile_image = NULL,
+                </when>
+                <when test="profileImage != null">
+                    profile_image = #{profileImage},
+                </when>
+            </choose>
+            updated_at = NOW()
+        WHERE id = #{memberId}
+    </update>
+
 </mapper>
