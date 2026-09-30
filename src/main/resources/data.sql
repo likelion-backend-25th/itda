@@ -76,7 +76,25 @@ VALUES
     (6, 'craft@itda.com', '$2a$10$e4dlYcuksXo57vvps8oPaeyDcD0keCuSwPIHBuYDn5oIGZD1PpHrq',
      '손뜨개러', 'ROLE_USER', '뜨개질과 공예를 좋아합니다.', 'profile/craft_profile.png', 2, 'LOCAL', 10000),
     (7, 'admin@itda.com', '$2a$10$e4dlYcuksXo57vvps8oPaeyDcD0keCuSwPIHBuYDn5oIGZD1PpHrq',
-     '관리자', 'ROLE_ADMIN', 'ITDA 관리자 계정입니다.', 'profile/admin_profile.png', 1, 'LOCAL', 0);
+     '관리자', 'ROLE_ADMIN', 'ITDA 관리자 계정입니다.', 'profile/admin_profile.png', 1, 'LOCAL', 0),
+    (8, 'user3@itda.com','$2a$10$e4dlYcuksXo57vvps8oPaeyDcD0keCuSwPIHBuYDn5oIGZD1PpHrq',
+     '그림그리는신아', 'ROLE_USER','그림 그리는 걸 좋아합니다.','profile/user3_profile.png', 1, 'LOCAL', 120000),
+    (9, 'user4@itda.com', '$2a$10$e4dlYcuksXo57vvps8oPaeyDcD0keCuSwPIHBuYDn5oIGZD1PpHrq',
+     '음악하는하루', 'ROLE_USER','좋아하는 음악을 공유해요.', 'profile/user4_profile.png', 1, 'LOCAL', 85000),
+    (10, 'user5@itda.com','$2a$10$e4dlYcuksXo57vvps8oPaeyDcD0keCuSwPIHBuYDn5oIGZD1PpHrq',
+     '요리하는민수', 'ROLE_USER','집에서 요리하는 시간을 좋아합니다.','profile/user5_profile.png', 1, 'LOCAL', 140000),
+    (11, 'user6@itda.com','$2a$10$e4dlYcuksXo57vvps8oPaeyDcD0keCuSwPIHBuYDn5oIGZD1PpHrq',
+     '여행가는날', 'ROLE_USER','새로운 장소를 여행하며 기록합니다.','profile/user6_profile.png', 1, 'LOCAL', 95000),
+    (12, 'user7@itda.com','$2a$10$e4dlYcuksXo57vvps8oPaeyDcD0keCuSwPIHBuYDn5oIGZD1PpHrq',
+     '게임하는밤', 'ROLE_USER','손으로 만드는 작은 즐거움을 공유합니다.','profile/user7_profile.png', 1, 'LOCAL', 70000),
+    (13, 'user8@itda.com','$2a$10$e4dlYcuksXo57vvps8oPaeyDcD0keCuSwPIHBuYDn5oIGZD1PpHrq',
+     '맛집탐험가', 'ROLE_USER','맛있는 곳을 찾아다니는 걸 좋아합니다.','profile/user8_profile.png', 1, 'LOCAL', 110000),
+    (14, 'user9@itda.com','$2a$10$e4dlYcuksXo57vvps8oPaeyDcD0keCuSwPIHBuYDn5oIGZD1PpHrq',
+     '운동하는재현', 'ROLE_USER','꾸준히 운동하며 기록하고 있습니다.','profile/user9_profile.png', 1, 'LOCAL', 125000),
+    (15, 'user10@itda.com','$2a$10$e4dlYcuksXo57vvps8oPaeyDcD0keCuSwPIHBuYDn5oIGZD1PpHrq',
+     '공예하는소희', 'ROLE_USER','게임과 일상을 함께 기록합니다.','profile/user10_profile.png', 1, 'LOCAL', 65000),
+    (16, 'user11@itda.com','$2a$10$e4dlYcuksXo57vvps8oPaeyDcD0keCuSwPIHBuYDn5oIGZD1PpHrq',
+     '취미수집가', 'ROLE_USER','새로운 취미를 하나씩 찾아가는 중입니다.','profile/user11_profile.png', 1, 'LOCAL', 90000);
 
 
 -- 4. 회원 관심 카테고리
