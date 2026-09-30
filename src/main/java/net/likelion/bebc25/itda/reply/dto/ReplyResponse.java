@@ -14,12 +14,13 @@ public record ReplyResponse (
         LocalDateTime createdAt,
         LocalDateTime updatedAt
 ){
-    public static ReplyResponse from(Reply reply){
+    /** profileImageUrl은 presigned URL */
+    public static ReplyResponse from(Reply reply, String profileImageUrl){
         return new ReplyResponse(
                 reply.getId(),
                 reply.getMemberId(),
                 reply.getNickname(),
-                reply.getProfileImage(),
+                profileImageUrl,
                 reply.getPostId(),
                 reply.getContent(),
                 reply.getCreatedAt(),
