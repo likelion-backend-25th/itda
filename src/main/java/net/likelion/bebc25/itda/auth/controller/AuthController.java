@@ -1,5 +1,6 @@
 package net.likelion.bebc25.itda.auth.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +25,10 @@ public class AuthController {
 
     private final AuthService authService;
 
+    @Operation(
+            summary = "로그인",
+            description = "이메일과 비밀번호로 로그인하고 Access Token과 Refresh Token을 발급합니다."
+    )
     @PostMapping("/login")
     public ResponseEntity<TokenResponse> login(@RequestBody LoginRequest request, HttpServletResponse response) {
         AuthTokenResult result = authService.login(request);
@@ -32,6 +37,10 @@ public class AuthController {
         return ResponseEntity.ok(result.tokenResponse());
     }
 
+    @Operation(
+            summary = "Access Token 재발급",
+            description = "HttpOnly Cookie의 Refresh Token을 검증하여 새로운 Access Token과 Refresh Token을 발급합니다."
+    )
     @PostMapping("/refresh")
     public ResponseEntity<TokenResponse> refresh(@CookieValue("refreshToken") String refreshToken, HttpServletResponse response) {
         AuthTokenResult result = authService.refresh(refreshToken);
@@ -40,6 +49,10 @@ public class AuthController {
         return ResponseEntity.ok(result.tokenResponse());
     }
 
+    @Operation(
+            summary = "로그아웃",
+            description = "Refresh Token을 폐기하고 클라이언트의 Refresh Token Cookie를 삭제합니다."
+    )
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(@CookieValue(value = "refreshToken", required = false) String refreshToken, HttpServletResponse response) {
         ResponseCookie clearCookie = authService.logout(refreshToken);

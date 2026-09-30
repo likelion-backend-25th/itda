@@ -69,7 +69,7 @@ public class ThemeServiceTest {
     @DisplayName("보유 테마 스타일 조회 성공")
     void getThemeStyles_owned_success() {
         Long memberId = 1L;      // data.sql에 맞게 수정
-        Long ownedThemeId = 2L;  // 구매 이력이 있는 theme id
+        Long ownedThemeId = 3L;  // 구매 이력이 있는 theme id
 
         ThemeStylesResponse styles = ThemeService.getThemeStyles(memberId, ownedThemeId);
 
