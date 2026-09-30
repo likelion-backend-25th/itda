@@ -114,4 +114,30 @@ public class MemberController {
 
         return ResponseEntity.ok().build();
     }
+
+    // 회원 정보 수정 — signup과 동일하게 multipart (request JSON + profileImage)
+    @PutMapping("/me")
+    public ResponseEntity<Void> updateMyProfile(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @Valid @RequestPart("request") MemberUpdateRequest request,
+            @RequestPart(value = "profileImage", required = false)
+            MultipartFile profileImage
+    ) {
+        Long memberId = userDetails.getMember().getId();
+
+        memberService.updateMyProfile(memberId, request, profileImage);
+
+        return ResponseEntity.noContent().build();
+    }
+
+    // 내 관심사 수정 (전체 교체)
+    @PutMapping("/me/interests")
+    public ResponseEntity<Void> updateMyInterests(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @Valid @RequestBody InterestUpdateRequest request
+    ) {
+        Long memberId = userDetails.getMember().getId();
+        memberService.updateMyInterests(memberId, request);
+        return ResponseEntity.noContent().build();
+    }
 }

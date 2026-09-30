@@ -3,6 +3,7 @@ package net.likelion.bebc25.itda.member.dto;
 import net.likelion.bebc25.itda.domain.Member;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 // 사용자에게 데이터를 전달 할때 사용하는 dto (민감한 password 는 제외)
 public record MemberProfileResponse(
@@ -17,14 +18,16 @@ public record MemberProfileResponse(
         int followerCount,
         int followingCount,
         int postCount,
-        String status
+        String status,
+        List<Long> interestCategoryIds
 ) {
     public static MemberProfileResponse from(
             Member member,
             String profileImageUrl,
             int followerCount,
             int followingCount,
-            int postCount
+            int postCount,
+            List<Long> interestCategoryIds
     ) {
         return new MemberProfileResponse(
                 member.getId(),
@@ -38,7 +41,8 @@ public record MemberProfileResponse(
                 followerCount,
                 followingCount,
                 postCount,
-                member.getStatus()
+                member.getStatus(),
+                interestCategoryIds == null ? List.of() : interestCategoryIds
         );
     }
 }
