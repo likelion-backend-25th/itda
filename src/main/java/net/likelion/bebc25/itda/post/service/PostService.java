@@ -7,6 +7,8 @@ import net.likelion.bebc25.itda.post.dto.PostFeedResponse;
 import net.likelion.bebc25.itda.post.dto.PostResponse;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 public interface PostService {
 
     // 1. 게시글 신규 등록
@@ -26,5 +28,8 @@ public interface PostService {
 
     // 6. 검증된 접근
     void validatePostAccess(Post post, Long memberId);
+
+    // 7. 검색
+    List<PostResponse> searchPosts(Long memberId, String keyword, List<Long> targetMemberIds, Long cursor, int size);
 
 }

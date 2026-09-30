@@ -21,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.View;
 
 import java.net.URI;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -181,6 +182,26 @@ public class PostController {
 //        cookie.setMaxAge(0);
 
         response.addCookie(cookie);
+    }
+
+    // 검색 - 비로그인 사용자도 검색 가능하게끔
+    @GetMapping("/search")
+    public ResponseEntity<List<PostResponse>> searchPosts(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) List<Long> targetMemberIds,
+            @RequestParam(required = false) Long cursor,
+            @RequestParam(defaultValue = "10") int size) {
+
+        Long memberId = null;
+
+        if (userDetails != null) {
+            memberId = userDetails.getId();
+        }
+
+        List<PostResponse> posts = postService.searchPosts(memberId, keyword, targetMemberIds, cursor, size);
+
+        return ResponseEntity.ok(posts);
     }
 
 }
