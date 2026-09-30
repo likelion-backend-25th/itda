@@ -285,6 +285,30 @@ public class PostServiceImpl implements PostService {
         }
     }
 
+    // 검색
+    @Override
+    public List<PostResponse> searchPosts(Long memberId, String keyword, List<Long> targetMemberIds, Long cursor, int size) {
+        List<Post> posts = postMapper.searchPosts(memberId, keyword, targetMemberIds, cursor, size);
+
+        List<PostResponse> responses = new ArrayList<>();
+
+        for (Post post : posts) {
+
+            boolean liked = false;
+            boolean scrapped = false;
+
+            if (memberId != null) {
+                liked = postReactionMapper.countLike(memberId, post.getId()) > 0;
+                scrapped = postReactionMapper.countScrap(memberId, post.getId()) > 0;
+            }
+            responses.add(toResponse(post, liked, scrapped)
+            );
+        }
+
+        return responses;
+
+    }
+
     // 게시글 작성자 본인 여부를 검증하는 헬퍼 메서드
     public boolean isAuthor(Long postId, Long memberId) {
         Post post = postMapper.findById(postId);
