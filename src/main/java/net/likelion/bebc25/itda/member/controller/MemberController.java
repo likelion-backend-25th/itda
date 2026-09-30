@@ -1,9 +1,9 @@
 package net.likelion.bebc25.itda.member.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import net.likelion.bebc25.itda.domain.Member;
 import net.likelion.bebc25.itda.member.dto.*;
 import net.likelion.bebc25.itda.member.service.FollowService;
@@ -11,30 +11,20 @@ import net.likelion.bebc25.itda.member.service.MemberService;
 import net.likelion.bebc25.itda.security.principal.CustomUserDetails;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.net.URI;
 import java.util.List;
 
 @Tag(name = "회원 API", description = "회원가입 기능")
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/v1/members")
 public class MemberController {
 
     private final MemberService memberService;
     private final FollowService followService;
-
-    public MemberController(
-            MemberService memberService,
-            FollowService followService
-    ) {
-        this.memberService = memberService;
-        this.followService = followService;
-    }
 
     // 회원가입
     @Operation(

@@ -14,6 +14,7 @@ import java.util.HexFormat;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class RefreshTokenServiceImpl implements RefreshTokenService {
 
     private final RefreshTokenMapper refreshTokenMapper;
@@ -30,7 +31,6 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public RefreshTokenResponse findValidToken(Long memberId, String hashToken) {
         return refreshTokenMapper.findValidToken(memberId, hashToken);
     }
