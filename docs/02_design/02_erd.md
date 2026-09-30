@@ -360,7 +360,8 @@ erDiagram
 | is_used | BOOLEAN | DEFAULT FALSE | 현재 테마 적용 여부 |
 | created_at | DATETIME | NOT NULL, DEFAULT CURRENT_TIMESTAMP | 테마 구매 일시 |
 
-- ### 1.2.12 refresh_token (Refresh Token)
+### 1.2.12 refresh_token (Refresh Token)
+
 | 컬럼명 | 데이터 타입 | 제약 조건 | 설명 |
 | --- | --- | --- | --- |
 | id | BIGINT | PK, NOT NULL, AUTO_INCREMENT | Refresh Token 고유 식별자 |
@@ -370,8 +371,8 @@ erDiagram
 | created_at | DATETIME | NOT NULL, DEFAULT CURRENT_TIMESTAMP | Refresh Token 생성 일시 |
 | revoked_at | DATETIME | NULL | Refresh Token 폐기 일시 |
 
-- ### 1.2.12 payment_refund (결제 환불)
-- 
+### 1.2.12 payment_refund (결제 환불)
+
 | 컬럼명 | 데이터 타입 | 제약 조건 | 설명 |
 | --- | --- | --- | --- |
 | id | BIGINT | PK, NOT NULL, AUTO_INCREMENT | 환불 고유 식별자 |
