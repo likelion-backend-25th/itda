@@ -203,14 +203,17 @@ INSERT INTO payment (
 )
 VALUES
     (1, 1, 'THEME', 3, 'imp_test_theme_001', 'merchant_theme_001', 3000, 2, 5, CURRENT_TIMESTAMP),
-    (2, 1, 'THEME', 5, 'imp_test_theme_002', 'merchant_theme_002', 5000, 2, 6, CURRENT_TIMESTAMP),
+    (2, 1, 'THEME', 5, 'imp_test_theme_002', 'merchant_theme_002', 5000, 27, 6, CURRENT_TIMESTAMP),
     (3, 2, 'THEME', 4, 'imp_test_theme_003', 'merchant_theme_003', 3000, 2, 5, CURRENT_TIMESTAMP),
-    (4, 4, 'THEME', 6, 'imp_test_theme_004', 'merchant_theme_004', 5000, 2, 7, CURRENT_TIMESTAMP),
+    (4, 4, 'THEME', 6, 'imp_test_theme_004', 'merchant_theme_004', 5000, 27, 7, CURRENT_TIMESTAMP),
     (5, 6, 'THEME', 2, 'imp_test_theme_005', 'merchant_theme_005', 0, 2, 5, CURRENT_TIMESTAMP),
     (6, 1, 'SUBSCRIPTION', 3, 'imp_test_subscription_001', 'merchant_subscription_001', 5000, 2, 5, CURRENT_TIMESTAMP),
     (7, 2, 'SUBSCRIPTION', 3, 'imp_test_subscription_002', 'merchant_subscription_002', 5000, 2, 6, CURRENT_TIMESTAMP),
     (8, 4, 'SUBSCRIPTION', 3, 'imp_test_subscription_003', 'merchant_subscription_003', 3000, 2, 7, CURRENT_TIMESTAMP),
-    (9, 5, 'SUBSCRIPTION', 4, 'imp_test_subscription_004', 'merchant_subscription_004', 5000, 2, 5, CURRENT_TIMESTAMP);
+    (9, 5, 'SUBSCRIPTION', 4, 'imp_test_subscription_004', 'merchant_subscription_004', 5000, 2, 5, CURRENT_TIMESTAMP),
+    (10, 6, 'THEME', 3, 'imp_test_theme_006', 'merchant_theme_006', 3000, 27, 5, CURRENT_TIMESTAMP),
+    (11, 7, 'THEME', 4, 'imp_test_theme_007', 'merchant_theme_007', 3000, 27, 6, CURRENT_TIMESTAMP),
+    (12, 8, 'THEME', 4, 'imp_test_theme_008', 'merchant_theme_008', 5000, 27, 5, CURRENT_TIMESTAMP);
 
 -- 10. 테마 구매
 INSERT INTO theme_purchase (id, member_id, theme_id, payment_id, is_used)
