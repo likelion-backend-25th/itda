@@ -184,22 +184,26 @@ CREATE TABLE subscription (
                         FOREIGN KEY (payment_id) REFERENCES payment(id),
 
     -- 자기 자신 구독 방지
+                        UNIQUE (member_id, target_id),
                         CHECK ( member_id <> target_id)
 );
 
 -- 11. 구매한 테마 테이블
 CREATE TABLE theme_purchase (
-                        id BIGINT AUTO_INCREMENT PRIMARY KEY,
-                        member_id BIGINT NOT NULL,
-                        theme_id BIGINT NOT NULL,
-                        payment_id BIGINT,
-                        is_used BOOLEAN DEFAULT 0,
-                        created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                        FOREIGN KEY (member_id) REFERENCES member(id) ON DELETE CASCADE,
-                        FOREIGN KEY (theme_id) REFERENCES theme(id),
-                        FOREIGN KEY (payment_id) REFERENCES payment(id),
-                        -- 같은 회원이 같은 테마를 중복 구매하지 못하도록 설정
-                        UNIQUE (member_id,theme_id)
+                                id BIGINT AUTO_INCREMENT PRIMARY KEY,
+                                member_id BIGINT NOT NULL,
+                                theme_id BIGINT NOT NULL,
+                                payment_id BIGINT,
+                                -- 구매 완료 후 테마 적용 여부
+                                is_used BOOLEAN DEFAULT 0,
+                                -- 구매 완료 상태 1 환불 상태 0
+                                purchase_status BOOLEAN DEFAULT 1,
+                                created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                                FOREIGN KEY (member_id) REFERENCES member(id) ON DELETE CASCADE,
+                                FOREIGN KEY (theme_id) REFERENCES theme(id),
+                                FOREIGN KEY (payment_id) REFERENCES payment(id),
+                                 -- 같은 회원이 같은 테마를 중복 구매하지 못하도록 설정
+                                UNIQUE (member_id,theme_id)
 
 );
 
