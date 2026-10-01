@@ -12,7 +12,7 @@ public interface AdminThemeService {
 
     void createTheme(AdminThemeRequest request, MultipartFile themeImage);
 
-    void updateTheme(Long themeId, AdminThemeRequest request);
+    void updateTheme(Long themeId, AdminThemeRequest request, MultipartFile themeImage);
 
     void updateThemeStatus(Long themeId, String status);
 }

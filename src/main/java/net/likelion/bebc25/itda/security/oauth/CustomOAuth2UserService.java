@@ -5,6 +5,7 @@ import net.likelion.bebc25.itda.domain.Member;
 import net.likelion.bebc25.itda.member.mapper.MemberMapper;
 import net.likelion.bebc25.itda.s3.S3Service;
 import net.likelion.bebc25.itda.security.principal.CustomUserDetails;
+import net.likelion.bebc25.itda.theme.service.ThemeService;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
@@ -21,10 +22,12 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
     private final MemberMapper memberMapper;
     private final S3Service s3Service;
+    private final ThemeService themeService;
 
-    public CustomOAuth2UserService(MemberMapper memberMapper, S3Service s3Service) {
+    public CustomOAuth2UserService(MemberMapper memberMapper, S3Service s3Service, ThemeService themeService) {
         this.memberMapper = memberMapper;
         this.s3Service = s3Service;
+        this.themeService = themeService;
     }
 
     @Override
@@ -90,6 +93,9 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         // DB에 해당 이메일의 기존 회원이 있는지 조회
         Member existingMember = memberMapper.findByEmail(email);
         if (existingMember == null) {
+            // 기본 테마 조회
+            Long defaultThemeId = themeService.getDefaultThemeId();
+
             // 신규만 소셜 아바타 → S3 업로드 (실패해도 가입은 진행)
             String profileImageKey = uploadAvatarOrNull(avatarUrl);
 
@@ -100,8 +106,13 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                     .profileImage(profileImageKey)
                     .role("ROLE_USER")
                     .authmethod(registrationId.toUpperCase())
+                    .themeId(defaultThemeId)
                     .build();
             memberMapper.save(newMember);
+
+            // 기본 테마를 보유 테마로 등록
+            themeService.insertDefaultTheme(newMember.getId(), defaultThemeId);
+
             log.info(
                     "신규 소셜 회원 DB 자동 가입 완료: ID={}, Email={}, profileImage={}",
                     newMember.getId(),

@@ -4,7 +4,6 @@ import net.likelion.bebc25.itda.admin.theme.dto.AdminThemeResponse;
 import net.likelion.bebc25.itda.admin.theme.dto.AdminThemeRequest;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -13,6 +12,9 @@ public interface AdminThemeMapper {
 
     // 전체 테마 조회
     List<AdminThemeResponse> findAllThemes();
+
+    // 단건 조회 (S3 key 원본 포함)
+    AdminThemeResponse findById(@Param("themeId") Long themeId);
 
     // 테마 등록
     int insertTheme(AdminThemeRequest request);
