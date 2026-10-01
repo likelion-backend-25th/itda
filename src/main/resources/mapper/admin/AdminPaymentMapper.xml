@@ -35,33 +35,21 @@
 
     </select>
 
-    <!-- 환불 완료(PS04) 목록 -->
+    <!-- payment_refund 환불 내역 -->
     <select id="findAllRefunds"
             resultType="net.likelion.bebc25.itda.admin.payment.dto.AdminRefundResponse">
 
         SELECT
-        p.id AS paymentId,
-        p.member_id AS memberId,
-        m.nickname,
-        m.email,
-        p.payment_type AS paymentType,
-        p.target_id AS targetId,
-        p.transaction_id AS transactionId,
-        p.amount,
-        c.name AS paymentStatus,
-        pm.name AS paymentMethod,
-        p.paid_at AS paidAt,
-        p.created_at AS createdAt
-        FROM payment p
-        JOIN member m
-        ON p.member_id = m.id
-        JOIN common_code c
-        ON p.status_id = c.id
-        LEFT JOIN common_code pm
-        ON p.pay_method_id = pm.id
-        WHERE c.type = 1
-        AND c.code = 'PS04'
-        ORDER BY p.created_at DESC
+        pr.id,
+        pr.payment_id AS paymentId,
+        pr.cancellation_id AS cancellationId,
+        pr.refund_reason AS refundReason,
+        pr.refund_amount AS refundAmount,
+        pr.deduction_amount AS deductionAmount,
+        pr.requested_at AS requestedAt,
+        pr.refunded_at AS refundedAt
+        FROM payment_refund pr
+        ORDER BY pr.requested_at DESC, pr.id DESC
 
     </select>
 
