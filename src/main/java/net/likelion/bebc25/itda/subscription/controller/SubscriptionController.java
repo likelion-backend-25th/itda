@@ -1,17 +1,17 @@
 package net.likelion.bebc25.itda.subscription.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import net.likelion.bebc25.itda.dto.PageResponse;
 import net.likelion.bebc25.itda.security.principal.CustomUserDetails;
 import net.likelion.bebc25.itda.subscription.dto.*;
 import net.likelion.bebc25.itda.subscription.service.SubscriptionService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @Tag(name = "구독 API", description = "구독 관련 기능")
 @RestController
@@ -64,21 +64,24 @@ public class SubscriptionController {
         );
     }
 
-    // 내가 구독한 창작자들 목록
+    // 내가 구독한 창작자들 목록. page는 1부터, 한 페이지 기본 6명
     @Operation(
             summary = "내 구독 목록 조회",
-            description = "내가 구독한 창작자 목록을 조회한다."
+            description = "내가 구독한 창작자 목록을 페이지 단위로 조회한다."
     )
     @GetMapping("/me")
-    public ResponseEntity<List<MySubscriptionResponse>> getMySubscriptions(
-            @AuthenticationPrincipal CustomUserDetails userDetails
+    public ResponseEntity<PageResponse<MySubscriptionResponse>> getMySubscriptions(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @Parameter(description = "페이지 번호 (1부터)", example = "1")
+            @RequestParam(defaultValue = "1") int page,
+            @Parameter(description = "페이지 크기", example = "6")
+            @RequestParam(defaultValue = "6") int size
     ) {
         Long memberId = userDetails.getMember().getId();
 
-        List<MySubscriptionResponse> subscriptions =
-                subscriptionService.getMySubscriptions(memberId);
-
-        return ResponseEntity.ok(subscriptions);
+        return ResponseEntity.ok(
+                subscriptionService.getMySubscriptions(memberId, page, size)
+        );
     }
 
     // 구독하고 있는 특정 창작자를 구독 해제

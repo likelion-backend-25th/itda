@@ -2,6 +2,7 @@ package net.likelion.bebc25.itda.subscription.service;
 
 import lombok.RequiredArgsConstructor;
 import net.likelion.bebc25.itda.commoncode.mapper.CommonCodeMapper;
+import net.likelion.bebc25.itda.dto.PageResponse;
 import net.likelion.bebc25.itda.domain.CommonCode;
 import net.likelion.bebc25.itda.domain.Member;
 import net.likelion.bebc25.itda.domain.Subscription;
@@ -95,14 +96,19 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     }
 
     @Override
-    public List<MySubscriptionResponse> getMySubscriptions(Long memberId) {
+    public PageResponse<MySubscriptionResponse> getMySubscriptions(Long memberId, int page, int size) {
+        if (page < 1) page = 1;
+        if (size < 1) size = 6;
+        if (size > 50) size = 50;
 
+        int offset = (page - 1) * size;
         List<SubscriptionInfo> subscriptions =
-                subscriptionMapper.findMySubscriptions(memberId);
+                subscriptionMapper.findMySubscriptions(memberId, size, offset);
+        long total = subscriptionMapper.countMySubscriptions(memberId);
 
         LocalDateTime now = LocalDateTime.now();
 
-        return subscriptions.stream()
+        List<MySubscriptionResponse> content = subscriptions.stream()
                 .map(subscription -> {
 
                     // 결제 완료로 만든 구독은 next_billing_at 이 비어 있을 수 있다. 그때도 목록은 반환한다.
@@ -123,6 +129,8 @@ public class SubscriptionServiceImpl implements SubscriptionService {
                     );
                 })
                 .toList();
+
+        return PageResponse.of(content, page, size, total);
     }
 
     @Override
