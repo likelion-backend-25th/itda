@@ -29,8 +29,12 @@ public interface SubscriptionMapper {
     );
 
     List<SubscriptionInfo> findMySubscriptions(
-            @Param("memberId") Long memberId
+            @Param("memberId") Long memberId,
+            @Param("limit") int limit,
+            @Param("offset") int offset
     );
+
+    long countMySubscriptions(@Param("memberId") Long memberId);
 
     int expireSubscriptions();
 
