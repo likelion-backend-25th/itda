@@ -38,6 +38,9 @@
             ON m.id = #{memberId}
         </if>
         WHERE t.status = 'ON_SALE'
+        <if test="keyword != null and keyword != ''">
+            AND t.theme_name LIKE CONCAT('%', #{keyword}, '%')
+        </if>
         ORDER BY t.created_at DESC
         LIMIT #{limit} OFFSET #{offset}
     </select>
@@ -46,6 +49,9 @@
         SELECT COUNT(*)
         FROM theme t
         WHERE t.status = 'ON_SALE'
+        <if test="keyword != null and keyword != ''">
+            AND t.theme_name LIKE CONCAT('%', #{keyword}, '%')
+        </if>
     </select>
 
     <select id="findById" resultType="net.likelion.bebc25.itda.theme.dto.ThemeDetailResponse">

@@ -33,12 +33,14 @@ public class ThemeServiceImpl implements ThemeService{
     }
 
     @Override
-    public PageResponse<ThemeResponse> getAllThemes(Long memberId, int page, int size) {
+    public PageResponse<ThemeResponse> getAllThemes(Long memberId, int page, int size, String keyword) {
         if(page < 1) page = 1;
         if(size < 1) size = 6;
 
+        String trimmedKeyword = (keyword == null || keyword.isBlank()) ? null : keyword.trim();
+
         int offset = (page - 1) * size;
-        List<ThemeResponse> content = themeMapper.findAllThemes(memberId,size,offset);
+        List<ThemeResponse> content = themeMapper.findAllThemes(memberId,size,offset,trimmedKeyword);
         List<ThemeResponse> responses = content.stream()
                 .map(theme -> ThemeResponse.from(
                         theme,
@@ -46,7 +48,7 @@ public class ThemeServiceImpl implements ThemeService{
                 ))
                 .toList();
 
-        long total = themeMapper.countThemes();
+        long total = themeMapper.countThemes(trimmedKeyword);
 
         return PageResponse.of(responses, page, size, total);
     }

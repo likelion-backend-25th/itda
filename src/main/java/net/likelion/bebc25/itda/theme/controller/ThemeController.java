@@ -32,7 +32,7 @@ public class ThemeController {
 
     @Operation(
             summary = "테마 목록 조회",
-            description = "판매중 테마를 최신순으로 페이징 조회합니다. 한 페이지 기본 6개."
+            description = "판매중 테마를 최신순으로 페이징 조회합니다. keyword로 테마 이름·코드를 검색할 수 있습니다. 한 페이지 기본 6개."
     )
     @ApiResponse(
             responseCode = "200",
@@ -45,11 +45,13 @@ public class ThemeController {
             @Parameter(description = "페이지 번호 (1부터)", example = "1")
             @RequestParam(defaultValue = "1") int page,
             @Parameter(description = "페이지 크기", example = "6")
-            @RequestParam(defaultValue = "6") int size
+            @RequestParam(defaultValue = "6") int size,
+            @Parameter(description = "테마 이름·코드 검색어", example = "오션")
+            @RequestParam(required = false) String keyword
     ) {
         Long memberId = userDetails != null ? userDetails.getId() : null;
 
-        PageResponse<ThemeResponse> themes = themeService.getAllThemes(memberId, page, size);
+        PageResponse<ThemeResponse> themes = themeService.getAllThemes(memberId, page, size, keyword);
         return ResponseEntity.ok(themes);
     }
 
