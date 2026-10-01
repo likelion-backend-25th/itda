@@ -17,14 +17,14 @@
         ON pr_like.type = cc_like.id
         WHERE pr_like.post_id = p.id
         AND pr_like.member_id = #{memberId}
-        AND cc_like.code='LIKE') AS liked,
+        AND cc_like.code='RT01') AS liked,
 
         EXISTS (SELECT 1 FROM post_reaction pr_scrap
         JOIN common_code  cc_scrap
         ON pr_scrap.type = cc_scrap.id
         WHERE pr_scrap.post_id = p.id
         AND pr_scrap.member_id = #{memberId}
-        AND cc_scrap.code = 'SCRAP') AS scrapped
+        AND cc_scrap.code = 'RT02') AS scrapped
     </sql>
 
 <!--    1. 신규 게시글 등록 작성일은 DEFAULT로 만든 날로 들어가기 때문에 필요 없음  -->

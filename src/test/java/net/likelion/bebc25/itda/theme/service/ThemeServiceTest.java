@@ -49,7 +49,7 @@ public class ThemeServiceTest {
         int size = 6;
 
         // when
-        PageResponse<ThemeResponse> themes = ThemeService.getAllThemes(memberId, page, size);
+        PageResponse<ThemeResponse> themes = ThemeService.getAllThemes(memberId, page, size, null);
 
         // then
         assertThat(themes).isNotNull();
