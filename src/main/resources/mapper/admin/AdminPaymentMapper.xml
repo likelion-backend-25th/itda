@@ -35,7 +35,7 @@
 
     </select>
 
-    <!-- 환불 대기 목록 -->
+    <!-- 환불 완료(PS04) 목록 -->
     <select id="findAllRefunds"
             resultType="net.likelion.bebc25.itda.admin.payment.dto.AdminRefundResponse">
 
@@ -60,7 +60,7 @@
         LEFT JOIN common_code pm
         ON p.pay_method_id = pm.id
         WHERE c.type = 1
-        AND c.code = 'PS05'
+        AND c.code = 'PS04'
         ORDER BY p.created_at DESC
 
     </select>
