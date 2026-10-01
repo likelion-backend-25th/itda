@@ -11,6 +11,7 @@ import net.likelion.bebc25.itda.reply.dto.ReplyCreateRequest;
 import net.likelion.bebc25.itda.reply.dto.ReplyResponse;
 import net.likelion.bebc25.itda.reply.dto.ReplyUpdateRequest;
 import net.likelion.bebc25.itda.reply.mapper.ReplyMapper;
+import net.likelion.bebc25.itda.s3.S3Service;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,6 +28,7 @@ public class ReplyServiceImpl implements ReplyService {
     private final PostMapper postMapper;
     private final MemberMapper memberMapper;
     private final PostService postService;
+    private final S3Service s3Service;
 
     /** 활동 정지 회원은 댓글 작성·수정이 불가능하다 */
     private void rejectIfSuspended(Long memberId) {
@@ -34,6 +36,11 @@ public class ReplyServiceImpl implements ReplyService {
         if (member != null && "SUSPENDED".equals(member.getStatus())) {
             throw new IllegalArgumentException("활동 정지된 회원은 댓글을 작성할 수 없습니다.");
         }
+    }
+
+    /** S3 key → presigned URL (게시글 프로필 이미지와 동일) */
+    private ReplyResponse toResponse(Reply reply) {
+        return ReplyResponse.from(reply, s3Service.getPresignedUrl(reply.getProfileImage()));
     }
 
     // 1. 댓글 등록
@@ -63,7 +70,7 @@ public class ReplyServiceImpl implements ReplyService {
         // 저장된 댓글 다시 조회
         Reply savedReply = replyMapper.findById(reply.getId());
 
-        return ReplyResponse.from(savedReply);
+        return toResponse(savedReply);
 
     }
 
@@ -85,9 +92,7 @@ public class ReplyServiceImpl implements ReplyService {
         // ReplyResponse로 변환
         List<ReplyResponse> responses = new ArrayList<>();
         for(Reply reply : replies) {
-            ReplyResponse response = ReplyResponse.from(reply);
-
-            responses.add(response);
+            responses.add(toResponse(reply));
         }
         return responses;
     }
@@ -115,7 +120,7 @@ public class ReplyServiceImpl implements ReplyService {
 
         Reply savedReply = replyMapper.findById(replyId);
 
-        return ReplyResponse.from(savedReply);
+        return toResponse(savedReply);
     }
 
     // 4. 댓글 삭제 - 관리자와 작성자만 삭제 가능

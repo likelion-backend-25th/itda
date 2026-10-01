@@ -38,7 +38,7 @@
         m.nickname,
         m.profile_image AS profileImage,
         s.price_id AS priceId,
-        s.next_billing_at AS nextBillingAt
+        COALESCE(s.next_billing_at, s.ended_at, DATE_ADD(s.started_at, INTERVAL 1 MONTH)) AS nextBillingAt
         FROM subscription s
         JOIN member m
         ON s.target_id = m.id
@@ -65,6 +65,7 @@
         status_id,
         next_billing_at,
         started_at,
+        ended_at,
         payment_id
         )
         VALUES (
@@ -81,6 +82,7 @@
         ),
         DATE_ADD(NOW(), INTERVAL 1 MONTH),
         NOW(),
+        DATE_ADD(NOW(), INTERVAL 1 MONTH),
         #{payment_id}
         )
 
@@ -88,7 +90,8 @@
 
     <update id="extendSubscription">
         UPDATE subscription
-        SET next_billing_at = DATE_ADD(next_billing_at, INTERVAL 1 MONTH)
+        SET next_billing_at = DATE_ADD(next_billing_at, INTERVAL 1 MONTH),
+        ended_at = DATE_ADD(COALESCE(ended_at, next_billing_at, started_at), INTERVAL 1 MONTH)
         WHERE member_id = #{memberId}
         AND target_id = #{targetId}
         AND status_id = (
@@ -159,16 +162,29 @@
 
     </select>
 
-    <select id="getMonthlyIncome"
-            resultType="int">
+    <!--결제 완료(PS02), 환불 완료(PS04) 상태일때 정산 금액을 다르게 처리 -->
+    <select id="getMonthlyIncome" resultType="int">
+        <!-- 결제 상태별 정산 금액 합산 -->
+        SELECT COALESCE(
+        SUM(
+        CASE
+        WHEN p.status_id = 2 THEN p.amount
+        WHEN p.status_id = 4 THEN pr.deduction_amount
+        ELSE 0
+        END
+        ), 0)
 
-        SELECT COALESCE(SUM(p.amount), 0)
         FROM payment p
+
+        LEFT JOIN payment_refund pr
+        ON pr.payment_id = p.id
+
         WHERE p.payment_type = 'SUBSCRIPTION'
         AND p.target_id = #{targetId}
-        AND p.status_id = 2
+        AND p.status_id IN (2, 4)
+
         AND p.paid_at >= DATE_FORMAT(CURRENT_DATE, '%Y-%m-01')
-        AND p.paid_at &lt;DATE_ADD(
+        AND p.paid_at &lt; DATE_ADD(
         DATE_FORMAT(CURRENT_DATE, '%Y-%m-01'),
         INTERVAL 1 MONTH
         )

@@ -4,9 +4,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import net.likelion.bebc25.itda.auth.service.RefreshTokenService;
-import net.likelion.bebc25.itda.domain.Member;
 import net.likelion.bebc25.itda.security.jwt.JwtProvider;
 import net.likelion.bebc25.itda.security.principal.CustomUserDetails;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.Authentication;
@@ -24,10 +24,16 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
     private final JwtProvider jwtProvider;
     private final RefreshTokenService refreshTokenService;
+    private final String frontendBaseUrl;
 
-    public OAuth2SuccessHandler(JwtProvider jwtProvider, RefreshTokenService refreshTokenService) {
+    public OAuth2SuccessHandler(
+            JwtProvider jwtProvider,
+            RefreshTokenService refreshTokenService,
+            @Value("${app.frontend-base-url}") String frontendBaseUrl
+    ) {
         this.jwtProvider = jwtProvider;
         this.refreshTokenService = refreshTokenService;
+        this.frontendBaseUrl = frontendBaseUrl;
     }
 
     @Override
@@ -50,7 +56,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         String tokenHash = refreshTokenService.hashToken(refreshToken);
         refreshTokenService.save(memberId, tokenHash, LocalDateTime.now().plusDays(7));
 
-        // 4. Refresh Token을 HttpOnly Coolie로 설정
+        // 4. Refresh Token을 HttpOnly Cookie로 설정
         ResponseCookie cookie = ResponseCookie.from("refreshToken", refreshToken)
                 .httpOnly(true)
                 .secure(true)
@@ -58,12 +64,11 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
                 .path("/api/v1/auth")
                 .maxAge(Duration.ofDays(7))
                 .build();
-        response.addHeader(HttpHeaders.SET_COOKIE,cookie.toString());
+        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
 
-        // 5. React 메인 페이지로 리다이렉트
+        // 5. React 메인 페이지로 리다이렉트 (로컬/배포는 app.frontend-base-url)
         String targetUrl = UriComponentsBuilder
-                .fromUriString("https://itda-sns.netlify.app/")
-//                .fromUriString("http://localhost:5173/")
+                .fromUriString(trimTrailingSlash(frontendBaseUrl) + "/")
                 .queryParam("accessToken", accessToken)
                 .build().toUriString();
 
@@ -71,5 +76,12 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
         // 6. 브라우저 리다이렉트 실행
         getRedirectStrategy().sendRedirect(request, response, targetUrl);
+    }
+
+    private static String trimTrailingSlash(String url) {
+        if (url == null || url.isBlank()) {
+            return "";
+        }
+        return url.endsWith("/") ? url.substring(0, url.length() - 1) : url;
     }
 }

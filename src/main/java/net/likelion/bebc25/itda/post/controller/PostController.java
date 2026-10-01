@@ -1,5 +1,8 @@
 package net.likelion.bebc25.itda.post.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -21,7 +24,10 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.View;
 
 import java.net.URI;
+import java.util.List;
 
+@Tag(name = "게시글 API", description = "게시글 CRUD, 검색, 좋아요, 스크랩")
+@SecurityRequirement(name = "bearerAuth")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/posts")
@@ -33,6 +39,10 @@ public class PostController {
     private final View view;
 
     // 1. 게시글 등록
+    @Operation(
+            summary = "게시글 등록",
+            description = "게시글 내용과 선택적 이미지를 등록한다."
+    )
     @PostMapping
     public ResponseEntity<PostResponse> createPost(
             @AuthenticationPrincipal CustomUserDetails userDetails,
@@ -48,6 +58,10 @@ public class PostController {
     }
 
     // 2. 게시글 한 건 조회
+    @Operation(
+            summary = "게시글 단건 조회",
+            description = "게시글 ID로 단건을 조회하고, 최초 조회 시 조회수를 증가시킨다."
+    )
     @GetMapping("/{id}")
     public ResponseEntity<PostResponse> getPostById(
             @PathVariable("id") Long id,
@@ -80,6 +94,10 @@ public class PostController {
 
     // 메인 페이지에서 게시글 피드 - 비로그인시 / 로그인시
     // userDetails - JWT 인증을 통해 현재 로그인한 회원 정보
+    @Operation(
+            summary = "게시글 피드 조회",
+            description = "공개/구독 피드를 커서 기반으로 조회한다. 비로그인도 가능하다."
+    )
     @GetMapping
     public ResponseEntity<PostFeedResponse> getPosts(
             @AuthenticationPrincipal CustomUserDetails userDetails,
@@ -101,6 +119,10 @@ public class PostController {
     }
 
     // 3. 글 수정
+    @Operation(
+            summary = "게시글 수정",
+            description = "본인 게시글의 내용과 이미지를 수정한다."
+    )
     @PutMapping("{id}")
     public ResponseEntity<PostResponse> updatePost(
             @PathVariable Long id,
@@ -116,6 +138,10 @@ public class PostController {
     }
 
     // 4. 게시글 삭제
+    @Operation(
+            summary = "게시글 삭제",
+            description = "게시글을 삭제한다."
+    )
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletePost(
             @PathVariable Long id
@@ -127,6 +153,10 @@ public class PostController {
     }
 
     // 5. 게시글 좋아요 토글
+    @Operation(
+            summary = "게시글 좋아요 토글",
+            description = "게시글 좋아요를 추가하거나 취소한다."
+    )
     @PostMapping("/{id}/like")
     public ResponseEntity<PostLikeResponse> toggleLike(
             @PathVariable Long id, @AuthenticationPrincipal CustomUserDetails userDetails) {
@@ -138,6 +168,10 @@ public class PostController {
     }
 
     // 6. 게시글 스크랩 토글
+    @Operation(
+            summary = "게시글 스크랩 토글",
+            description = "게시글 스크랩을 추가하거나 취소한다."
+    )
     @PostMapping("/{id}/scrap")
     public ResponseEntity<PostScrapResponse> toggleScrap(
             @PathVariable("id") Long postId,
@@ -183,6 +217,28 @@ public class PostController {
         response.addCookie(cookie);
     }
 
+    // 검색 - 비로그인 사용자도 검색 가능하게끔
+    @Operation(
+            summary = "게시글 검색",
+            description = "키워드·작성자 조건으로 게시글을 검색한다. 비로그인도 가능하다."
+    )
+    @GetMapping("/search")
+    public ResponseEntity<List<PostResponse>> searchPosts(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) List<Long> targetMemberIds,
+            @RequestParam(required = false) Long cursor,
+            @RequestParam(defaultValue = "10") int size) {
+
+        Long memberId = null;
+
+        if (userDetails != null) {
+            memberId = userDetails.getId();
+        }
+
+        List<PostResponse> posts = postService.searchPosts(memberId, keyword, targetMemberIds, cursor, size);
+
+        return ResponseEntity.ok(posts);
+    }
+
 }
-
-

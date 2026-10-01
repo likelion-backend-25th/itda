@@ -6,6 +6,7 @@ import net.likelion.bebc25.itda.domain.CommonCode;
 import net.likelion.bebc25.itda.domain.Member;
 import net.likelion.bebc25.itda.domain.Subscription;
 import net.likelion.bebc25.itda.member.mapper.MemberMapper;
+import net.likelion.bebc25.itda.s3.S3Service;
 import net.likelion.bebc25.itda.subscription.dto.MySubscriptionResponse;
 import net.likelion.bebc25.itda.subscription.dto.SubscriptionInfo;
 import net.likelion.bebc25.itda.subscription.dto.SubscriptionRequest;
@@ -25,6 +26,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     private final SubscriptionMapper subscriptionMapper;
     private final MemberMapper memberMapper;
     private final CommonCodeMapper commonCodeMapper;
+    private final S3Service s3Service;
 
     @Override
     public void validateSubscription(
@@ -109,11 +111,12 @@ public class SubscriptionServiceImpl implements SubscriptionService {
                             ? 0
                             : Math.max(ChronoUnit.DAYS.between(now, nextBillingAt), 0);
 
+                    // DB에는 S3 key가 있으므로 presigned URL로 변환
                     return new MySubscriptionResponse(
                             subscription.getSubscriptionId(),
                             subscription.getTargetId(),
                             subscription.getNickname(),
-                            subscription.getProfileImage(),
+                            s3Service.getPresignedUrl(subscription.getProfileImage()),
                             subscription.getPriceId(),
                             nextBillingAt,
                             remainingDays
@@ -172,8 +175,14 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     }
 
     @Override
+    @Transactional
     public int getMonthlyIncome(Long targetId) {
-        return subscriptionMapper.getMonthlyIncome(targetId);
+        // 이번 달 구독 수익을 계산
+        int monthlyIncome = subscriptionMapper.getMonthlyIncome(targetId);
+        // 계산된 수익을 member.month_income에 저장
+        memberMapper.updateMonthlyIncome(targetId, monthlyIncome);
+        // 계산된 수익 반환
+        return monthlyIncome;
     }
 
     @Override

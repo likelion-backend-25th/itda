@@ -63,4 +63,7 @@ public interface PostMapper {
     // 프로필 - 해당 회원이 작성한 게시글 수
     int countPosts(@Param("memberId") Long memberId);
 
+    // 15. 다중 조건 검색
+    // 키워드, 멤버, 무한스크롤에 필요한 크기
+    List<Post> searchPosts(@Param("memberId")Long memberId, @Param("keyword") String keyword, @Param("targetMemberIds")List<Long> targetMemberIds, @Param("cursor") Long cursor,@Param("size") int size);
 }

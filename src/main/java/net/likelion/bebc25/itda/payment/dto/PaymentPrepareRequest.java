@@ -36,7 +36,7 @@ public record PaymentPrepareRequest(
         @Schema(description = "결제 수단",
                 example = "TOSSPAY"
         )
-        @NotNull
+        @NotNull(message = "결제 수단은 필수입니다.")
         String payMethod
 ) {
 }

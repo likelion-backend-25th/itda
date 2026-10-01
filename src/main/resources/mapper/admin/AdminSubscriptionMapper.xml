@@ -18,7 +18,7 @@
         c.name AS subscriptionStatus,
         s.price_id AS priceId,
         s.started_at AS startedAt,
-        s.ended_at AS endedAt,
+        COALESCE(s.ended_at, s.next_billing_at, DATE_ADD(s.started_at, INTERVAL 1 MONTH)) AS endedAt,
         s.next_billing_at AS nextBillingAt,
         s.payment_id AS paymentId
         FROM subscription s

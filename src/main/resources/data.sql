@@ -42,17 +42,17 @@ VALUES
 (27, 1, 'PS05', '환불 대기','환불 신청 후 환불 처리를 기다리는 상태', NULL, 5, TRUE);
 
 -- 2. 테마 (ON_SALE 8개 → size=6이면 2페이지 / HIDDEN 1개)
-INSERT INTO theme (id, theme_name, description, price, thumbnail_url, theme_code, css_text, status, is_default)
+INSERT INTO theme (id, theme_name, description, price, thumbnail_url, theme_code, css_text, status, is_default, created_at)
 VALUES
-    (1, '기본 테마',     'ITDA 기본 테마', 0,    'themes/default.png',  'DEFAULT', NULL, 'ON_SALE', TRUE),
-    (2, '미드나잇 다크',     '눈 편한 다크 테마',0, 'themes/dark.png',     'DARK',':root[data-theme=''dark'']{--bg:#0c121c;--surface:#161e2b;--text:#d8e2ef;--text-soft:#b9c7d8;--muted:#96a6b9;--line:#2a384a;--blue:#6b9ae8;--blue-deep:#4a7fd0;--blue-soft:#1a2838;--shadow:0 14px 34px rgba(0,0,0,.38);--search-bg:#101826;--on-accent:#0b1220;--radius:20px;}:root[data-theme=''dark''] body,:root[data-theme=''dark''] .page{background-color:var(--bg);background-image:radial-gradient(ellipse 55% 30% at 18% 0%,rgba(45,85,135,.12),transparent 58%),radial-gradient(ellipse 45% 28% at 92% 6%,rgba(30,65,110,.08),transparent 52%),linear-gradient(180deg,#0a1018 0%,#0e1520 50%,#0c121c 100%);}:root[data-theme=''dark''] .topbar,:root[data-theme=''dark''] .sidebar,:root[data-theme=''dark''] .post,:root[data-theme=''dark''] .empty{background:linear-gradient(180deg,#171f2c 0%,#131b27 100%);border-color:rgba(107,154,232,.16);box-shadow:0 12px 28px rgba(0,0,0,.34);}:root[data-theme=''dark''] .search{border:1px solid var(--line);}:root[data-theme=''dark''] .write-btn{color:var(--on-accent);box-shadow:0 6px 16px rgba(74,127,208,.22);}:root[data-theme=''dark''] .logo,:root[data-theme=''dark''] .stat{color:var(--blue);}','ON_SALE', FALSE),
-    (3, '오션 블루',     '시원한 바다 느낌의 테마',           3000, 'themes/ocean.png',    'OCEAN', ':root[data-theme=''ocean'']{--bg:#d9f0f8;--surface:#f4fbff;--text:#0c2f3f;--text-soft:#3a6b80;--muted:#6a93a6;--line:#bfe0ee;--blue:#0a8dbf;--blue-deep:#06729e;--blue-soft:#cfeff9;--shadow:0 14px 36px rgba(8,110,150,.14);--search-bg:#e3f5fb;--on-accent:#fff;--radius:22px;}:root[data-theme=''ocean''] body,:root[data-theme=''ocean''] .page{background-color:var(--bg);background-image:radial-gradient(ellipse 90% 55% at 15% 0%,rgba(120,210,240,.55),transparent 58%),radial-gradient(ellipse 70% 50% at 90% 10%,rgba(70,180,220,.35),transparent 55%),linear-gradient(180deg,#c8ebf6 0%,#e4f4fb 42%,#dff2f9 100%);}:root[data-theme=''ocean''] .topbar,:root[data-theme=''ocean''] .sidebar,:root[data-theme=''ocean''] .post,:root[data-theme=''ocean''] .empty{border-color:rgba(10,141,191,.18);box-shadow:0 12px 32px rgba(8,110,150,.12);backdrop-filter:saturate(1.05);}:root[data-theme=''ocean''] .sidebar{background:linear-gradient(180deg,#f7fdff 0%,#eef8fc 100%);}:root[data-theme=''ocean''] .post{background:linear-gradient(165deg,#ffffff 0%,#f3fbfe 100%);}:root[data-theme=''ocean''] .logo,:root[data-theme=''ocean''] .stat{color:var(--blue);}','ON_SALE', FALSE),
-    (4, '포레스트 그린', '차분한 숲 느낌의 테마',             3000, 'themes/forest.png',   'FOREST',':root[data-theme=''forest'']{--bg:#eef3e6;--surface:#f8faf4;--text:#24331c;--text-soft:#556848;--muted:#7f9170;--line:#d5e0c8;--blue:#738a4d;--blue-deep:#5c703c;--blue-soft:#e6efd8;--shadow:0 14px 34px rgba(70,95,40,.12);--search-bg:#e9f0df;--on-accent:#fff;--radius:20px;}:root[data-theme=''forest''] body,:root[data-theme=''forest''] .page{background-color:var(--bg);background-image:radial-gradient(ellipse 80% 45% at 10% 0%,rgba(170,200,120,.4),transparent 60%),radial-gradient(ellipse 60% 40% at 95% 5%,rgba(120,150,80,.25),transparent 55%),linear-gradient(185deg,#e8efdc 0%,#f3f6ec 50%,#eef3e6 100%);}:root[data-theme=''forest''] .topbar,:root[data-theme=''forest''] .sidebar,:root[data-theme=''forest''] .post,:root[data-theme=''forest''] .empty{border-color:rgba(115,138,77,.28);box-shadow:0 10px 28px rgba(70,95,40,.1);}:root[data-theme=''forest''] .sidebar{background:linear-gradient(180deg,#fbfcf7 0%,#f1f5e8 100%);border-width:1.5px;}:root[data-theme=''forest''] .post{border-color:rgba(115,138,77,.22);background:#fffcf7;}:root[data-theme=''forest''] .write-btn{border-radius:999px;}', 'ON_SALE', FALSE),
-    (5, '선셋 코랄',     '따뜻한 노을 느낌의 테마',           5000, 'themes/sunset.png',   'SUNSET',':root[data-theme=''sunset'']{--bg:#ffe8dc;--surface:#fff8f3;--text:#3d241c;--text-soft:#8a5a4a;--muted:#b08474;--line:#f0d5c8;--blue:#e56a45;--blue-deep:#c84e34;--blue-soft:#ffe0d4;--shadow:0 14px 36px rgba(200,90,50,.14);--search-bg:#ffefe6;--on-accent:#fff;--radius:22px;}:root[data-theme=''sunset''] body,:root[data-theme=''sunset''] .page{background-color:var(--bg);background-image:radial-gradient(ellipse 85% 55% at 20% -5%,rgba(255,180,120,.65),transparent 55%),radial-gradient(ellipse 70% 45% at 100% 0%,rgba(255,140,100,.45),transparent 50%),linear-gradient(180deg,#ffd4c0 0%,#ffe9df 40%,#fff3ec 100%);}:root[data-theme=''sunset''] .topbar,:root[data-theme=''sunset''] .sidebar,:root[data-theme=''sunset''] .post,:root[data-theme=''sunset''] .empty{border-color:rgba(229,106,69,.2);box-shadow:0 12px 30px rgba(200,90,50,.12);}:root[data-theme=''sunset''] .sidebar{background:linear-gradient(180deg,#fffaf6 0%,#fff0e8 100%);}:root[data-theme=''sunset''] .post{background:linear-gradient(160deg,#ffffff 0%,#fff6f1 100%);}:root[data-theme=''sunset''] .nav-item.active,:root[data-theme=''sunset''] .write-btn{box-shadow:0 8px 18px rgba(229,106,69,.28);}', 'ON_SALE', FALSE),
-    (6, '라벤더 나이트', '보랏빛 밤 느낌의 테마',             5000, 'themes/lavender.png', 'LAVENDER', ':root[data-theme=''lavender'']{--bg:#efe8fb;--surface:#fbf8ff;--text:#2c2344;--text-soft:#5c5278;--muted:#8d84a8;--line:#ddd2f0;--blue:#7c5cbf;--blue-deep:#62469e;--blue-soft:#ece3ff;--shadow:0 14px 36px rgba(90,60,150,.14);--search-bg:#f0e9ff;--on-accent:#fff;--radius:22px;}:root[data-theme=''lavender''] body,:root[data-theme=''lavender''] .page{background-color:var(--bg);background-image:radial-gradient(ellipse 80% 50% at 12% 0%,rgba(190,160,240,.5),transparent 58%),radial-gradient(ellipse 65% 45% at 95% 8%,rgba(160,130,220,.35),transparent 55%),linear-gradient(180deg,#e8dff8 0%,#f3eefc 45%,#efeaf8 100%);}:root[data-theme=''lavender''] .topbar,:root[data-theme=''lavender''] .sidebar,:root[data-theme=''lavender''] .post,:root[data-theme=''lavender''] .empty{border-color:rgba(124,92,191,.2);box-shadow:0 12px 32px rgba(90,60,150,.12);}:root[data-theme=''lavender''] .sidebar{background:linear-gradient(180deg,#fffcff 0%,#f5f0fc 100%);}:root[data-theme=''lavender''] .post{background:linear-gradient(165deg,#ffffff 0%,#f8f4ff 100%);}:root[data-theme=''lavender''] .logo{letter-spacing:-0.05em;}', 'ON_SALE', FALSE),
-    (7, '코튼 크림',     '부드러운 크림톤 테마',             2000, 'themes/cream.png',    'CREAM',':root[data-theme=''cream'']{--bg:#f5efe6;--surface:#fffdf9;--text:#3d342c;--text-soft:#7a6c5e;--muted:#a89786;--line:#e5dbcf;--blue:#c4a574;--blue-deep:#a88655;--blue-soft:#f3ebdf;--shadow:0 14px 34px rgba(120,90,50,.12);--search-bg:#efe7db;--on-accent:#fff;--radius:20px;}:root[data-theme=''cream''] body,:root[data-theme=''cream''] .page{background-color:var(--bg);background-image:radial-gradient(ellipse 75% 45% at 15% 0%,rgba(230,210,180,.55),transparent 58%),radial-gradient(ellipse 60% 40% at 100% 0%,rgba(210,180,140,.3),transparent 55%),linear-gradient(180deg,#efe6d8 0%,#f7f1e8 48%,#f5efe6 100%);}:root[data-theme=''cream''] .topbar,:root[data-theme=''cream''] .sidebar,:root[data-theme=''cream''] .post,:root[data-theme=''cream''] .empty{border-color:rgba(196,165,116,.28);box-shadow:0 12px 28px rgba(120,90,50,.1);}:root[data-theme=''cream''] .sidebar{background:linear-gradient(180deg,#fffefb 0%,#f8f2e9 100%);}:root[data-theme=''cream''] .post{background:#fffefb;}:root[data-theme=''cream''] .write-btn{border-radius:14px;}','ON_SALE', FALSE),
-    (8, '스카이 라이트', '맑은 하늘 느낌의 테마',             2000, 'themes/sky.png',      'SKY',':root[data-theme=''sky'']{--bg:#e6f1ff;--surface:#f7fbff;--text:#1a3550;--text-soft:#4a6d8c;--muted:#7f9cb8;--line:#cfe2f6;--blue:#4aa3ff;--blue-deep:#2f86e0;--blue-soft:#dcebff;--shadow:0 14px 34px rgba(50,120,200,.12);--search-bg:#e2efff;--on-accent:#fff;--radius:22px;}:root[data-theme=''sky''] body,:root[data-theme=''sky''] .page{background-color:var(--bg);background-image:radial-gradient(ellipse 80% 50% at 25% -5%,rgba(160,205,255,.55),transparent 55%),radial-gradient(ellipse 65% 40% at 95% 0%,rgba(120,180,255,.35),transparent 50%),linear-gradient(180deg,#d8e9ff 0%,#eef6ff 45%,#e6f1ff 100%);}:root[data-theme=''sky''] .topbar,:root[data-theme=''sky''] .sidebar,:root[data-theme=''sky''] .post,:root[data-theme=''sky''] .empty{border-color:rgba(74,163,255,.22);box-shadow:0 12px 30px rgba(50,120,200,.11);}:root[data-theme=''sky''] .sidebar{background:linear-gradient(180deg,#ffffff 0%,#f0f7ff 100%);}:root[data-theme=''sky''] .post{background:linear-gradient(165deg,#ffffff 0%,#f5faff 100%);}','ON_SALE', FALSE),
-    (9, '숨김 테마',     '관리자 비공개 테마 (목록 제외)',     9999, 'themes/hidden.png',   'HIDDEN',':root[data-theme=''hidden'']{--bg:#e8e6ec;--surface:#f6f5f7;--text:#3a3840;--text-soft:#6b6774;--muted:#9a96a3;--line:#d5d1db;--blue:#7a7488;--blue-deep:#5f596c;--blue-soft:#ebe8ef;--shadow:0 12px 30px rgba(60,50,80,.1);--search-bg:#e4e2e8;--on-accent:#fff;--radius:18px;}:root[data-theme=''hidden''] body,:root[data-theme=''hidden''] .page{background-color:var(--bg);background-image:radial-gradient(ellipse 70% 45% at 20% 0%,rgba(170,165,185,.35),transparent 58%),linear-gradient(180deg,#e2e0e7 0%,#eceaef 50%,#e8e6ec 100%);}:root[data-theme=''hidden''] .topbar,:root[data-theme=''hidden''] .sidebar,:root[data-theme=''hidden''] .post,:root[data-theme=''hidden''] .empty{border-color:rgba(122,116,136,.22);box-shadow:0 10px 26px rgba(60,50,80,.09);}:root[data-theme=''hidden''] .sidebar{background:linear-gradient(180deg,#faf9fb 0%,#f0eef3 100%);}:root[data-theme=''hidden''] .post{background:#faf9fb;}', 'HIDDEN', FALSE);
+    (1, '기본 테마',     'ITDA 기본 테마', 0,    'themes/default.png',  'DEFAULT', NULL, 'ON_SALE', TRUE, '2025-01-01 10:00:00'),
+    (2, '미드나잇 다크',     '눈 편한 다크 테마',0, 'themes/dark.png',     'DARK',':root[data-theme=''dark'']{--bg:#0c121c;--surface:#161e2b;--text:#d8e2ef;--text-soft:#b9c7d8;--muted:#96a6b9;--line:#2a384a;--blue:#6b9ae8;--blue-deep:#4a7fd0;--blue-soft:#1a2838;--shadow:0 14px 34px rgba(0,0,0,.38);--search-bg:#101826;--on-accent:#0b1220;--radius:20px;}:root[data-theme=''dark''] body,:root[data-theme=''dark''] .page{background-color:var(--bg);background-image:radial-gradient(ellipse 55% 30% at 18% 0%,rgba(45,85,135,.12),transparent 58%),radial-gradient(ellipse 45% 28% at 92% 6%,rgba(30,65,110,.08),transparent 52%),linear-gradient(180deg,#0a1018 0%,#0e1520 50%,#0c121c 100%);}:root[data-theme=''dark''] .topbar,:root[data-theme=''dark''] .sidebar,:root[data-theme=''dark''] .post,:root[data-theme=''dark''] .empty{background:linear-gradient(180deg,#171f2c 0%,#131b27 100%);border-color:rgba(107,154,232,.16);box-shadow:0 12px 28px rgba(0,0,0,.34);}:root[data-theme=''dark''] .search{border:1px solid var(--line);}:root[data-theme=''dark''] .write-btn{color:var(--on-accent);box-shadow:0 6px 16px rgba(74,127,208,.22);}:root[data-theme=''dark''] .logo,:root[data-theme=''dark''] .stat{color:var(--blue);}','ON_SALE', FALSE, '2025-01-02 10:00:00'),
+    (3, '오션 블루',     '시원한 바다 느낌의 테마',           3000, 'themes/ocean.png',    'OCEAN', ':root[data-theme=''ocean'']{--bg:#d9f0f8;--surface:#f4fbff;--text:#0c2f3f;--text-soft:#3a6b80;--muted:#6a93a6;--line:#bfe0ee;--blue:#0a8dbf;--blue-deep:#06729e;--blue-soft:#cfeff9;--shadow:0 14px 36px rgba(8,110,150,.14);--search-bg:#e3f5fb;--on-accent:#fff;--radius:22px;}:root[data-theme=''ocean''] body,:root[data-theme=''ocean''] .page{background-color:var(--bg);background-image:radial-gradient(ellipse 90% 55% at 15% 0%,rgba(120,210,240,.55),transparent 58%),radial-gradient(ellipse 70% 50% at 90% 10%,rgba(70,180,220,.35),transparent 55%),linear-gradient(180deg,#c8ebf6 0%,#e4f4fb 42%,#dff2f9 100%);}:root[data-theme=''ocean''] .topbar,:root[data-theme=''ocean''] .sidebar,:root[data-theme=''ocean''] .post,:root[data-theme=''ocean''] .empty{border-color:rgba(10,141,191,.18);box-shadow:0 12px 32px rgba(8,110,150,.12);backdrop-filter:saturate(1.05);}:root[data-theme=''ocean''] .sidebar{background:linear-gradient(180deg,#f7fdff 0%,#eef8fc 100%);}:root[data-theme=''ocean''] .post{background:linear-gradient(165deg,#ffffff 0%,#f3fbfe 100%);}:root[data-theme=''ocean''] .logo,:root[data-theme=''ocean''] .stat{color:var(--blue);}','ON_SALE', FALSE, '2025-01-03 10:00:00'),
+    (4, '포레스트 그린', '차분한 숲 느낌의 테마',             3000, 'themes/forest.png',   'FOREST',':root[data-theme=''forest'']{--bg:#eef3e6;--surface:#f8faf4;--text:#24331c;--text-soft:#556848;--muted:#7f9170;--line:#d5e0c8;--blue:#738a4d;--blue-deep:#5c703c;--blue-soft:#e6efd8;--shadow:0 14px 34px rgba(70,95,40,.12);--search-bg:#e9f0df;--on-accent:#fff;--radius:20px;}:root[data-theme=''forest''] body,:root[data-theme=''forest''] .page{background-color:var(--bg);background-image:radial-gradient(ellipse 80% 45% at 10% 0%,rgba(170,200,120,.4),transparent 60%),radial-gradient(ellipse 60% 40% at 95% 5%,rgba(120,150,80,.25),transparent 55%),linear-gradient(185deg,#e8efdc 0%,#f3f6ec 50%,#eef3e6 100%);}:root[data-theme=''forest''] .topbar,:root[data-theme=''forest''] .sidebar,:root[data-theme=''forest''] .post,:root[data-theme=''forest''] .empty{border-color:rgba(115,138,77,.28);box-shadow:0 10px 28px rgba(70,95,40,.1);}:root[data-theme=''forest''] .sidebar{background:linear-gradient(180deg,#fbfcf7 0%,#f1f5e8 100%);border-width:1.5px;}:root[data-theme=''forest''] .post{border-color:rgba(115,138,77,.22);background:#fffcf7;}:root[data-theme=''forest''] .write-btn{border-radius:999px;}', 'ON_SALE', FALSE, '2025-01-04 10:00:00'),
+    (5, '선셋 코랄',     '따뜻한 노을 느낌의 테마',           5000, 'themes/sunset.png',   'SUNSET',':root[data-theme=''sunset'']{--bg:#ffe8dc;--surface:#fff8f3;--text:#3d241c;--text-soft:#8a5a4a;--muted:#b08474;--line:#f0d5c8;--blue:#e56a45;--blue-deep:#c84e34;--blue-soft:#ffe0d4;--shadow:0 14px 36px rgba(200,90,50,.14);--search-bg:#ffefe6;--on-accent:#fff;--radius:22px;}:root[data-theme=''sunset''] body,:root[data-theme=''sunset''] .page{background-color:var(--bg);background-image:radial-gradient(ellipse 85% 55% at 20% -5%,rgba(255,180,120,.65),transparent 55%),radial-gradient(ellipse 70% 45% at 100% 0%,rgba(255,140,100,.45),transparent 50%),linear-gradient(180deg,#ffd4c0 0%,#ffe9df 40%,#fff3ec 100%);}:root[data-theme=''sunset''] .topbar,:root[data-theme=''sunset''] .sidebar,:root[data-theme=''sunset''] .post,:root[data-theme=''sunset''] .empty{border-color:rgba(229,106,69,.2);box-shadow:0 12px 30px rgba(200,90,50,.12);}:root[data-theme=''sunset''] .sidebar{background:linear-gradient(180deg,#fffaf6 0%,#fff0e8 100%);}:root[data-theme=''sunset''] .post{background:linear-gradient(160deg,#ffffff 0%,#fff6f1 100%);}:root[data-theme=''sunset''] .nav-item.active,:root[data-theme=''sunset''] .write-btn{box-shadow:0 8px 18px rgba(229,106,69,.28);}', 'ON_SALE', FALSE, '2025-01-05 10:00:00'),
+    (6, '라벤더 나이트', '보랏빛 밤 느낌의 테마',             5000, 'themes/lavender.png', 'LAVENDER', ':root[data-theme=''lavender'']{--bg:#efe8fb;--surface:#fbf8ff;--text:#2c2344;--text-soft:#5c5278;--muted:#8d84a8;--line:#ddd2f0;--blue:#7c5cbf;--blue-deep:#62469e;--blue-soft:#ece3ff;--shadow:0 14px 36px rgba(90,60,150,.14);--search-bg:#f0e9ff;--on-accent:#fff;--radius:22px;}:root[data-theme=''lavender''] body,:root[data-theme=''lavender''] .page{background-color:var(--bg);background-image:radial-gradient(ellipse 80% 50% at 12% 0%,rgba(190,160,240,.5),transparent 58%),radial-gradient(ellipse 65% 45% at 95% 8%,rgba(160,130,220,.35),transparent 55%),linear-gradient(180deg,#e8dff8 0%,#f3eefc 45%,#efeaf8 100%);}:root[data-theme=''lavender''] .topbar,:root[data-theme=''lavender''] .sidebar,:root[data-theme=''lavender''] .post,:root[data-theme=''lavender''] .empty{border-color:rgba(124,92,191,.2);box-shadow:0 12px 32px rgba(90,60,150,.12);}:root[data-theme=''lavender''] .sidebar{background:linear-gradient(180deg,#fffcff 0%,#f5f0fc 100%);}:root[data-theme=''lavender''] .post{background:linear-gradient(165deg,#ffffff 0%,#f8f4ff 100%);}:root[data-theme=''lavender''] .logo{letter-spacing:-0.05em;}', 'ON_SALE', FALSE, '2025-01-06 10:00:00'),
+    (7, '코튼 크림',     '부드러운 크림톤 테마',             2000, 'themes/cream.png',    'CREAM',':root[data-theme=''cream'']{--bg:#f5efe6;--surface:#fffdf9;--text:#3d342c;--text-soft:#7a6c5e;--muted:#a89786;--line:#e5dbcf;--blue:#c4a574;--blue-deep:#a88655;--blue-soft:#f3ebdf;--shadow:0 14px 34px rgba(120,90,50,.12);--search-bg:#efe7db;--on-accent:#fff;--radius:20px;}:root[data-theme=''cream''] body,:root[data-theme=''cream''] .page{background-color:var(--bg);background-image:radial-gradient(ellipse 75% 45% at 15% 0%,rgba(230,210,180,.55),transparent 58%),radial-gradient(ellipse 60% 40% at 100% 0%,rgba(210,180,140,.3),transparent 55%),linear-gradient(180deg,#efe6d8 0%,#f7f1e8 48%,#f5efe6 100%);}:root[data-theme=''cream''] .topbar,:root[data-theme=''cream''] .sidebar,:root[data-theme=''cream''] .post,:root[data-theme=''cream''] .empty{border-color:rgba(196,165,116,.28);box-shadow:0 12px 28px rgba(120,90,50,.1);}:root[data-theme=''cream''] .sidebar{background:linear-gradient(180deg,#fffefb 0%,#f8f2e9 100%);}:root[data-theme=''cream''] .post{background:#fffefb;}:root[data-theme=''cream''] .write-btn{border-radius:14px;}','ON_SALE', FALSE, '2025-01-07 10:00:00'),
+    (8, '스카이 라이트', '맑은 하늘 느낌의 테마',             2000, 'themes/sky.png',      'SKY',':root[data-theme=''sky'']{--bg:#e6f1ff;--surface:#f7fbff;--text:#1a3550;--text-soft:#4a6d8c;--muted:#7f9cb8;--line:#cfe2f6;--blue:#4aa3ff;--blue-deep:#2f86e0;--blue-soft:#dcebff;--shadow:0 14px 34px rgba(50,120,200,.12);--search-bg:#e2efff;--on-accent:#fff;--radius:22px;}:root[data-theme=''sky''] body,:root[data-theme=''sky''] .page{background-color:var(--bg);background-image:radial-gradient(ellipse 80% 50% at 25% -5%,rgba(160,205,255,.55),transparent 55%),radial-gradient(ellipse 65% 40% at 95% 0%,rgba(120,180,255,.35),transparent 50%),linear-gradient(180deg,#d8e9ff 0%,#eef6ff 45%,#e6f1ff 100%);}:root[data-theme=''sky''] .topbar,:root[data-theme=''sky''] .sidebar,:root[data-theme=''sky''] .post,:root[data-theme=''sky''] .empty{border-color:rgba(74,163,255,.22);box-shadow:0 12px 30px rgba(50,120,200,.11);}:root[data-theme=''sky''] .sidebar{background:linear-gradient(180deg,#ffffff 0%,#f0f7ff 100%);}:root[data-theme=''sky''] .post{background:linear-gradient(165deg,#ffffff 0%,#f5faff 100%);}','ON_SALE', FALSE, '2025-01-08 10:00:00'),
+    (9, '숨김 테마',     '관리자 비공개 테마 (목록 제외)',     9999, 'themes/hidden.png',   'HIDDEN',':root[data-theme=''hidden'']{--bg:#e8e6ec;--surface:#f6f5f7;--text:#3a3840;--text-soft:#6b6774;--muted:#9a96a3;--line:#d5d1db;--blue:#7a7488;--blue-deep:#5f596c;--blue-soft:#ebe8ef;--shadow:0 12px 30px rgba(60,50,80,.1);--search-bg:#e4e2e8;--on-accent:#fff;--radius:18px;}:root[data-theme=''hidden''] body,:root[data-theme=''hidden''] .page{background-color:var(--bg);background-image:radial-gradient(ellipse 70% 45% at 20% 0%,rgba(170,165,185,.35),transparent 58%),linear-gradient(180deg,#e2e0e7 0%,#eceaef 50%,#e8e6ec 100%);}:root[data-theme=''hidden''] .topbar,:root[data-theme=''hidden''] .sidebar,:root[data-theme=''hidden''] .post,:root[data-theme=''hidden''] .empty{border-color:rgba(122,116,136,.22);box-shadow:0 10px 26px rgba(60,50,80,.09);}:root[data-theme=''hidden''] .sidebar{background:linear-gradient(180deg,#faf9fb 0%,#f0eef3 100%);}:root[data-theme=''hidden''] .post{background:#faf9fb;}', 'HIDDEN', FALSE, '2025-01-09 10:00:00');
 
 
 SELECT theme_code, LEFT(css_text, 40) AS css_head FROM theme;
@@ -76,7 +76,25 @@ VALUES
     (6, 'craft@itda.com', '$2a$10$e4dlYcuksXo57vvps8oPaeyDcD0keCuSwPIHBuYDn5oIGZD1PpHrq',
      '손뜨개러', 'ROLE_USER', '뜨개질과 공예를 좋아합니다.', 'profile/craft_profile.png', 2, 'LOCAL', 10000),
     (7, 'admin@itda.com', '$2a$10$e4dlYcuksXo57vvps8oPaeyDcD0keCuSwPIHBuYDn5oIGZD1PpHrq',
-     '관리자', 'ROLE_ADMIN', 'ITDA 관리자 계정입니다.', 'profile/admin_profile.png', 1, 'LOCAL', 0);
+     '관리자', 'ROLE_ADMIN', 'ITDA 관리자 계정입니다.', 'profile/admin_profile.png', 1, 'LOCAL', 0),
+    (8, 'user3@itda.com','$2a$10$e4dlYcuksXo57vvps8oPaeyDcD0keCuSwPIHBuYDn5oIGZD1PpHrq',
+     '그림그리는신아', 'ROLE_USER','그림 그리는 걸 좋아합니다.','profile/user3_profile.png', 1, 'LOCAL', 120000),
+    (9, 'user4@itda.com', '$2a$10$e4dlYcuksXo57vvps8oPaeyDcD0keCuSwPIHBuYDn5oIGZD1PpHrq',
+     '음악하는하루', 'ROLE_USER','좋아하는 음악을 공유해요.', 'profile/user4_profile.png', 1, 'LOCAL', 85000),
+    (10, 'user5@itda.com','$2a$10$e4dlYcuksXo57vvps8oPaeyDcD0keCuSwPIHBuYDn5oIGZD1PpHrq',
+     '요리하는민수', 'ROLE_USER','집에서 요리하는 시간을 좋아합니다.','profile/user5_profile.png', 1, 'LOCAL', 140000),
+    (11, 'user6@itda.com','$2a$10$e4dlYcuksXo57vvps8oPaeyDcD0keCuSwPIHBuYDn5oIGZD1PpHrq',
+     '여행가는날', 'ROLE_USER','새로운 장소를 여행하며 기록합니다.','profile/user6_profile.png', 1, 'LOCAL', 95000),
+    (12, 'user7@itda.com','$2a$10$e4dlYcuksXo57vvps8oPaeyDcD0keCuSwPIHBuYDn5oIGZD1PpHrq',
+     '게임하는밤', 'ROLE_USER','손으로 만드는 작은 즐거움을 공유합니다.','profile/user7_profile.png', 1, 'LOCAL', 70000),
+    (13, 'user8@itda.com','$2a$10$e4dlYcuksXo57vvps8oPaeyDcD0keCuSwPIHBuYDn5oIGZD1PpHrq',
+     '맛집탐험가', 'ROLE_USER','맛있는 곳을 찾아다니는 걸 좋아합니다.','profile/user8_profile.png', 1, 'LOCAL', 110000),
+    (14, 'user9@itda.com','$2a$10$e4dlYcuksXo57vvps8oPaeyDcD0keCuSwPIHBuYDn5oIGZD1PpHrq',
+     '운동하는재현', 'ROLE_USER','꾸준히 운동하며 기록하고 있습니다.','profile/user9_profile.png', 1, 'LOCAL', 125000),
+    (15, 'user10@itda.com','$2a$10$e4dlYcuksXo57vvps8oPaeyDcD0keCuSwPIHBuYDn5oIGZD1PpHrq',
+     '공예하는소희', 'ROLE_USER','게임과 일상을 함께 기록합니다.','profile/user10_profile.png', 1, 'LOCAL', 65000),
+    (16, 'user11@itda.com','$2a$10$e4dlYcuksXo57vvps8oPaeyDcD0keCuSwPIHBuYDn5oIGZD1PpHrq',
+     '취미수집가', 'ROLE_USER','새로운 취미를 하나씩 찾아가는 중입니다.','profile/user11_profile.png', 1, 'LOCAL', 90000);
 
 
 -- 4. 회원 관심 카테고리
@@ -185,14 +203,17 @@ INSERT INTO payment (
 )
 VALUES
     (1, 1, 'THEME', 3, 'imp_test_theme_001', 'merchant_theme_001', 3000, 2, 5, CURRENT_TIMESTAMP),
-    (2, 1, 'THEME', 5, 'imp_test_theme_002', 'merchant_theme_002', 5000, 2, 6, CURRENT_TIMESTAMP),
+    (2, 1, 'THEME', 5, 'imp_test_theme_002', 'merchant_theme_002', 5000, 27, 6, CURRENT_TIMESTAMP),
     (3, 2, 'THEME', 4, 'imp_test_theme_003', 'merchant_theme_003', 3000, 2, 5, CURRENT_TIMESTAMP),
-    (4, 4, 'THEME', 6, 'imp_test_theme_004', 'merchant_theme_004', 5000, 2, 7, CURRENT_TIMESTAMP),
+    (4, 4, 'THEME', 6, 'imp_test_theme_004', 'merchant_theme_004', 5000, 27, 7, CURRENT_TIMESTAMP),
     (5, 6, 'THEME', 2, 'imp_test_theme_005', 'merchant_theme_005', 0, 2, 5, CURRENT_TIMESTAMP),
     (6, 1, 'SUBSCRIPTION', 3, 'imp_test_subscription_001', 'merchant_subscription_001', 5000, 2, 5, CURRENT_TIMESTAMP),
     (7, 2, 'SUBSCRIPTION', 3, 'imp_test_subscription_002', 'merchant_subscription_002', 5000, 2, 6, CURRENT_TIMESTAMP),
     (8, 4, 'SUBSCRIPTION', 3, 'imp_test_subscription_003', 'merchant_subscription_003', 3000, 2, 7, CURRENT_TIMESTAMP),
-    (9, 5, 'SUBSCRIPTION', 4, 'imp_test_subscription_004', 'merchant_subscription_004', 5000, 2, 5, CURRENT_TIMESTAMP);
+    (9, 5, 'SUBSCRIPTION', 4, 'imp_test_subscription_004', 'merchant_subscription_004', 5000, 2, 5, CURRENT_TIMESTAMP),
+    (10, 6, 'THEME', 3, 'imp_test_theme_006', 'merchant_theme_006', 3000, 27, 5, CURRENT_TIMESTAMP),
+    (11, 7, 'THEME', 4, 'imp_test_theme_007', 'merchant_theme_007', 3000, 27, 6, CURRENT_TIMESTAMP),
+    (12, 8, 'THEME', 4, 'imp_test_theme_008', 'merchant_theme_008', 5000, 27, 5, CURRENT_TIMESTAMP);
 
 -- 10. 테마 구매
 INSERT INTO theme_purchase (id, member_id, theme_id, payment_id, is_used)
@@ -232,4 +253,94 @@ INSERT INTO subscription (
       (4, 5, 4, 'customer_test_004', 23, 19,
        DATE_SUB(CURRENT_TIMESTAMP, INTERVAL 1 DAY), DATE_SUB(CURRENT_TIMESTAMP, INTERVAL 2 MONTH),DATE_SUB(CURRENT_TIMESTAMP, INTERVAL 1 DAY),9);
 
+-- 12. 게시글 추가
+INSERT INTO post
+(member_id, category_id, content, image_url, subscriber_only)
+VALUES
 
+-- =========================
+-- 맛집 8
+-- =========================
+(1, 8, '주말에 다녀온 서울 맛집 후기입니다. 파스타가 특히 맛있었어요.', NULL, FALSE),
+(2, 8, '여행 중 우연히 발견한 작은 맛집을 추천합니다.', NULL, FALSE),
+(3, 8, '구독자분들에게만 알려드리는 숨은 맛집 추천입니다.', NULL, TRUE),
+(5, 8, '혼자 방문하기 좋은 맛집을 찾아서 다녀왔습니다.', NULL, FALSE),
+
+-- =========================
+-- 여행 9
+-- =========================
+(1, 9, '부산 여행을 다녀왔습니다. 바다 산책 코스를 추천합니다.', NULL, FALSE),
+(2, 9, '제주도 여행 후기입니다. 조용하게 걷기 좋은 곳이 많았어요.', NULL, FALSE),
+(3, 9, '당일치기로 다녀오기 좋은 서울 근교 여행지를 소개합니다.', NULL, FALSE),
+(3, 9, '구독자 전용으로 공개하는 가을 여행 코스입니다.', NULL, TRUE),
+(4, 9, '사진을 찍으러 다녀온 여행 후기입니다. 풍경이 정말 좋았습니다.', NULL, FALSE),
+
+-- =========================
+-- 운동 10
+-- =========================
+(2, 10, '운동 초보자를 위한 가벼운 홈트레이닝 루틴입니다.', NULL, FALSE),
+(3, 10, '아침 운동을 한 달 동안 꾸준히 해본 후기입니다.', NULL, FALSE),
+(5, 10, '퇴근 후 할 수 있는 간단한 운동 루틴을 정리했습니다.', NULL, FALSE),
+(6, 10, '집에서 스트레칭과 운동을 같이 해봤습니다.', NULL, FALSE),
+
+-- =========================
+-- 독서 11
+-- =========================
+(1, 11, '최근 읽은 소설 작품 중 가장 기억에 남은 책을 소개합니다.', NULL, FALSE),
+(1, 11, '주말 독서 기록입니다. 오랜만에 책 한 권을 끝까지 읽었습니다.', NULL, FALSE),
+(3, 11, '여행에 관한 에세이를 읽고 기억에 남는 부분을 정리했습니다.', NULL, FALSE),
+(3, 11, '구독자분들에게만 추천하는 이번 달 독서 목록입니다.', NULL, TRUE),
+(5, 11, '자기 전에 읽기 좋은 짧은 책을 추천합니다.', NULL, FALSE),
+
+-- =========================
+-- 음악 12
+-- =========================
+(2, 12, '집중할 때 듣기 좋은 음악 플레이리스트를 추천합니다.', NULL, FALSE),
+(5, 12, '비 오는 날 듣기 좋은 음악을 모아봤습니다.', NULL, FALSE),
+(5, 12, '최근 가장 자주 듣는 음악과 플레이리스트 후기입니다.', NULL, FALSE),
+(6, 12, '공예 작업을 하면서 듣기 좋은 잔잔한 음악 추천입니다.', NULL, FALSE),
+(3, 12, '구독자 전용으로 공유하는 새벽 음악 플레이리스트입니다.', NULL, TRUE),
+
+-- =========================
+-- 요리 13
+-- =========================
+(2, 13, '초보자도 쉽게 만들 수 있는 파스타 요리 레시피입니다.', NULL, FALSE),
+(2, 13, '냉장고 재료만 사용해서 간단한 요리를 만들어봤습니다.', NULL, FALSE),
+(3, 13, '여행에서 먹었던 음식을 생각하며 만든 요리입니다.', NULL, FALSE),
+(3, 13, '구독자에게만 공개하는 특별한 볶음 요리 레시피입니다.', NULL, TRUE),
+(6, 13, '주말에 만들어본 간단한 베이킹 후기입니다.', NULL, FALSE),
+
+-- =========================
+-- 공예 14
+-- =========================
+(6, 14, '초보자를 위한 코바늘 공예 작품을 만들어봤습니다.', NULL, FALSE),
+(6, 14, '이번 주말에 완성한 뜨개질 작품입니다.', NULL, FALSE),
+(4, 14, '작은 소품을 직접 만드는 공예 작업 과정을 기록했습니다.', NULL, FALSE),
+(3, 14, '구독자분들과 공유하는 공예 작품 제작 과정입니다.', NULL, TRUE),
+(1, 14, '책갈피를 직접 만들어본 간단한 공예 후기입니다.', NULL, FALSE),
+
+-- =========================
+-- 그림 15
+-- =========================
+(4, 15, '오랜만에 완성한 그림 작품입니다. 풍경을 주제로 그렸습니다.', NULL, FALSE),
+(4, 15, '여행에서 찍은 사진을 참고해서 그림을 그려봤습니다.', NULL, FALSE),
+(1, 15, '책을 읽다가 떠오른 장면을 그림으로 표현해봤습니다.', NULL, FALSE),
+(3, 15, '연습 삼아 시작했는데 마음에 드는 그림 작품이 완성됐습니다.', NULL, TRUE),
+(6, 15, '공예 작품을 참고해서 간단한 그림을 그려봤습니다.', NULL, FALSE),
+
+-- =========================
+-- 게임 16
+-- =========================
+(5, 16, '주말에 친구들과 같이 플레이한 게임 후기입니다.', NULL, FALSE),
+(1, 16, '최근 시작한 게임을 초보자 입장에서 리뷰해봤습니다.', NULL, FALSE),
+(2, 16, '가볍게 즐기기 좋은 게임을 몇 가지 추천합니다.', NULL, FALSE),
+(3, 16, '구독자들과 함께 즐기고 싶은 게임 추천 목록입니다.', NULL, TRUE),
+
+-- =========================
+-- 기타 17
+-- =========================
+(1, 17, '요즘 새롭게 시작한 취미에 대한 기록입니다.', NULL, FALSE),
+(2, 17, '주말에 집에서 할 수 있는 간단한 취미를 추천합니다.', NULL, FALSE),
+(4, 17, '사진 정리를 하면서 예전 여행 기록을 다시 살펴봤습니다.', NULL, FALSE),
+(5, 17, '최근 배우기 시작한 새로운 취미 후기입니다.', NULL, FALSE),
+(3, 17, '구독자분들과만 공유하는 이번 달 취미 계획입니다.', NULL, TRUE);

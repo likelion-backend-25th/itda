@@ -124,32 +124,13 @@ public interface PaymentMapper {
             @Param("paidStatusId") Long paidStatusId,
             @Param("refundedStatusId") Long refundedStatusId
     );
-    // 환불 후 구독 상태 변경 SS01 → SS02 변경
-    int updateSubscriptionCancelled(
-            @Param("paymentId") Long paymentId,
-            @Param("activeStatusId") Long activeStatusId,
-            @Param("cancelledStatusId") Long cancelledStatusId
-    );
+
+    // 환불 후 구독 삭제
+    int deleteByPaymentId(Long paymentId);
 
     // 환불 후 결제 테마 내역 삭제
     int deleteThemePurchaseByPaymentId(
             @Param("paymentId") Long paymentId
     );
-
-
-
-    /**
-     * 회원의 결제 이력 조회
-     * @param memberId 회원 ID
-     * @return 결제 이력 목록
-     */
-    List<Payment> findPaymentsByMemberId(
-            @Param("memberId") Long memberId
-    );
-    /**
-     * 관리자 전체 결제 이력 조회
-     * @return 전체 결제 이력 목록
-     */
-    List<Payment> findAllPayments();
 
 }

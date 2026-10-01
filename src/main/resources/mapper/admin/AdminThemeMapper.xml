@@ -18,7 +18,8 @@
         status,
         is_default AS isDefault,
         updated_at AS updatedAt,
-        created_at AS createdAt
+        created_at AS createdAt,
+        css_text AS cssText
         FROM theme
         ORDER BY created_at DESC
     </select>
@@ -41,7 +42,6 @@
         description = #{request.description},
         price = #{request.price},
         thumbnail_url = #{request.thumbnailUrl},
-        theme_code = #{request.themeCode},
         css_text = #{request.cssText}
         WHERE id = #{themeId}
     </update>

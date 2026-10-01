@@ -14,4 +14,17 @@ public interface MemberMapper {
 
     // 신규 회원 등록 (OAuth 2.0 소셜 로그인 자동 회원가입)
     int save(Member member);
+
+    int updateMyProfile(
+            @Param("memberId") Long memberId,
+            @Param("nickname") String nickname,
+            @Param("introduction") String introduction,
+            @Param("profileImage") String profileImage,
+            @Param("clearProfileImage") boolean clearProfileImage
+    );
+
+    int updateMonthlyIncome(
+            @Param("memberId") Long memberId,
+            @Param("monthlyIncome") int monthlyIncome
+    );
 }

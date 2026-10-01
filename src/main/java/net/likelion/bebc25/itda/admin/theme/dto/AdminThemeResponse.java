@@ -12,5 +12,23 @@ public record AdminThemeResponse(
         String status,
         Boolean isDefault,
         LocalDateTime updatedAt,
-        LocalDateTime createdAt
-) {}
+        LocalDateTime createdAt,
+        String cssText
+) {
+    /** DB의 S3 key를 프리사인 URL로 바꿔 응답한다 */
+    public static AdminThemeResponse from(AdminThemeResponse theme, String thumbnailUrl) {
+        return new AdminThemeResponse(
+                theme.id(),
+                theme.themeName(),
+                theme.description(),
+                theme.price(),
+                thumbnailUrl,
+                theme.themeCode(),
+                theme.status(),
+                theme.isDefault(),
+                theme.updatedAt(),
+                theme.createdAt(),
+                theme.cssText()
+        );
+    }
+}

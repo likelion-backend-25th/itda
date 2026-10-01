@@ -1,5 +1,6 @@
 package net.likelion.bebc25.itda.admin.post.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import net.likelion.bebc25.itda.admin.post.dto.AdminPostResponse;
@@ -17,6 +18,10 @@ public class AdminPostController {
 
     private final AdminPostService adminPostService;
 
+    @Operation(
+            summary = "게시글 목록 조회",
+            description = "관리자용 전체 게시글 목록을 조회한다."
+    )
     @GetMapping
     public ResponseEntity<List<AdminPostResponse>> getAllPosts() {
 
@@ -26,6 +31,10 @@ public class AdminPostController {
         return ResponseEntity.ok(posts);
     }
 
+    @Operation(
+            summary = "게시글 삭제",
+            description = "관리자가 게시글을 삭제한다."
+    )
     @DeleteMapping("/{postId}")
     public ResponseEntity<Void> deletePost(
             @PathVariable Long postId

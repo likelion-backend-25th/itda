@@ -21,7 +21,6 @@ public record AdminThemeRequest(
         @Size(max = 255, message = "썸네일 URL은 255자 이하여야 합니다.")
         String thumbnailUrl,
 
-        @NotBlank(message = "테마 코드는 필수입니다.")
         @Size(max = 255, message = "테마 코드는 255자 이하여야 합니다.")
         String themeCode,
 

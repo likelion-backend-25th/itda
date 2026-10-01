@@ -3,6 +3,7 @@ package net.likelion.bebc25.itda.security.oauth;
 import lombok.extern.slf4j.Slf4j;
 import net.likelion.bebc25.itda.domain.Member;
 import net.likelion.bebc25.itda.member.mapper.MemberMapper;
+import net.likelion.bebc25.itda.s3.S3Service;
 import net.likelion.bebc25.itda.security.principal.CustomUserDetails;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
@@ -19,9 +20,11 @@ import java.util.UUID;
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
     private final MemberMapper memberMapper;
+    private final S3Service s3Service;
 
-    public CustomOAuth2UserService(MemberMapper memberMapper) {
+    public CustomOAuth2UserService(MemberMapper memberMapper, S3Service s3Service) {
         this.memberMapper = memberMapper;
+        this.s3Service = s3Service;
     }
 
     @Override
@@ -42,20 +45,27 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     }
 
     // 소셜 플랫폼별 상이한 JSON 구조를 분석하여 Member 엔티티로 변환 및 DB 반영
+    @SuppressWarnings("unchecked")
     private Member saveOrUpdate(String registrationId, Map<String, Object> attributes) {
         String email;
         String nickname;
+        String avatarUrl = null;
 
         switch (registrationId.toLowerCase()) {
             case "google" -> {
                 email = (String) attributes.get("email");
                 nickname = (String) attributes.get("name");
+                avatarUrl = asTrimmedString(attributes.get("picture"));
             }
             case "kakao" -> {
                 Map<String, Object> kakaoAccount = (Map<String, Object>) attributes.get("kakao_account");
-                Map<String, Object> profile = (kakaoAccount != null) ? (Map<String, Object>) kakaoAccount.get("profile") : null;
+                Map<String, Object> profile = (kakaoAccount != null)
+                        ? (Map<String, Object>) kakaoAccount.get("profile")
+                        : null;
                 email = (kakaoAccount != null) ? (String) kakaoAccount.get("email") : null;
-                nickname = (profile != null) ? (String) profile.get("nickname") : "KakaoUser_" + UUID.randomUUID().toString().substring(0, 6);
+                nickname = (profile != null)
+                        ? (String) profile.get("nickname")
+                        : "KakaoUser_" + UUID.randomUUID().toString().substring(0, 6);
 
                 // 카카오 비즈 앱 미전환 또는 사용자 동의 거부로 이메일이 null인 경우: 카카오 고유 id 기반 가상 이메일 생성
                 if (email == null || email.isBlank()) {
@@ -63,26 +73,65 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                     email = "kakao_" + kakaoId + "@kakao.social";
                     log.info("카카오 이메일 미제공 계정: 대체 가상 이메일 [{}] 생성", email);
                 }
+
+                // 기본 실루엣 이미지는 S3에 올리지 않음
+                boolean isDefaultImage = profile != null && Boolean.TRUE.equals(profile.get("is_default_image"));
+                if (!isDefaultImage && profile != null) {
+                    avatarUrl = asTrimmedString(profile.get("profile_image_url"));
+                    if (avatarUrl == null) {
+                        avatarUrl = asTrimmedString(profile.get("thumbnail_image_url"));
+                    }
+                }
             }
-            default -> throw new OAuth2AuthenticationException("지원하지 않는 소셜 로그인 공급자입니다: " + registrationId);
+            default -> throw new OAuth2AuthenticationException(
+                    "지원하지 않는 소셜 로그인 공급자입니다: " + registrationId);
         }
 
         // DB에 해당 이메일의 기존 회원이 있는지 조회
         Member existingMember = memberMapper.findByEmail(email);
         if (existingMember == null) {
-            // 최초 로그인인 경우 자동 회원가입 진행
+            // 신규만 소셜 아바타 → S3 업로드 (실패해도 가입은 진행)
+            String profileImageKey = uploadAvatarOrNull(avatarUrl);
+
             Member newMember = Member.builder()
                     .email(email)
                     .password("") // 소셜 로그인 회원은 자체 비밀번호가 없으므로 빈 문자열 저장
                     .nickname(nickname)
+                    .profileImage(profileImageKey)
                     .role("ROLE_USER")
                     .authmethod(registrationId.toUpperCase())
                     .build();
             memberMapper.save(newMember);
-            log.info("신규 소셜 회원 DB 자동 가입 완료: ID={}, Email={}", newMember.getId(), newMember.getEmail());
+            log.info(
+                    "신규 소셜 회원 DB 자동 가입 완료: ID={}, Email={}, profileImage={}",
+                    newMember.getId(),
+                    newMember.getEmail(),
+                    profileImageKey
+            );
             return newMember;
         }
 
+        // 기존 회원: 백필·이미지 갱신 없음
         return existingMember;
+    }
+
+    private String uploadAvatarOrNull(String avatarUrl) {
+        if (avatarUrl == null || avatarUrl.isBlank()) {
+            return null;
+        }
+        try {
+            return s3Service.uploadFromUrl(avatarUrl, "profile");
+        } catch (Exception e) {
+            log.warn("소셜 프로필 이미지 S3 업로드 실패 (가입은 계속): url={}, reason={}", avatarUrl, e.getMessage());
+            return null;
+        }
+    }
+
+    private static String asTrimmedString(Object value) {
+        if (!(value instanceof String text)) {
+            return null;
+        }
+        String trimmed = text.trim();
+        return trimmed.isEmpty() ? null : trimmed;
     }
 }

@@ -6,6 +6,4 @@ import java.util.List;
 
 public interface MyPaymentService {
     List<MyPaymentResponse> getMyPayments(Long memberId);
-
-    void requestRefund(Long memberId, Long paymentId);
 }

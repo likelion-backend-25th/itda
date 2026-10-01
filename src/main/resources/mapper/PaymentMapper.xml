@@ -50,8 +50,8 @@
     </select>
 
     <!-- payment에서 테마/구독 결제에 따라 가격을 조회-->
-    <select id="findAmount"
-            resultType="java.lang.Long">
+    <select id="findAmount" resultType="java.lang.Long">
+
         <!-- 둘 중 null값이 아닌것만 조회-->
         SELECT COALESCE(
         <!-- 테마 결제 가격 -->
@@ -64,22 +64,12 @@
 
         <!-- 구독 결제 가격 조회 -->
         (
-        SELECT cc.numeric_value
-        FROM subscription s
-        <!-- 실제 구독 금액(numeric_value)을 조회 -->
-        INNER JOIN common_code cc
-        ON s.price_id = cc.id
-        WHERE s.target_id = #{targetId}
-        <!-- 현재 결제 유형이 SUBSCRIPTION인 경우에만 구독 가격 조회 쿼리가 동작 -->
+        SELECT common_code.numeric_value
+        FROM common_code
+        WHERE common_code.type = 5
+        AND common_code.is_active = TRUE
         AND #{paymentType} = 'SUBSCRIPTION'
-        <!-- type = 5는 구독 가격 코드 -->
-        AND cc.type = 5
-
-        <!-- 현재 신규 구독에 사용 가능한 가격만 조회 -->
-        AND cc.is_active = TRUE
-
-        <!-- 활성화된 가격 코드가 여러 개 존재할 경우 값이 가장 큰 최신 가격을 우선 사용 -->
-        ORDER BY cc.sort DESC
+        ORDER BY common_code.sort DESC
         LIMIT 1
         )
         )
@@ -120,7 +110,7 @@
         member_id, target_id, price_id, status_id, payment_id, started_at, next_billing_at, ended_at
         )
         SELECT
-        #{memberId}, #{targetId}, common_code.id, #{statusId}, #{paymentId}, CURRENT_TIMESTAMP, DATE_ADD(CURRENT_TIMESTAMP, INTERVAL 1 MONTH), NULL
+        #{memberId}, #{targetId}, common_code.id, #{statusId}, #{paymentId}, CURRENT_TIMESTAMP, DATE_ADD(CURRENT_TIMESTAMP, INTERVAL 1 MONTH), DATE_ADD(CURRENT_TIMESTAMP, INTERVAL 1 MONTH)
 
         FROM common_code
         WHERE common_code.type = 5
@@ -131,62 +121,6 @@
 
     </insert>
 
-    <!--  회원의 결제 목록 조회 -->
-    <select id="findPaymentsByMemberId" resultType="net.likelion.bebc25.itda.payment.dto.PaymentManagementResponse">
-
-        SELECT
-        p.payment_id AS paymentId,
-        p.member_id AS memberId,
-        p.target_id AS targetId,
-        p.paid_at AS paidAt,
-
-        <!-- SUBSCRIPTION 결제일 경우에만 만료일 조회 -->
-        s.ended_at AS endedAt,
-
-        <!-- 카드, 카카오페이 등 -->
-        cc.name AS payMethod
-
-        FROM payment p
-
-        <!-- 구독 결제인 경우 subscription 정보 연결 -->
-        LEFT JOIN subscription s
-        ON p.payment_type = 'SUBSCRIPTION'
-        AND p.member_id = s.member_id
-        AND p.target_id = s.target_id
-
-        <!-- 결제 수단 이름 조회 -->
-        LEFT JOIN common_code cc
-        ON p.pay_method_id = cc.id
-
-        ORDER BY p.paid_at DESC
-
-    </select>
-
-    <!-- 관리자 전체 결제 이력 조회 -->
-    <select id="findAllPayments"
-            resultType="net.likelion.bebc25.itda.payment.dto.PaymentManagementResponse">
-
-        SELECT
-        p.payment_id AS paymentId,
-        p.member_id AS memberId,
-        p.target_id AS targetId,
-        p.paid_at AS paidAt,
-        s.ended_at AS endedAt,
-        cc.name AS payMethod
-
-        FROM payment p
-
-        <!-- 구독 결제인 경우 구독 만료일 조회 -->
-        LEFT JOIN subscription s
-        ON s.payment_id = p.id
-
-        <!-- 결제 수단 이름 조회 -->
-        LEFT JOIN common_code cc
-        ON cc.id = p.pay_method_id
-
-        ORDER BY p.paid_at DESC
-
-    </select>
     <!-- 테마 사용여부 조회-->
     <select id="findThemeIsUsed" resultType="java.lang.Boolean">
         SELECT is_used
@@ -219,13 +153,11 @@
         AND status_id = #{paidStatusId}
     </update>
 
-    <!-- 환불 후 구독 상태 변경 -->
-    <update id="updateSubscriptionCancelled">
-        UPDATE subscription
-        SET status_id = #{cancelledStatusId}
+    <!-- 환불 후 구독 테이블에서 제거 -->
+    <delete id="deleteByPaymentId">
+        DELETE FROM subscription
         WHERE payment_id = #{paymentId}
-        AND status_id = #{activeStatusId}
-    </update>
+    </delete>
 
     <!-- 환불 후 테마 구매 내역에서 제거 -->
     <delete id="deleteThemePurchaseByPaymentId">
