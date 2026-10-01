@@ -172,8 +172,14 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     }
 
     @Override
+    @Transactional
     public int getMonthlyIncome(Long targetId) {
-        return subscriptionMapper.getMonthlyIncome(targetId);
+        // 이번 달 구독 수익을 계산
+        int monthlyIncome = subscriptionMapper.getMonthlyIncome(targetId);
+        // 계산된 수익을 member.month_income에 저장
+        memberMapper.updateMonthlyIncome(targetId, monthlyIncome);
+        // 계산된 수익 반환
+        return monthlyIncome;
     }
 
     @Override

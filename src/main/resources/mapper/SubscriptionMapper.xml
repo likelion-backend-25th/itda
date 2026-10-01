@@ -162,16 +162,29 @@
 
     </select>
 
-    <select id="getMonthlyIncome"
-            resultType="int">
+    <!--결제 완료(PS02), 환불 완료(PS04) 상태일때 정산 금액을 다르게 처리 -->
+    <select id="getMonthlyIncome" resultType="int">
+        <!-- 결제 상태별 정산 금액 합산 -->
+        SELECT COALESCE(
+        SUM(
+        CASE
+        WHEN p.status_id = 2 THEN p.amount
+        WHEN p.status_id = 4 THEN pr.deduction_amount
+        ELSE 0
+        END
+        ), 0)
 
-        SELECT COALESCE(SUM(p.amount), 0)
         FROM payment p
+
+        LEFT JOIN payment_refund pr
+        ON pr.payment_id = p.id
+
         WHERE p.payment_type = 'SUBSCRIPTION'
         AND p.target_id = #{targetId}
-        AND p.status_id = 2
+        AND p.status_id IN (2, 4)
+
         AND p.paid_at >= DATE_FORMAT(CURRENT_DATE, '%Y-%m-01')
-        AND p.paid_at &lt;DATE_ADD(
+        AND p.paid_at &lt; DATE_ADD(
         DATE_FORMAT(CURRENT_DATE, '%Y-%m-01'),
         INTERVAL 1 MONTH
         )
