@@ -1,9 +1,8 @@
 package net.likelion.bebc25.itda.subscription.service;
 
+import net.likelion.bebc25.itda.dto.PageResponse;
 import net.likelion.bebc25.itda.subscription.dto.MySubscriptionResponse;
 import net.likelion.bebc25.itda.subscription.dto.SubscriptionRequest;
-
-import java.util.List;
 
 public interface SubscriptionService {
 
@@ -18,7 +17,7 @@ public interface SubscriptionService {
             String customerUid
     );
 
-    List<MySubscriptionResponse> getMySubscriptions(Long memberId);
+    PageResponse<MySubscriptionResponse> getMySubscriptions(Long memberId, int page, int size);
 
     boolean isSubscribed(
             Long memberId,

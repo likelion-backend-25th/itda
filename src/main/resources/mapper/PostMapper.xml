@@ -11,6 +11,22 @@
         p.image_url, p.reply_count, p.like_count, p.view_count, p.subscriber_only, p.created_at, p.updated_at
     </sql>
 
+    <sql id="reactionColumns">
+        EXISTS (SELECT 1 FROM post_reaction pr_like
+        JOIN common_code cc_like
+        ON pr_like.type = cc_like.id
+        WHERE pr_like.post_id = p.id
+        AND pr_like.member_id = #{memberId}
+        AND cc_like.code='LIKE') AS liked,
+
+        EXISTS (SELECT 1 FROM post_reaction pr_scrap
+        JOIN common_code  cc_scrap
+        ON pr_scrap.type = cc_scrap.id
+        WHERE pr_scrap.post_id = p.id
+        AND pr_scrap.member_id = #{memberId}
+        AND cc_scrap.code = 'SCRAP') AS scrapped
+    </sql>
+
 <!--    1. 신규 게시글 등록 작성일은 DEFAULT로 만든 날로 들어가기 때문에 필요 없음  -->
     <insert id="save" parameterType="net.likelion.bebc25.itda.post.domain.Post" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO post (member_id, category_id, content, image_url, subscriber_only)
@@ -142,16 +158,19 @@
 
 <!--    13. 마이페이지 - 내가 좋아요한 게시글 목록 조회-->
     <select id="findMyLikedPosts" resultType="net.likelion.bebc25.itda.post.domain.Post">
-        SELECT <include refid="postColumns"/>
-        FROM post_reaction pr
-        JOIN post p
-        ON pr.post_id = p.id
+        SELECT <include refid="postColumns"/>, <include refid="reactionColumns"/>
+        FROM post p
         JOIN member m
         ON p.member_id = m.id
         JOIN common_code c
         ON p.category_id = c.id
+        JOIN post_reaction pr
+        ON pr.post_id = p.id
+        JOIN common_code reaction_code
+        ON pr.type = reaction_code.id
         WHERE pr.member_id = #{memberId}
-        AND pr.type = 25
+        AND reaction_code.type = 6
+        AND reaction_code.code = 'RT01'
         <if test="cursor != null ">
             AND p.id <![CDATA[ < ]]> #{cursor}
         </if>
@@ -161,16 +180,19 @@
 
 <!--    14. 마이페이지 - 내가 스크랩한 게시글 목록 조회-->
     <select id="findMyScrappedPosts" resultType="net.likelion.bebc25.itda.post.domain.Post" >
-        SELECT <include refid="postColumns"/>
-        FROM post_reaction pr
-        JOIN post p
-        ON pr.post_id = p.id
+        SELECT <include refid="postColumns"/>, <include refid="reactionColumns"/>
+        FROM post p
         JOIN member m
         ON p.member_id = m.id
         JOIN common_code c
         ON p.category_id = c.id
+        JOIN post_reaction pr
+        ON pr.post_id = p.id
+        JOIN common_code reaction_code
+        ON pr.type = reaction_code.id
         WHERE pr.member_id = #{memberId}
-        AND pr.type = 26
+        AND reaction_code.code = 'RT02'
+        AND reaction_code.type = 6
         <if test="cursor != null ">
             AND p.id <![CDATA[ < ]]> #{cursor}
         </if>

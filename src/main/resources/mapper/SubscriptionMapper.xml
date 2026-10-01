@@ -47,8 +47,19 @@
         WHERE s.member_id = #{memberId}
         AND c.type = 4
         AND c.code = 'SS01'
-        ORDER BY s.next_billing_at ASC
+        ORDER BY s.next_billing_at ASC, s.id ASC
+        LIMIT #{limit} OFFSET #{offset}
 
+    </select>
+
+    <select id="countMySubscriptions" resultType="long">
+        SELECT COUNT(*)
+        FROM subscription s
+        JOIN common_code c
+        ON s.status_id = c.id
+        WHERE s.member_id = #{memberId}
+        AND c.type = 4
+        AND c.code = 'SS01'
     </select>
 
 

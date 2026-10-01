@@ -14,13 +14,13 @@ public interface ThemeMapper {
     Long findDefaultThemeId();
 
     // 테마 전체 목록 조회
-    List<ThemeResponse> findAllThemes(@Param("memberId") Long memberId, @Param("limit") int limit, @Param("offset") int offset);
+    List<ThemeResponse> findAllThemes(@Param("memberId") Long memberId, @Param("limit") int limit, @Param("offset") int offset, @Param("keyword") String keyword);
 
     // ID 기반 테마 상세 조회
     ThemeDetailResponse findById(@Param("memberId") Long memberId, @Param("themeId") Long themeId);
 
     // 전체 테마 개수
-    long countThemes();
+    long countThemes(@Param("keyword") String keyword);
 
     // 회원의 보유 테마 등록
     void insertDefaultTheme(@Param("memberId") Long memberId, @Param("themeId") Long themeId);
