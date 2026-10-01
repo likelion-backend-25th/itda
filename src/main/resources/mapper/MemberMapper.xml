@@ -39,4 +39,11 @@
         WHERE id = #{memberId}
     </update>
 
+    <!-- 회원의 이번 달 수익 갱신 -->
+    <update id="updateMonthlyIncome">
+        UPDATE member
+        SET month_income = #{monthlyIncome}
+        WHERE id = #{memberId}
+    </update>
+
 </mapper>

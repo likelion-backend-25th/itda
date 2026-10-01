@@ -22,4 +22,9 @@ public interface MemberMapper {
             @Param("profileImage") String profileImage,
             @Param("clearProfileImage") boolean clearProfileImage
     );
+
+    int updateMonthlyIncome(
+            @Param("memberId") Long memberId,
+            @Param("monthlyIncome") int monthlyIncome
+    );
 }
