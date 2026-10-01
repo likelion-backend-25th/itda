@@ -34,7 +34,7 @@ public class AdminPaymentController {
 
     @Operation(
             summary = "환불 목록 조회",
-            description = "관리자용 환불 요청 목록을 조회한다."
+            description = "payment_refund 환불 내역을 조회한다."
     )
     @GetMapping("/refunds")
     public ResponseEntity<List<AdminRefundResponse>> getAllRefunds() {
