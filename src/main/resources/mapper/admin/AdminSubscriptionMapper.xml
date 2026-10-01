@@ -29,7 +29,7 @@
         JOIN common_code c
         ON s.status_id = c.id
         WHERE c.type = 4
-        ORDER BY s.started_at DESC
+        ORDER BY s.started_at DESC, s.id DESC
 
     </select>
 
