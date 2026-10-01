@@ -49,6 +49,8 @@ public class PaymentServiceImpl implements PaymentService {
                 request.targetId()
         );
 
+
+
         // PS01 = 결제 대기에서 시작
         Long statusId =
                 paymentMapper.findCommonCodeId(
@@ -449,18 +451,38 @@ public class PaymentServiceImpl implements PaymentService {
         // 결제 유형에 따라 후속 처리
         if (payment.getPaymentType().equals("THEME")) {
 
-            // 테마 결제 완료 → theme_purchase 저장
-            int insertedTheme =
-                    paymentMapper.insertThemePurchase(
-                            payment.getMemberId(),
-                            payment.getTargetId(),
-                            payment.getId()
-                    );
-            // 결제는 완료되었지만 테마 구매 내역 저장에 실패한 경우
-            if (insertedTheme != 1) {
-                throw new IllegalStateException(
-                        ErrorCode.INTERNAL_SERVER_ERROR.getMessage() + " 테마 구매 목록에 저장 실패"
+            // 기존 테마 구매 상태 조회
+            Boolean purchaseStatus = paymentMapper.findThemePurchaseStatus(
+                    payment.getMemberId(),
+                    payment.getTargetId());
+
+            // 구매 이력이 없는 경우
+            if (purchaseStatus == null) {
+                int insertedTheme = paymentMapper.insertThemePurchase(
+                        payment.getMemberId(),
+                        payment.getTargetId(),
+                        payment.getId()
                 );
+                // 테마 구매 내역에 저장 되었는가 확인
+                if (insertedTheme != 1) {
+                    throw new IllegalStateException(
+                            ErrorCode.INTERNAL_SERVER_ERROR.getMessage()
+                                    + " 테마 구매 목록 저장 실패"
+                    );
+                }
+                // 환불한 테마인 경우
+            } else if (purchaseStatus == false) {
+
+                int updatedTheme =paymentMapper.repurchaseTheme(
+                        payment.getMemberId(),
+                        payment.getTargetId(),
+                        payment.getId()
+                );
+                if (updatedTheme != 1){
+                    throw new IllegalStateException(
+                            ErrorCode.INTERNAL_SERVER_ERROR.getMessage() + " 테마 재구매 정보 갱신 실패"
+                    );
+                }
             }
 
         } else if (payment.getPaymentType().equals("SUBSCRIPTION")) {
@@ -478,19 +500,38 @@ public class PaymentServiceImpl implements PaymentService {
                 );
             }
 
-            // 구독 결제 완료 → subscription 저장
-            int insertedSubscription =
-                    paymentMapper.insertSubscription(
-                            payment.getMemberId(),
-                            payment.getTargetId(),
-                            subscriptionStatusId,
-                            payment.getId()
-                    );
-            // 결제는 완료되었지만 구독 내역 저장에 실패한 경우
-            if (insertedSubscription != 1) {
-                throw new IllegalStateException(
-                        ErrorCode.INTERNAL_SERVER_ERROR.getMessage() + " 구독 저장이 실패하였습니다."
+            // 기존 구독 상태 조회
+            Long currentSubscriptionStatus = paymentMapper.findSubscriptionStatus(
+                    payment.getMemberId(),
+                    payment.getTargetId()
+            );
+
+            // 최초 구독
+            if(currentSubscriptionStatus == null) {
+                int insertedSubscription = paymentMapper.insertSubscription(
+                        payment.getMemberId(),
+                        payment.getTargetId(),
+                        subscriptionStatusId,
+                        payment.getId()
                 );
+                if (insertedSubscription != 1) {
+                    throw new IllegalStateException(
+                            ErrorCode.INTERNAL_SERVER_ERROR.getMessage() + " 구독 저장이 실패했습니다."
+                    );
+                }
+            }else {
+                // 기존 구독 정보가 있는경우
+                int updatedSubscription = paymentMapper.reactivateSubscription(
+                        payment.getMemberId(),
+                        payment.getTargetId(),
+                        subscriptionStatusId,
+                        payment.getId()
+                );
+                if (updatedSubscription != 1) {
+                    throw new IllegalStateException(
+                            ErrorCode.INTERNAL_SERVER_ERROR.getMessage() + " 재구독 상태 변경에 실패했습니다."
+                    );
+                }
             }
         }
         /*
@@ -672,7 +713,7 @@ public class PaymentServiceImpl implements PaymentService {
                 );
 
         // 환불 후 결제 상태 갱신
-        int updatedRefund = paymentMapper.updateRefunded(
+        int updatedRefund = paymentMapper.updatePaymentRefundStatus(
                         payment.getPaymentId(),
                         paidStatusId,
                         refundedStatusId
@@ -687,23 +728,46 @@ public class PaymentServiceImpl implements PaymentService {
         if("SUBSCRIPTION".equals(
                 payment.getPaymentType()
         )){
-            // 환불 후 구독 페이지에서 제거
-            int deletedSubscription = paymentMapper.deleteByPaymentId(payment.getId());
-            // 제거 여부 확인
-            log.info("[SUBSCRIPTION DELETE] paymentId={}, deldteCount={}",
+            // 구독 취소 상태 코드 조회 SS02
+            Long cancelledStatusId = paymentMapper.findCommonCodeId(4,"SS02");
+
+            // 구독 취소 코드가 없는 경우
+            if (cancelledStatusId == null) {
+                throw new IllegalStateException(
+                        ErrorCode.INTERNAL_SERVER_ERROR.getMessage() + " 구독 취소 상태 코드가 없습니다."
+                );
+            }
+            // 구독 이력은 삭제하지 않고 취소 상태로 변경
+            int updatedSubscription = paymentMapper.updateSubscriptionCancelStatus(
                     payment.getId(),
-                    deletedSubscription
+                    cancelledStatusId
             );
+
+            if(updatedSubscription != 1) {
+                throw new IllegalStateException(
+                        ErrorCode.INTERNAL_SERVER_ERROR.getMessage() + " 구독 상태 변경에 실패했습니다."
+                );
+            }
+            // 구독 취소/ 결제ID와 구독 취소 상태를 보여줌
+            log.info(
+                    "[SUBSCRIPTION CANCELLED] paymentId={}, statusId={}",
+                    payment.getId(),
+                    cancelledStatusId
+            );
+
 
         } else if ("THEME".equals(
                 payment.getPaymentType()
         )) {
-            // 환불 후 테마 결제 내역에서 삭제
-            int deletedThemePurchase = paymentMapper.deleteThemePurchaseByPaymentId(payment.getId());
+            // 환불 대상 테마를 현재 사용 중이면 기본 테마로 변경
+            paymentMapper.resetThemeToDefaultByPaymentId(payment.getId());
+
+            // 환불 후 테마 결제 내역의 상태 초기화
+            int updatedThemePurchase = paymentMapper.updateRefundStatusByPaymentId(payment.getId());
             // 제거 여부 확인
-            log.info("[SUBSCRIPTION DELETE] paymentId={}, deldteCount={}",
+            log.info("[THEME PURCHASE REFUNDED] paymentId={}, deldteCount={}",
                     payment.getId(),
-                    deletedThemePurchase
+                    updatedThemePurchase
             );
         }
         log.info("[PAYMENT REFUND SUCCESS] paymentId={}, cancellationId={}, refoundAmount={}, deductionAmount={}",

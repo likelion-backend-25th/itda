@@ -216,28 +216,28 @@ VALUES
     (12, 8, 'THEME', 4, 'imp_test_theme_008', 'merchant_theme_008', 5000, 27, 5, CURRENT_TIMESTAMP);
 
 -- 10. 테마 구매
-INSERT INTO theme_purchase (id, member_id, theme_id, payment_id, is_used)
+INSERT INTO theme_purchase (id, member_id, theme_id, payment_id, is_used, purchase_status)
 VALUES
     -- 기본 테마 (전 회원) — 회원가입과 동일하게 무료 지급
-    (1, 1, 1, NULL, FALSE),  -- user1: 오션 적용 중
-    (2, 2, 1, NULL, FALSE),  -- user2: 포레스트 적용 중
-    (3, 3, 1, NULL, TRUE),   -- creator: 기본 적용
-    (4, 4, 1, NULL, TRUE),   -- artist: 기본 적용
-    (5, 5, 1, NULL, TRUE),   -- music: 기본 적용
-    (6, 6, 1, NULL, FALSE),  -- craft: 미드나잇 다크 적용 중
-    (7, 7, 1, NULL, TRUE),   -- admin: 기본 적용
+    (1, 1, 1, NULL, FALSE,TRUE),  -- user1: 오션 적용 중
+    (2, 2, 1, NULL, FALSE,TRUE),  -- user2: 포레스트 적용 중
+    (3, 3, 1, NULL, TRUE,TRUE),   -- creator: 기본 적용
+    (4, 4, 1, NULL, TRUE,TRUE),   -- artist: 기본 적용
+    (5, 5, 1, NULL, TRUE,TRUE),   -- music: 기본 적용
+    (6, 6, 1, NULL, FALSE,TRUE),  -- craft: 미드나잇 다크 적용 중
+    (7, 7, 1, NULL, TRUE,TRUE),   -- admin: 기본 적용
     -- 유료 구매 (payment 1~5 와 연결)
-    (8,  1, 3, 1, TRUE),     -- user1 오션 블루 적용
-    (9,  1, 5, 2, FALSE),    -- user1 선셋 코랄 보유만
-    (10, 2, 4, 3, TRUE),     -- user2 포레스트 그린 적용
-    (11, 4, 6, 4, FALSE),    -- artist 라벤더 나이트 보유만
-    (12, 6, 2, 5, TRUE),     -- craft 미드나잇 다크 적용
+    (8,  1, 3, 1, TRUE,TRUE),     -- user1 오션 블루 적용
+    (9,  1, 5, 2, FALSE,TRUE),    -- user1 선셋 코랄 보유만
+    (10, 2, 4, 3, TRUE,TRUE),     -- user2 포레스트 그린 적용
+    (11, 4, 6, 4, FALSE,TRUE),    -- artist 라벤더 나이트 보유만
+    (12, 6, 2, 5, TRUE,TRUE),     -- craft 미드나잇 다크 적용
     -- 추가 보유(시드용 무료 지급) — styles/보유 목록 테스트용
-    (13, 1, 7, NULL, FALSE), -- user1 코튼 크림 보유
-    (14, 2, 8, NULL, FALSE), -- user2 스카이 라이트 보유
-    (15, 3, 7, NULL, FALSE), -- creator 코튼 크림 보유
-    (16, 5, 8, NULL, FALSE), -- music 스카이 라이트 보유
-    (17, 7, 3, NULL, FALSE); -- admin 오션 블루 보유
+    (13, 1, 7, NULL, FALSE,TRUE), -- user1 코튼 크림 보유
+    (14, 2, 8, NULL, FALSE,TRUE), -- user2 스카이 라이트 보유
+    (15, 3, 7, NULL, FALSE,TRUE), -- creator 코튼 크림 보유
+    (16, 5, 8, NULL, FALSE,TRUE), -- music 스카이 라이트 보유
+    (17, 7, 3, NULL, FALSE,TRUE); -- admin 오션 블루 보유
 
 -- 11. 정기 구독
 INSERT INTO subscription (
