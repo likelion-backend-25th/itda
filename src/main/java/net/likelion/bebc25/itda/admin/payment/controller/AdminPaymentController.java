@@ -1,5 +1,6 @@
 package net.likelion.bebc25.itda.admin.payment.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import net.likelion.bebc25.itda.admin.payment.dto.AdminPaymentResponse;
@@ -18,6 +19,10 @@ public class AdminPaymentController {
 
     private final AdminPaymentService adminPaymentService;
 
+    @Operation(
+            summary = "결제 목록 조회",
+            description = "관리자용 전체 결제 목록을 조회한다."
+    )
     @GetMapping
     public ResponseEntity<List<AdminPaymentResponse>> getAllPayments() {
 
@@ -27,6 +32,10 @@ public class AdminPaymentController {
         return ResponseEntity.ok(payments);
     }
 
+    @Operation(
+            summary = "환불 목록 조회",
+            description = "관리자용 환불 요청 목록을 조회한다."
+    )
     @GetMapping("/refunds")
     public ResponseEntity<List<AdminRefundResponse>> getAllRefunds() {
 
@@ -36,6 +45,10 @@ public class AdminPaymentController {
         return ResponseEntity.ok(refunds);
     }
 
+    @Operation(
+            summary = "환불 승인",
+            description = "환불 요청을 승인한다."
+    )
     @PatchMapping("/{paymentId}/refund")
     public ResponseEntity<Void> refundPayment(
             @PathVariable Long paymentId
@@ -45,6 +58,10 @@ public class AdminPaymentController {
         return ResponseEntity.ok().build();
     }
 
+    @Operation(
+            summary = "환불 거절",
+            description = "환불 요청을 거절한다."
+    )
     @PatchMapping("/{paymentId}/refund/reject")
     public ResponseEntity<Void> rejectRefund(
             @PathVariable Long paymentId

@@ -7,6 +7,7 @@ import net.likelion.bebc25.itda.admin.theme.mapper.AdminThemeMapper;
 import net.likelion.bebc25.itda.s3.S3Service;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -30,7 +31,7 @@ public class AdminThemeServiceImpl implements AdminThemeService {
 
     @Override
     @Transactional
-    public void createTheme(AdminThemeRequest request) {
+    public void createTheme(AdminThemeRequest request, MultipartFile themeImage) {
         if (request.cssText() == null || request.cssText().isBlank()) {
             throw new IllegalArgumentException("CSS 텍스트는 필수입니다.");
         }
@@ -42,11 +43,18 @@ public class AdminThemeServiceImpl implements AdminThemeService {
             throw new IllegalArgumentException("이미 사용 중인 테마 코드입니다.");
         }
 
+        // 테마 이미지 S3 업로드
+        String themeImageKey = null;
+
+        if (themeImage != null && !themeImage.isEmpty()) {
+            themeImageKey = s3Service.upload(themeImage, "themes");
+        }
+
         adminThemeMapper.insertTheme(new AdminThemeRequest(
                 request.themeName(),
                 request.description(),
                 request.price(),
-                request.thumbnailUrl(),
+                themeImageKey,
                 themeCode,
                 request.cssText()
         ));
