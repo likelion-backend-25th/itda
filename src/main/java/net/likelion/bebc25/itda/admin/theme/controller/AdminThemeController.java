@@ -64,13 +64,24 @@ public class AdminThemeController {
     // 테마 활성화/비활성화
     @Operation(
             summary = "테마 상태 변경",
-            description = "테마 활성화/비활성화 상태를 변경한다."
+            description = "테마 활성화/비활성화 상태를 변경한다. 기본 테마는 HIDDEN으로 바꿀 수 없다."
     )
     @PatchMapping("/{themeId}/status")
     public ResponseEntity<Void> updateThemeStatus(
             @PathVariable Long themeId,
             @RequestParam String status) {
         adminThemeService.updateThemeStatus(themeId, status);
+        return ResponseEntity.noContent().build();
+    }
+
+    // 기본 테마 지정 (is_default = true, 기존 기본은 해제)
+    @Operation(
+            summary = "기본 테마 지정",
+            description = "해당 테마를 유일한 기본 테마로 지정한다. 기존 기본 테마의 is_default는 false가 되고, 대상은 ON_SALE로 유지된다."
+    )
+    @PatchMapping("/{themeId}/default")
+    public ResponseEntity<Void> setDefaultTheme(@PathVariable Long themeId) {
+        adminThemeService.setDefaultTheme(themeId);
         return ResponseEntity.noContent().build();
     }
 }

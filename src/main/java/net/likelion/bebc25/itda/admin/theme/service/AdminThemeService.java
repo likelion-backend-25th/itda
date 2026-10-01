@@ -15,4 +15,7 @@ public interface AdminThemeService {
     void updateTheme(Long themeId, AdminThemeRequest request, MultipartFile themeImage);
 
     void updateThemeStatus(Long themeId, String status);
+
+    /** 해당 테마를 유일한 기본 테마로 지정한다. */
+    void setDefaultTheme(Long themeId);
 }

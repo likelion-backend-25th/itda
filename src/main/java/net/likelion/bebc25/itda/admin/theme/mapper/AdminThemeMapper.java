@@ -31,6 +31,12 @@ public interface AdminThemeMapper {
             @Param("status") String status
     );
 
+    // 기본 테마 플래그 전부 해제
+    int clearDefaultThemes();
+
+    // 지정 테마를 기본 테마로 설정
+    int setDefaultTheme(@Param("themeId") Long themeId);
+
     // 테마 코드 중복 방지
     boolean existsByThemeCode(@Param("themeCode") String themeCode);
 }

@@ -72,6 +72,21 @@
         WHERE id = #{themeId}
     </update>
 
+    <!-- 기본 테마 플래그 전부 해제 (단일 기본값 보장) -->
+    <update id="clearDefaultThemes">
+        UPDATE theme
+        SET is_default = FALSE
+        WHERE is_default = TRUE
+    </update>
+
+    <!-- 지정 테마를 기본으로 설정 (판매중 유지) -->
+    <update id="setDefaultTheme">
+        UPDATE theme
+        SET is_default = TRUE,
+            status = 'ON_SALE'
+        WHERE id = #{themeId}
+    </update>
+
     <!-- 테마 코드 중복 확인 -->
     <select id="existsByThemeCode" resultType="boolean">
         SELECT EXISTS (

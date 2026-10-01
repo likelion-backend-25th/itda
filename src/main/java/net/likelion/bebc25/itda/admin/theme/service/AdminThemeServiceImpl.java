@@ -116,8 +116,36 @@ public class AdminThemeServiceImpl implements AdminThemeService {
             throw new IllegalArgumentException("올바르지 않은 테마 상태입니다.");
         }
 
+        AdminThemeResponse existing = adminThemeMapper.findById(themeId);
+        if (existing == null) {
+            throw new IllegalArgumentException("존재하지 않는 테마입니다.");
+        }
+        // 기본 테마는 숨기면 신규 가입·기본 적용이 깨지므로 차단
+        if ("HIDDEN".equals(status) && Boolean.TRUE.equals(existing.isDefault())) {
+            throw new IllegalArgumentException("기본 테마는 비활성화할 수 없습니다. 다른 테마를 기본으로 지정한 뒤 다시 시도하세요.");
+        }
+
         int updatedCount = adminThemeMapper.updateThemeStatus(themeId, status);
 
+        if (updatedCount == 0) {
+            throw new IllegalArgumentException("존재하지 않는 테마입니다.");
+        }
+    }
+
+    @Override
+    @Transactional
+    public void setDefaultTheme(Long themeId) {
+        AdminThemeResponse existing = adminThemeMapper.findById(themeId);
+        if (existing == null) {
+            throw new IllegalArgumentException("존재하지 않는 테마입니다.");
+        }
+        if (Boolean.TRUE.equals(existing.isDefault())) {
+            return;
+        }
+
+        // 기본은 하나만: 기존 플래그 해제 후 대상 지정 (+ ON_SALE 강제)
+        adminThemeMapper.clearDefaultThemes();
+        int updatedCount = adminThemeMapper.setDefaultTheme(themeId);
         if (updatedCount == 0) {
             throw new IllegalArgumentException("존재하지 않는 테마입니다.");
         }
