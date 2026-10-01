@@ -24,6 +24,9 @@ public class Post {
     private int viewCount;
     // 구독자 전용 여부
     private boolean subscriberOnly;
+    private boolean liked;
+    private boolean scrapped;
+
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 

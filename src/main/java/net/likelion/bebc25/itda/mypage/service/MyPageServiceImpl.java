@@ -84,19 +84,16 @@ public class MyPageServiceImpl implements MyPageService {
         if (!posts.isEmpty()) {
             nextCursor = posts.get(posts.size() - 1).getId();
         }
-
         // Post를 PostResponse로 반환
-        List<PostResponse> postResponses = new ArrayList<>();
+        List<PostResponse> responses = new ArrayList<>();
 
         for (Post post : posts) {
-            // 현재 사용자의 좋아요 스크랩 확인
-            boolean liked = postReactionMapper.countLike(memberId, post.getId()) > 0;
-            boolean scrapped = postReactionMapper.countScrap(memberId, post.getId()) > 0;
+            PostResponse postResponse = toResponse(post, post.isLiked(), post.isScrapped());
 
-            postResponses.add(toResponse(post, liked, scrapped ));
-
+            responses.add(postResponse);
         }
-        return new MyPagePostResponse(postResponses, nextCursor, hasNext);
+
+        return new MyPagePostResponse(responses, nextCursor, hasNext);
     }
 
     @Override
@@ -112,7 +109,6 @@ public class MyPageServiceImpl implements MyPageService {
         if (hasNext) {
             posts.remove(posts.size() - 1);
         }
-
         // 다음 요청에 사용할 cursor
         Long nextCursor = null;
 
@@ -121,18 +117,15 @@ public class MyPageServiceImpl implements MyPageService {
         }
 
         // Post를 PostResponse로 반환
-        List<PostResponse> postResponses = new ArrayList<>();
+        List<PostResponse> responses = new ArrayList<>();
 
         for (Post post : posts) {
-            // 현재 사용자의 좋아요 스크랩 확인
-            boolean liked = postReactionMapper.countLike(memberId, post.getId()) > 0;
-            boolean scrapped = postReactionMapper.countScrap(memberId, post.getId()) > 0;
+            PostResponse postResponse = toResponse(post, post.isLiked(), post.isScrapped());
 
-            postResponses.add(toResponse(post, liked, scrapped));
-
+            responses.add(postResponse);
         }
-        return new MyPagePostResponse(postResponses, nextCursor, hasNext);
-    }
 
+        return new MyPagePostResponse(responses, nextCursor, hasNext);
+    }
 
 }
