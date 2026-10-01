@@ -1,5 +1,6 @@
 package net.likelion.bebc25.itda.admin.subscription.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import net.likelion.bebc25.itda.admin.subscription.dto.AdminSubscriptionResponse;
@@ -19,6 +20,10 @@ public class AdminSubscriptionController {
 
     private final AdminSubscriptionService adminSubscriptionService;
 
+    @Operation(
+            summary = "구독 목록 조회",
+            description = "관리자용 전체 구독 목록을 조회한다."
+    )
     @GetMapping
     public ResponseEntity<List<AdminSubscriptionResponse>> getAllSubscriptions() {
 
