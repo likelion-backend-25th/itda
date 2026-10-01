@@ -46,16 +46,18 @@ public class AdminThemeController {
         return ResponseEntity.status(201).build();
     }
 
-    // 테마 수정
+    // 테마 수정 — 게시글 수정과 동일하게 multipart (request JSON + themeImage?)
     @Operation(
             summary = "테마 수정",
-            description = "기존 테마 정보를 수정한다."
+            description = "기존 테마 정보를 수정한다. 새 이미지가 없으면 기존 썸네일을 유지한다."
     )
     @PutMapping("/{themeId}")
     public ResponseEntity<Void> updateTheme(
             @PathVariable Long themeId,
-            @Valid @RequestBody AdminThemeRequest request) {
-        adminThemeService.updateTheme(themeId, request);
+            @Valid @RequestPart("request") AdminThemeRequest request,
+            @RequestPart(value = "themeImage", required = false) MultipartFile themeImage
+    ) {
+        adminThemeService.updateTheme(themeId, request, themeImage);
         return ResponseEntity.noContent().build();
     }
 

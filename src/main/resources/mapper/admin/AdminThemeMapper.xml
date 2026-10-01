@@ -24,6 +24,25 @@
         ORDER BY created_at DESC
     </select>
 
+    <!-- 테마 단건 조회 -->
+    <select id="findById"
+            resultType="net.likelion.bebc25.itda.admin.theme.dto.AdminThemeResponse">
+        SELECT
+        id,
+        theme_name AS themeName,
+        description,
+        price,
+        thumbnail_url AS thumbnailUrl,
+        theme_code AS themeCode,
+        status,
+        is_default AS isDefault,
+        updated_at AS updatedAt,
+        created_at AS createdAt,
+        css_text AS cssText
+        FROM theme
+        WHERE id = #{themeId}
+    </select>
+
     <!-- 테마 등록 -->
     <insert id="insertTheme"
             parameterType="net.likelion.bebc25.itda.admin.theme.dto.AdminThemeRequest">

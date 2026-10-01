@@ -70,16 +70,42 @@ public class AdminThemeServiceImpl implements AdminThemeService {
 
     @Override
     @Transactional
-    public void updateTheme(Long themeId, AdminThemeRequest request) {
-        // 수정은 테마 코드를 바꾸지 않고 css_text만 갱신한다.
+    public void updateTheme(Long themeId, AdminThemeRequest request, MultipartFile themeImage) {
+        // 수정은 테마 코드를 바꾸지 않고 css_text·메타·썸네일만 갱신한다.
         if (request.cssText() == null || request.cssText().isBlank()) {
             throw new IllegalArgumentException("CSS 텍스트는 필수입니다.");
         }
 
-        int updatedCount = adminThemeMapper.updateTheme(themeId, request);
+        AdminThemeResponse existing = adminThemeMapper.findById(themeId);
+        if (existing == null) {
+            throw new IllegalArgumentException("존재하지 않는 테마입니다.");
+        }
+
+        // 새 파일이 없으면 기존 S3 키 유지 (게시글 수정과 동일)
+        String oldImageKey = existing.thumbnailUrl();
+        String themeImageKey = oldImageKey;
+        boolean imageReplaced = false;
+
+        if (themeImage != null && !themeImage.isEmpty()) {
+            themeImageKey = s3Service.upload(themeImage, "themes");
+            imageReplaced = true;
+        }
+
+        int updatedCount = adminThemeMapper.updateTheme(themeId, new AdminThemeRequest(
+                request.themeName(),
+                request.description(),
+                request.price(),
+                themeImageKey,
+                existing.themeCode(),
+                request.cssText()
+        ));
 
         if (updatedCount == 0) {
             throw new IllegalArgumentException("존재하지 않는 테마입니다.");
+        }
+
+        if (imageReplaced && oldImageKey != null && !oldImageKey.isBlank() && !oldImageKey.equals(themeImageKey)) {
+            s3Service.delete(oldImageKey);
         }
     }
 
