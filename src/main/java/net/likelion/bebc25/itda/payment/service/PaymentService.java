@@ -19,10 +19,4 @@ public interface PaymentService {
             Long memberId,
             PaymentCompleteRequest request
     );
-
-    PaymentRefundResponse refundPayment(
-            Long memberId,
-            String paymentId,
-            PaymentRefundRequest request
-    );
 }

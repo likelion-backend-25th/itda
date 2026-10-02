@@ -93,6 +93,10 @@ public interface PaymentMapper {
             @Param("statusId")
             Long statusId,
 
+            // webhook/complete 분기 결제 상태
+            @Param("paymentPendingStatusId")
+            Long paymentPendingStatusId,
+
             @Param("paidAt")
             LocalDateTime paidAt
     );
