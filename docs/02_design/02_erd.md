@@ -181,6 +181,7 @@ erDiagram
         bigint theme_id FK "테마 ID"
         bigint payment_id FK "결제 ID"
         boolean is_used "테마 적용 여부"
+        boolean purchase_status "구매 상태 여부"
         datetime created_at "구매 일시"
     }
 
