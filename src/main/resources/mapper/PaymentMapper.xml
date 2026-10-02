@@ -82,6 +82,7 @@
     transaction_id : 실제 PortOne 결제 시도 ID
     status_id      : PS01 → PS02
     paid_at        : 실제 결제 완료 시간
+    paymentPendingStatusId: 결제 대기 상태에서만 완료 처리
     -->
     <update id="updatePaid">
 
@@ -93,6 +94,10 @@
         paid_at = #{paidAt}
 
         WHERE payment_id = #{paymentId}
+        <!-- 이미 결제 완료 처리된 경우
+      status_id는 PS02이고, paymentPendingStatusId는 PS01이므로
+      WHERE 조건에 일치하지 않아 UPDATE되지 않는다. -->
+        AND status_id = #{paymentPendingStatusId}
 
     </update>
 

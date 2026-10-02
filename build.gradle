@@ -23,6 +23,9 @@ dependencies {
 
     implementation("software.amazon.awssdk:s3:2.55.6")
 
+    // PortOne
+    implementation 'io.portone:server-sdk:0.24.0'
+
     // Swagger / OpenAPI
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:3.1.1'
 
