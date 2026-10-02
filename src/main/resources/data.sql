@@ -41,7 +41,7 @@ VALUES
 -- 환불 신청 대기 상태
 (27, 1, 'PS05', '환불 대기','환불 신청 후 환불 처리를 기다리는 상태', NULL, 5, TRUE);
 
--- 2. 테마 (ON_SALE 8개 → size=6이면 2페이지 / HIDDEN 1개)
+-- 2. 테마 (ON_SALE 8개 → size=6이면 2페이지 / HIDDEN)
 INSERT INTO theme (id, theme_name, description, price, thumbnail_url, theme_code, css_text, status, is_default, created_at)
 VALUES
     (1, '기본 테마',     'ITDA 기본 테마', 0,    'themes/default.png',  'DEFAULT', NULL, 'ON_SALE', TRUE, '2025-01-01 10:00:00'),
@@ -52,7 +52,10 @@ VALUES
     (6, '라벤더 나이트', '보랏빛 밤 느낌의 테마',             5000, 'themes/lavender.png', 'LAVENDER', ':root[data-theme=''lavender'']{--bg:#efe8fb;--surface:#fbf8ff;--text:#2c2344;--text-soft:#5c5278;--muted:#8d84a8;--line:#ddd2f0;--blue:#7c5cbf;--blue-deep:#62469e;--blue-soft:#ece3ff;--shadow:0 14px 36px rgba(90,60,150,.14);--search-bg:#f0e9ff;--on-accent:#fff;--radius:22px;}:root[data-theme=''lavender''] body,:root[data-theme=''lavender''] .page{background-color:var(--bg);background-image:radial-gradient(ellipse 80% 50% at 12% 0%,rgba(190,160,240,.5),transparent 58%),radial-gradient(ellipse 65% 45% at 95% 8%,rgba(160,130,220,.35),transparent 55%),linear-gradient(180deg,#e8dff8 0%,#f3eefc 45%,#efeaf8 100%);}:root[data-theme=''lavender''] .topbar,:root[data-theme=''lavender''] .sidebar,:root[data-theme=''lavender''] .post,:root[data-theme=''lavender''] .empty{border-color:rgba(124,92,191,.2);box-shadow:0 12px 32px rgba(90,60,150,.12);}:root[data-theme=''lavender''] .sidebar{background:linear-gradient(180deg,#fffcff 0%,#f5f0fc 100%);}:root[data-theme=''lavender''] .post{background:linear-gradient(165deg,#ffffff 0%,#f8f4ff 100%);}:root[data-theme=''lavender''] .logo{letter-spacing:-0.05em;}', 'ON_SALE', FALSE, '2025-01-06 10:00:00'),
     (7, '코튼 크림',     '부드러운 크림톤 테마',             2000, 'themes/cream.png',    'CREAM',':root[data-theme=''cream'']{--bg:#f5efe6;--surface:#fffdf9;--text:#3d342c;--text-soft:#7a6c5e;--muted:#a89786;--line:#e5dbcf;--blue:#c4a574;--blue-deep:#a88655;--blue-soft:#f3ebdf;--shadow:0 14px 34px rgba(120,90,50,.12);--search-bg:#efe7db;--on-accent:#fff;--radius:20px;}:root[data-theme=''cream''] body,:root[data-theme=''cream''] .page{background-color:var(--bg);background-image:radial-gradient(ellipse 75% 45% at 15% 0%,rgba(230,210,180,.55),transparent 58%),radial-gradient(ellipse 60% 40% at 100% 0%,rgba(210,180,140,.3),transparent 55%),linear-gradient(180deg,#efe6d8 0%,#f7f1e8 48%,#f5efe6 100%);}:root[data-theme=''cream''] .topbar,:root[data-theme=''cream''] .sidebar,:root[data-theme=''cream''] .post,:root[data-theme=''cream''] .empty{border-color:rgba(196,165,116,.28);box-shadow:0 12px 28px rgba(120,90,50,.1);}:root[data-theme=''cream''] .sidebar{background:linear-gradient(180deg,#fffefb 0%,#f8f2e9 100%);}:root[data-theme=''cream''] .post{background:#fffefb;}:root[data-theme=''cream''] .write-btn{border-radius:14px;}','ON_SALE', FALSE, '2025-01-07 10:00:00'),
     (8, '스카이 라이트', '맑은 하늘 느낌의 테마',             2000, 'themes/sky.png',      'SKY',':root[data-theme=''sky'']{--bg:#e6f1ff;--surface:#f7fbff;--text:#1a3550;--text-soft:#4a6d8c;--muted:#7f9cb8;--line:#cfe2f6;--blue:#4aa3ff;--blue-deep:#2f86e0;--blue-soft:#dcebff;--shadow:0 14px 34px rgba(50,120,200,.12);--search-bg:#e2efff;--on-accent:#fff;--radius:22px;}:root[data-theme=''sky''] body,:root[data-theme=''sky''] .page{background-color:var(--bg);background-image:radial-gradient(ellipse 80% 50% at 25% -5%,rgba(160,205,255,.55),transparent 55%),radial-gradient(ellipse 65% 40% at 95% 0%,rgba(120,180,255,.35),transparent 50%),linear-gradient(180deg,#d8e9ff 0%,#eef6ff 45%,#e6f1ff 100%);}:root[data-theme=''sky''] .topbar,:root[data-theme=''sky''] .sidebar,:root[data-theme=''sky''] .post,:root[data-theme=''sky''] .empty{border-color:rgba(74,163,255,.22);box-shadow:0 12px 30px rgba(50,120,200,.11);}:root[data-theme=''sky''] .sidebar{background:linear-gradient(180deg,#ffffff 0%,#f0f7ff 100%);}:root[data-theme=''sky''] .post{background:linear-gradient(165deg,#ffffff 0%,#f5faff 100%);}','ON_SALE', FALSE, '2025-01-08 10:00:00'),
-    (9, '숨김 테마',     '관리자 비공개 테마 (목록 제외)',     9999, 'themes/hidden.png',   'HIDDEN',':root[data-theme=''hidden'']{--bg:#e8e6ec;--surface:#f6f5f7;--text:#3a3840;--text-soft:#6b6774;--muted:#9a96a3;--line:#d5d1db;--blue:#7a7488;--blue-deep:#5f596c;--blue-soft:#ebe8ef;--shadow:0 12px 30px rgba(60,50,80,.1);--search-bg:#e4e2e8;--on-accent:#fff;--radius:18px;}:root[data-theme=''hidden''] body,:root[data-theme=''hidden''] .page{background-color:var(--bg);background-image:radial-gradient(ellipse 70% 45% at 20% 0%,rgba(170,165,185,.35),transparent 58%),linear-gradient(180deg,#e2e0e7 0%,#eceaef 50%,#e8e6ec 100%);}:root[data-theme=''hidden''] .topbar,:root[data-theme=''hidden''] .sidebar,:root[data-theme=''hidden''] .post,:root[data-theme=''hidden''] .empty{border-color:rgba(122,116,136,.22);box-shadow:0 10px 26px rgba(60,50,80,.09);}:root[data-theme=''hidden''] .sidebar{background:linear-gradient(180deg,#faf9fb 0%,#f0eef3 100%);}:root[data-theme=''hidden''] .post{background:#faf9fb;}', 'HIDDEN', FALSE, '2025-01-09 10:00:00');
+    (9, '숨김 테마',     '관리자 비공개 테마 (목록 제외)',     9999, 'themes/hidden.png',   'HIDDEN',':root[data-theme=''hidden'']{--bg:#e8e6ec;--surface:#f6f5f7;--text:#3a3840;--text-soft:#6b6774;--muted:#9a96a3;--line:#d5d1db;--blue:#7a7488;--blue-deep:#5f596c;--blue-soft:#ebe8ef;--shadow:0 12px 30px rgba(60,50,80,.1);--search-bg:#e4e2e8;--on-accent:#fff;--radius:18px;}:root[data-theme=''hidden''] body,:root[data-theme=''hidden''] .page{background-color:var(--bg);background-image:radial-gradient(ellipse 70% 45% at 20% 0%,rgba(170,165,185,.35),transparent 58%),linear-gradient(180deg,#e2e0e7 0%,#eceaef 50%,#e8e6ec 100%);}:root[data-theme=''hidden''] .topbar,:root[data-theme=''hidden''] .sidebar,:root[data-theme=''hidden''] .post,:root[data-theme=''hidden''] .empty{border-color:rgba(122,116,136,.22);box-shadow:0 10px 26px rgba(60,50,80,.09);}:root[data-theme=''hidden''] .sidebar{background:linear-gradient(180deg,#faf9fb 0%,#f0eef3 100%);}:root[data-theme=''hidden''] .post{background:#faf9fb;}', 'HIDDEN', FALSE, '2025-01-09 10:00:00'),
+    (10, '여름',     '시원한 여름 테마',     4900, 'themes/summer.jpg',   'SUMMER',':root[data-theme=''summer'']{--bg:#e5f7ff;--surface:#f7fdff;--text:#163044;--text-soft:#4d6d84;--muted:#8aabbf;--line:#c5e6f5;--blue:#1aa3d9;--blue-deep:#0e7eab;--blue-soft:#d7f3ff;--shadow:0 14px 36px rgba(20,120,170,.16);--search-bg:#e3f6ff;--on-accent:#fff;--radius:22px;}:root[data-theme=''summer''] body,:root[data-theme=''summer''] .page{background-color:var(--bg);background-image:radial-gradient(ellipse 90% 55% at 12% -8%,rgba(255,214,120,.65),transparent 55%),radial-gradient(ellipse 75% 50% at 100% 0%,rgba(110,210,230,.5),transparent 50%),linear-gradient(180deg,#d4f2ff 0%,#eef9ff 42%,#fff8e4 100%);}:root[data-theme=''summer''] .topbar,:root[data-theme=''summer''] .sidebar,:root[data-theme=''summer''] .post,:root[data-theme=''summer''] .empty{border-color:rgba(26,163,217,.28);box-shadow:0 12px 32px rgba(20,120,170,.14);}:root[data-theme=''summer''] .sidebar{background:linear-gradient(180deg,#f8feff 0%,#e5f7ff 100%);}:root[data-theme=''summer''] .post{background:linear-gradient(165deg,#ffffff 0%,#f0fbff 100%);}:root[data-theme=''summer''] .logo,:root[data-theme=''summer''] .stat,:root[data-theme=''summer''] .nav-item.active{color:var(--blue);}:root[data-theme=''summer''] .write-btn,:root[data-theme=''summer''] .nav-item.active{box-shadow:0 8px 18px rgba(26,163,217,.3);}', 'HIDDEN', FALSE, '2026-10-01 10:00:00'),
+    (11, '겨울',     '겨울 테말',     4900, 'themes/winter.jpg',   'WINTER',':root[data-theme=''winter'']{--bg:#eef4fb;--surface:#f8fbff;--text:#1e2a3a;--text-soft:#5c6e86;--muted:#96a6ba;--line:#d5e2f0;--blue:#5b7cfa;--blue-deep:#3d5ee0;--blue-soft:#e4ebff;--shadow:0 14px 36px rgba(70,100,160,.16);--search-bg:#e7eef8;--on-accent:#fff;--radius:22px;}:root[data-theme=''winter''] body,:root[data-theme=''winter''] .page{background-color:var(--bg);background-image:radial-gradient(ellipse 90% 55% at 12% -8%,rgba(190,215,255,.75),transparent 55%),radial-gradient(ellipse 75% 50% at 100% 0%,rgba(200,190,255,.4),transparent 50%),linear-gradient(180deg,#dce8f8 0%,#f4f8fd 45%,#eef2fb 100%);}:root[data-theme=''winter''] .topbar,:root[data-theme=''winter''] .sidebar,:root[data-theme=''winter''] .post,:root[data-theme=''winter''] .empty{border-color:rgba(91,124,250,.28);box-shadow:0 12px 32px rgba(70,100,160,.14);}:root[data-theme=''winter''] .sidebar{background:linear-gradient(180deg,#fbfdff 0%,#eef4fb 100%);}:root[data-theme=''winter''] .post{background:linear-gradient(165deg,#ffffff 0%,#f3f7fc 100%);}:root[data-theme=''winter''] .logo,:root[data-theme=''winter''] .stat,:root[data-theme=''winter''] .nav-item.active{color:var(--blue);}:root[data-theme=''winter''] .write-btn,:root[data-theme=''winter''] .nav-item.active{box-shadow:0 8px 18px rgba(91,124,250,.3);}', 'HIDDEN', FALSE, '2026-10-02 10:00:00');
+
 
 
 SELECT theme_code, LEFT(css_text, 40) AS css_head FROM theme;
@@ -261,35 +264,35 @@ VALUES
 -- =========================
 -- 맛집 8
 -- =========================
-(1, 8, '주말에 다녀온 서울 맛집 후기입니다. 파스타가 특히 맛있었어요.', NULL, FALSE),
-(2, 8, '여행 중 우연히 발견한 작은 맛집을 추천합니다.', NULL, FALSE),
-(3, 8, '구독자분들에게만 알려드리는 숨은 맛집 추천입니다.', NULL, TRUE),
-(5, 8, '혼자 방문하기 좋은 맛집을 찾아서 다녀왔습니다.', NULL, FALSE),
+(1, 8, '주말에 다녀온 서울 맛집 후기입니다. 파스타가 특히 맛있었어요.', 'posts/8.png', FALSE),
+(2, 8, '여행 중 우연히 발견한 작은 맛집을 추천합니다.', 'posts/7.png', FALSE),
+(3, 8, '구독자분들에게만 알려드리는 숨은 맛집 추천입니다.', 'posts/6.png', TRUE),
+(5, 8, '혼자 방문하기 좋은 맛집을 찾아서 다녀왔습니다.', 'posts/13.png', FALSE),
 
 -- =========================
 -- 여행 9
 -- =========================
-(1, 9, '부산 여행을 다녀왔습니다. 바다 산책 코스를 추천합니다.', NULL, FALSE),
-(2, 9, '제주도 여행 후기입니다. 조용하게 걷기 좋은 곳이 많았어요.', NULL, FALSE),
-(3, 9, '당일치기로 다녀오기 좋은 서울 근교 여행지를 소개합니다.', 'posts/dbbe37ff-022c-425e-8201-5a48d21861c5.png', FALSE),
-(3, 9, '구독자 전용으로 공개하는 가을 여행 코스입니다.', NULL, TRUE),
-(4, 9, '사진을 찍으러 다녀온 여행 후기입니다. 풍경이 정말 좋았습니다.', NULL, FALSE),
+(1, 9, '부산 여행을 다녀왔습니다. 바다 산책 코스를 추천합니다.', 'posts/5.png', FALSE),
+(2, 9, '제주도 여행 후기입니다. 조용하게 걷기 좋은 곳이 많았어요.', 'posts/9.png', FALSE),
+(3, 9, '당일치기로 다녀오기 좋은 서울 근교 여행지를 소개합니다.', 'posts/14.png', FALSE),
+(3, 9, '구독자 전용으로 공개하는 가을 여행 코스입니다.', 'posts/16.png', TRUE),
+(4, 9, '사진을 찍으러 다녀온 여행 후기입니다. 풍경이 정말 좋았습니다.', 'posts/17.png', FALSE),
 
 -- =========================
 -- 운동 10
 -- =========================
-(2, 10, '운동 초보자를 위한 가벼운 홈트레이닝 루틴입니다.', NULL, FALSE),
+(2, 10, '운동 초보자를 위한 가벼운 홈트레이닝 루틴입니다.', 'posts/10.png', FALSE),
 (3, 10, '아침 운동을 한 달 동안 꾸준히 해본 후기입니다.', NULL, FALSE),
 (5, 10, '퇴근 후 할 수 있는 간단한 운동 루틴을 정리했습니다.', NULL, FALSE),
-(6, 10, '집에서 스트레칭과 운동을 같이 해봤습니다.', NULL, FALSE),
+(6, 10, '집에서 스트레칭과 운동을 같이 해봤습니다.', 'posts/19.png', FALSE),
 
 -- =========================
 -- 독서 11
 -- =========================
 (1, 11, '최근 읽은 소설 작품 중 가장 기억에 남은 책을 소개합니다.', NULL, FALSE),
 (1, 11, '주말 독서 기록입니다. 오랜만에 책 한 권을 끝까지 읽었습니다.', NULL, FALSE),
-(3, 11, '여행에 관한 에세이를 읽고 기억에 남는 부분을 정리했습니다.', NULL, FALSE),
-(3, 11, '구독자분들에게만 추천하는 이번 달 독서 목록입니다.', NULL, TRUE),
+(3, 11, '여행에 관한 에세이를 읽고 기억에 남는 부분을 정리했습니다.', 'posts/4.png', FALSE),
+(3, 11, '구독자분들에게만 추천하는 이번 달 독서 목록입니다.', 'posts/15.png', TRUE),
 (5, 11, '자기 전에 읽기 좋은 짧은 책을 추천합니다.', NULL, FALSE),
 
 -- =========================
@@ -315,15 +318,15 @@ VALUES
 -- =========================
 (6, 14, '초보자를 위한 코바늘 공예 작품을 만들어봤습니다.', NULL, FALSE),
 (6, 14, '이번 주말에 완성한 뜨개질 작품입니다.', NULL, FALSE),
-(4, 14, '작은 소품을 직접 만드는 공예 작업 과정을 기록했습니다.', NULL, FALSE),
+(4, 14, '작은 소품을 직접 만드는 공예 작업 과정을 기록했습니다.', 'posts/11.png', FALSE),
 (3, 14, '구독자분들과 공유하는 공예 작품 제작 과정입니다.', NULL, TRUE),
-(1, 14, '책갈피를 직접 만들어본 간단한 공예 후기입니다.', NULL, FALSE),
+(1, 14, '책갈피를 직접 만들어본 간단한 공예 후기입니다.', 'posts/3.png', FALSE),
 
 -- =========================
 -- 그림 15
 -- =========================
 (4, 15, '오랜만에 완성한 그림 작품입니다. 풍경을 주제로 그렸습니다.', NULL, FALSE),
-(4, 15, '여행에서 찍은 사진을 참고해서 그림을 그려봤습니다.', NULL, FALSE),
+(4, 15, '여행에서 찍은 사진을 참고해서 그림을 그려봤습니다.', 'posts/18.png', FALSE),
 (1, 15, '책을 읽다가 떠오른 장면을 그림으로 표현해봤습니다.', NULL, FALSE),
 (3, 15, '연습 삼아 시작했는데 마음에 드는 그림 작품이 완성됐습니다.', NULL, TRUE),
 (6, 15, '공예 작품을 참고해서 간단한 그림을 그려봤습니다.', NULL, FALSE),
@@ -331,15 +334,15 @@ VALUES
 -- =========================
 -- 게임 16
 -- =========================
-(5, 16, '주말에 친구들과 같이 플레이한 게임 후기입니다.', NULL, FALSE),
-(1, 16, '최근 시작한 게임을 초보자 입장에서 리뷰해봤습니다.', NULL, FALSE),
+(5, 16, '주말에 친구들과 같이 플레이한 게임 후기입니다.', 'posts/12.png', FALSE),
+(1, 16, '최근 시작한 게임을 초보자 입장에서 리뷰해봤습니다.', 'posts/2.png', FALSE),
 (2, 16, '가볍게 즐기기 좋은 게임을 몇 가지 추천합니다.', NULL, FALSE),
 (3, 16, '구독자들과 함께 즐기고 싶은 게임 추천 목록입니다.', NULL, TRUE),
 
 -- =========================
 -- 기타 17
 -- =========================
-(1, 17, '요즘 새롭게 시작한 취미에 대한 기록입니다.', 'posts/e32221ea-5485-4e19-a1f3-00d638701071.png', FALSE),
+(1, 17, '요즘 새롭게 시작한 취미에 대한 기록입니다.', 'posts/1.png', FALSE),
 (2, 17, '주말에 집에서 할 수 있는 간단한 취미를 추천합니다.', NULL, FALSE),
 (4, 17, '사진 정리를 하면서 예전 여행 기록을 다시 살펴봤습니다.', NULL, FALSE),
 (5, 17, '최근 배우기 시작한 새로운 취미 후기입니다.', NULL, FALSE),
