@@ -175,6 +175,6 @@
         WHERE member_id = #{memberId}
         AND theme_id = #{themeId}
         AND is_used = FALSE
-        AND tp.purchase_status = TRUE
+        AND purchase_status = TRUE
     </update>
 </mapper>
