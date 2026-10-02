@@ -1,6 +1,11 @@
 package net.likelion.bebc25.itda.member.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Encoding;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +15,7 @@ import net.likelion.bebc25.itda.member.service.FollowService;
 import net.likelion.bebc25.itda.member.service.MemberService;
 import net.likelion.bebc25.itda.security.principal.CustomUserDetails;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -134,12 +140,29 @@ public class MemberController {
     // 회원 정보 수정 — signup과 동일하게 multipart (request JSON + profileImage)
     @Operation(
             summary = "내 프로필 수정",
-            description = "내 프로필 정보와 프로필 이미지를 수정한다."
+            description = """
+                    multipart/form-data로 내 프로필을 수정한다.
+                    - request: MemberUpdateRequest JSON (nickname, introduction, removeProfileImage)
+                    - profileImage: 프로필 이미지 파일 (선택). 파일이 있으면 교체 우선, removeProfileImage는 무시된다.
+                    """
     )
-    @PutMapping("/me")
+    @ApiResponse(responseCode = "204", description = "수정 성공 (Body 없음)")
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(
+            required = true,
+            content = @Content(
+                    mediaType = MediaType.MULTIPART_FORM_DATA_VALUE,
+                    schema = @Schema(implementation = ProfileUpdateMultipart.class),
+                    encoding = {
+                            @Encoding(name = "request", contentType = MediaType.APPLICATION_JSON_VALUE)
+                    }
+            )
+    )
+    @PutMapping(value = "/me", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Void> updateMyProfile(
             @AuthenticationPrincipal CustomUserDetails userDetails,
+            @Parameter(hidden = true)
             @Valid @RequestPart("request") MemberUpdateRequest request,
+            @Parameter(hidden = true)
             @RequestPart(value = "profileImage", required = false)
             MultipartFile profileImage
     ) {
@@ -163,5 +186,27 @@ public class MemberController {
         Long memberId = userDetails.getMember().getId();
         memberService.updateMyInterests(memberId, request);
         return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * Swagger multipart 스키마용.
+     * 실제 바인딩은 @RequestPart("request") + @RequestPart("profileImage")를 사용한다.
+     */
+    @Schema(name = "ProfileUpdateMultipart", description = "프로필 수정 multipart form")
+    public static class ProfileUpdateMultipart {
+
+        @Schema(
+                description = "프로필 수정 JSON (part name: request)",
+                implementation = MemberUpdateRequest.class,
+                requiredMode = Schema.RequiredMode.REQUIRED
+        )
+        public MemberUpdateRequest request;
+
+        @Schema(
+                description = "프로필 이미지 파일 (part name: profileImage, 선택)",
+                type = "string",
+                format = "binary"
+        )
+        public MultipartFile profileImage;
     }
 }
