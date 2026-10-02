@@ -181,6 +181,7 @@ erDiagram
         bigint theme_id FK "테마 ID"
         bigint payment_id FK "결제 ID"
         boolean is_used "테마 적용 여부"
+        boolean purchase_status "구매 상태 여부"
         datetime created_at "구매 일시"
     }
 
@@ -358,6 +359,7 @@ erDiagram
 | theme_id | BIGINT | FK (`theme.id`), NOT NULL | 구매한 테마 ID |
 | payment_id | BIGINT | FK (`payment.id`), NULL | 테마 결제 ID |
 | is_used | BOOLEAN | DEFAULT FALSE | 현재 테마 적용 여부 |
+| purchase_status | BOOLEAN | DEFAULT 1 | 구매 상태 여부
 | created_at | DATETIME | NOT NULL, DEFAULT CURRENT_TIMESTAMP | 테마 구매 일시 |
 
 ### 1.2.12 refresh_token (Refresh Token)

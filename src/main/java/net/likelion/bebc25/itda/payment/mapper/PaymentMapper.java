@@ -27,6 +27,34 @@ public interface PaymentMapper {
             @Param("code") String code
     );
 
+    // 테마 구매 이력의 구매 상태 조회
+    Boolean findThemePurchaseStatus(
+            @Param("memberId") Long memberId,
+            @Param("themeId") Long themeId
+    );
+
+    // 환불 후 테마 재구매시 기존 구매 정보 갱신
+    int repurchaseTheme(
+            @Param("memberId") Long memberId,
+            @Param("themeId") Long themeId,
+            @Param("paymentId") Long paymentId
+    );
+
+    // 기존 구독 상태 조회
+    Long findSubscriptionStatus(
+            @Param("memberId") Long memberId,
+            @Param("targetId") Long targetId
+    );
+
+    // 환불 후 재구독 시 기존 구독 정보 갱신
+    int reactivateSubscription(
+            @Param("memberId") Long memberId,
+            @Param("targetId") Long targetId,
+            @Param("statusId") Long statusId,
+            @Param("paymentId") Long paymentId
+    );
+
+
 
     /**
      * 결제 완료 후
@@ -65,6 +93,10 @@ public interface PaymentMapper {
             @Param("statusId")
             Long statusId,
 
+            // webhook/complete 분기 결제 상태
+            @Param("paymentPendingStatusId")
+            Long paymentPendingStatusId,
+
             @Param("paidAt")
             LocalDateTime paidAt
     );
@@ -94,6 +126,7 @@ public interface PaymentMapper {
             @Param("paymentId") Long paymentId
     );
 
+
     /**
      * 테마 사용 여부 조회
      * @param paymentId theme_purchase 조회
@@ -102,6 +135,8 @@ public interface PaymentMapper {
     Boolean findThemeIsUsed(
             @Param("paymentId") Long paymentId
     );
+
+
 
     // 구독 시작일 조회
     LocalDateTime findSubscriptionStartedAt(
@@ -119,18 +154,25 @@ public interface PaymentMapper {
             @Param("refundedAt") LocalDateTime refundedAt   // 환불 성공을 확인한 시간
     );
     // 환불 상태 변경 PS02 → PS04 변경
-    int updateRefunded(
+    int updatePaymentRefundStatus(
             @Param("paymentId") String paymentId,
             @Param("paidStatusId") Long paidStatusId,
             @Param("refundedStatusId") Long refundedStatusId
     );
 
-    // 환불 후 구독 삭제
-    int deleteByPaymentId(Long paymentId);
 
-    // 환불 후 결제 테마 내역 삭제
-    int deleteThemePurchaseByPaymentId(
+
+    // 환불 후 결제한 테마 내역에서 결제 상태 변경
+    int updateRefundStatusByPaymentId(
             @Param("paymentId") Long paymentId
     );
+    // 테마 환불 후 기본 테마로 변경
+    int resetThemeToDefaultByPaymentId(Long paymentId);
 
+
+    // 환불 시 구독 상태 변경
+    int updateSubscriptionCancelStatus(
+            @Param("paymentId") Long paymentId,
+            @Param("cancelledStatusId") Long cancelledStatusId
+    );
 }

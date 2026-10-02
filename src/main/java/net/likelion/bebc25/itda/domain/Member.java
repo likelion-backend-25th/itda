@@ -23,7 +23,7 @@ public class Member {
     private String introduction;
     private Long themeId; // 현재 적용중인 테마 id
     private String authmethod; // 로그인 인증 방식 (google/kakao/local)
-    private int month_income; // 월간 정산 금액
+    private int monthIncome; // 월간 정산 금액
     private LocalDateTime updatedAt;
     private LocalDateTime createdAt;
 }

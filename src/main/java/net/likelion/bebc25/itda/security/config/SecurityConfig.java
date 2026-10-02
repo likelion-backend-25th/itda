@@ -131,6 +131,10 @@ public class SecurityConfig {
                         // 테마 이미지 정적 리소스는 인증 없이 접근 허용
                         .requestMatchers("/images/**").permitAll()
 
+                        // 포트원의 웹훅에서오는 접근 모두 허용
+                        .requestMatchers(HttpMethod.POST,"/api/v1/payments/webhook").permitAll()
+
+
                         // 그 외 모든 요청(게시글 작성, 수정, 삭제 등)은 로그인 인증을 거쳐야 함
                         .anyRequest().authenticated()
                 )

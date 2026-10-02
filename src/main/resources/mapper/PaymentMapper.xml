@@ -82,6 +82,7 @@
     transaction_id : 실제 PortOne 결제 시도 ID
     status_id      : PS01 → PS02
     paid_at        : 실제 결제 완료 시간
+    paymentPendingStatusId: 결제 대기 상태에서만 완료 처리
     -->
     <update id="updatePaid">
 
@@ -93,6 +94,10 @@
         paid_at = #{paidAt}
 
         WHERE payment_id = #{paymentId}
+        <!-- 이미 결제 완료 처리된 경우
+      status_id는 PS02이고, paymentPendingStatusId는 PS01이므로
+      WHERE 조건에 일치하지 않아 UPDATE되지 않는다. -->
+        AND status_id = #{paymentPendingStatusId}
 
     </update>
 
@@ -103,6 +108,53 @@
         VALUES (
         #{memberId}, #{themeId}, #{paymentId}, FALSE )
     </insert>
+
+    <!-- 테마 구매 이력의 구매 상태 조회 -->
+    <select id="findThemePurchaseStatus"
+            resultType="boolean">
+
+        SELECT purchase_status
+        FROM theme_purchase
+        WHERE member_id = #{memberId}
+        AND theme_id = #{themeId}
+
+    </select>
+
+    <!-- 환불했던 테마를 재구매한 경우 기존 구매 정보를 갱신 -->
+    <update id="repurchaseTheme">
+        UPDATE theme_purchase
+        SET payment_id = #{paymentId},
+        purchase_status = TRUE,
+        is_used = FALSE
+        WHERE member_id = #{memberId}
+        AND theme_id = #{themeId}
+        AND purchase_status = FALSE
+    </update>
+
+    <!-- 기존 구독 상태 조회 -->
+    <select id="findSubscriptionStatus"
+            resultType="long">
+
+        SELECT status_id
+        FROM subscription
+        WHERE member_id = #{memberId}
+        AND target_id = #{targetId}
+
+    </select>
+
+    <!-- 환불 후 재구독 -->
+    <update id="reactivateSubscription">
+        UPDATE subscription
+        SET status_id = #{statusId},
+        payment_id = #{paymentId},
+        started_at = CURRENT_TIMESTAMP,
+        ended_at = CURRENT_TIMESTAMP + INTERVAL 1 MONTH,
+        next_billing_at = CURRENT_TIMESTAMP + INTERVAL 1 MONTH
+        WHERE member_id = #{memberId}
+        AND target_id = #{targetId}
+    </update>
+
+
 
     <!-- 구독 결제 완료 후 구독 정보 저장 -->
     <insert id="insertSubscription">
@@ -146,24 +198,43 @@
     </insert>
 
     <!-- 환불 상태 갱신 -->
-    <update id="updateRefunded">
+    <update id="updatePaymentRefundStatus">
         UPDATE payment
         SET status_id = #{refundedStatusId}
         WHERE payment_id = #{paymentId}
         AND status_id = #{paidStatusId}
     </update>
 
-    <!-- 환불 후 구독 테이블에서 제거 -->
-    <delete id="deleteByPaymentId">
-        DELETE FROM subscription
-        WHERE payment_id = #{paymentId}
-    </delete>
+    <!-- 테마 환불 후 적용 여부 초기화, 미구매 상태로 업데이트-->
+    <update id="updateRefundStatusByPaymentId">
+    UPDATE theme_purchase
+    SET is_used = FALSE,
+    purchase_status = FALSE
+    WHERE payment_id = #{paymentId}
+    </update>
 
-    <!-- 환불 후 테마 구매 내역에서 제거 -->
-    <delete id="deleteThemePurchaseByPaymentId">
-        DELETE FROM theme_purchase
-        WHERE payment_id = #{paymentId}
-    </delete>
+    <!-- 환불 대상 테마를 현재 사용 중인 경우 기본 테마로 변경 -->
+    <update id="resetThemeToDefaultByPaymentId">
+        UPDATE member m
+        JOIN theme_purchase tp
+        ON tp.member_id = m.id
 
+        SET m.theme_id = (
+        SELECT id
+        FROM theme
+        WHERE is_default = TRUE
+        LIMIT 1
+        )
+
+        WHERE tp.payment_id = #{paymentId}
+        AND m.theme_id = tp.theme_id
+    </update>
+
+    <!-- subscription: SS01 구독 활성 → SS02 구독 취소 -->
+    <update id="updateSubscriptionCancelStatus">
+        UPDATE subscription
+        SET status_id = #{cancelledStatusId}
+        WHERE payment_id = #{paymentId}
+    </update>
 
 </mapper>

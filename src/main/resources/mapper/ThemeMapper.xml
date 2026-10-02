@@ -34,6 +34,7 @@
             LEFT JOIN theme_purchase tp
             ON tp.theme_id = t.id
             AND tp.member_id = #{memberId}
+            AND tp.purchase_status = TRUE
             LEFT JOIN member m
             ON m.id = #{memberId}
         </if>
@@ -78,6 +79,7 @@
             LEFT JOIN theme_purchase tp
             ON tp.theme_id = t.id
             AND tp.member_id = #{memberId}
+            AND tp.purchase_status = TRUE
             LEFT JOIN member m
             ON m.id = #{memberId}
         </if>
@@ -127,6 +129,7 @@
         INNER JOIN member m
             ON m.id = tp.member_id
         WHERE tp.member_id = #{memberId}
+        AND tp.purchase_status = TRUE
         ORDER BY t.created_at DESC
         LIMIT #{limit} OFFSET #{offset}
     </select>
@@ -137,6 +140,7 @@
         INNER JOIN theme t
             ON t.id = tp.theme_id
         WHERE tp.member_id = #{memberId}
+        AND tp.purchase_status = TRUE
     </select>
 
     <select id="findStyleById" resultType="net.likelion.bebc25.itda.theme.dto.ThemeStylesResponse$ThemeStyleRow">
@@ -155,6 +159,7 @@
         FROM theme_purchase tp
         WHERE tp.member_id = #{memberId}
         AND tp.theme_id = #{themeId}
+        AND tp.purchase_status = TRUE
         )
     </select>
 
@@ -170,5 +175,6 @@
         WHERE member_id = #{memberId}
         AND theme_id = #{themeId}
         AND is_used = FALSE
+        AND purchase_status = TRUE
     </update>
 </mapper>
