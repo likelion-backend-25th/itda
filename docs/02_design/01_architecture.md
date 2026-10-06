@@ -59,7 +59,7 @@ graph TD
 ### 1.2.3 미디어 스토리지 및 파일 업로드 (AWS S3)
 - 이미지 업로드 파이프라인:
   - 회원이 피드 이미지나 프로필 이미지를 등록할 때, 프론트엔드의 Multipart/form-data 요청을 Spring Boot 서버가 수신.
-  - Spring Boot 서버는 AWS SDK for Java 2.x를 사용하여 S3 버킷의 `uploads/posts/` 및 `uploads/profiles/` 경로에 고유 UUID 파일명으로 안전하게 업로드.
+  - Spring Boot 서버는 AWS SDK for Java 2.x를 사용하여 S3 버킷의 `posts/` 및 `profiles/` 경로에 고유 UUID 파일명으로 안전하게 업로드.
   - 업로드 완료 후 생성된 S3 퍼블릭 객체 URL 또는 CloudFront 미디어 배포 URL을 DB의 `image_url` 컬럼에 영속화.
   - 업로드 파일은 용도에 따라 posts/, profiles/, themes/ 등의 디렉터리로 구분하여 저장.
   - 업로드 파일명은 UUID를 기반으로 생성하여 파일명 충돌을 방지.
@@ -70,7 +70,7 @@ graph TD
 ### 1.2.4 도메인 간 리소스 공유 (CORS 정책)
 - React 클라이언트(CloudFront 도메인)와 Spring Boot API 서버(EC2 도메인) 간 통신을 위해 Spring Security WebConfig에 CORS 정책 적용.
 - 허용 오리진:
-    - https://itda-web.netlify.app
+    - https://itda.likelion.shop
     - http://localhost:5173
 - 허용 헤더: Authorization, Content-Type, X-Requested-With 등
 - 허용 메서드: GET, POST, PUT, PATCH, DELETE, OPTIONS
@@ -82,16 +82,11 @@ graph TD
 구독 및 단건 결제 위변조를 차단하기 위한 3단계 결제 검증 흐름.
 
 ### 1.3.1 단건 결제 및 사후 검증 흐름
-1. 결제 준비 (클라이언트 -> 백엔드): 클라이언트가 결제 요청 전 서버에 `POST /api/v1/payments/prepare`를 호출하여 주문 번호(merchant_uid)와 결제 예정 금액 등록.
-2. 결제창 호출 (클라이언트 -> 결제 게이트웨이): 브라우저 결제창 SDK를 실행하여 결제 모듈 창을 띄우고 사용자가 카드 결제 완료.
-3. 결제 완료 통보 (결제 게이트웨이 -> 클라이언트): 결제 모듈이 브라우저 콜백으로 결제 승인 고유 식별자(imp_uid)와 주문 번호(merchant_uid) 반환.
-4. 사후 검증 및 저장 (클라이언트 -> 백엔드): 클라이언트가 백엔드 `POST /api/v1/payments/complete`로 imp_uid를 전송. 백엔드는 결제사 REST API 서버로 직접 결제 내역을 단건 조회하여 실제 결제된 금액과 DB의 예정 금액이 일치하는지 위변조를 확인한 뒤 결제 완료(PAID) 상태로 갱신.
+1. 결제 준비 (클라이언트 -> 백엔드 -> PortOne): 클라이언트가 결제 요청 전 서버에 `POST /api/v1/payments/prepare`를 호출하여 고유 식별자(payment_id)와 결제 예정 금액 등록.
+2. 결제창 호출 (클라이언트 -> PortOne/PG): 브라우저 결제창 SDK를 실행하여 결제 모듈 창을 띄우고 사용자가 카드 결제 완료.
+3. 결제 완료 통보 (PortOne -> 클라이언트): 결제 모듈이 브라우저 콜백으로 결제 승인 고유 식별자(payment_id)와 주문 번호(transaction_id) 반환.
+4. 사후 검증 및 저장 (클라이언트 -> 백엔드 -> PortOne): 클라이언트가 백엔드 `POST /api/v1/payments/complete`로 payment_id 전송. 백엔드는 결제사 REST API 서버로 직접 결제 내역을 단건 조회하여 실제 결제된 금액과 DB의 예정 금액이 일치하는지 위변조를 확인한 뒤 결제 완료(PAID) 상태로 갱신.
 
-### 1.3.2 정기 구독 빌링키 및 자동 결제 흐름
-1. 빌링키 발급: 유료 회원이 카드 정보를 입력하면 결제 게이트웨이로부터 재사용 가능한 빌링키(customer_uid) 발급.
-2. 구독 정보 저장: 백엔드 subscription 테이블에 회원 ID, 빌링키, 다음 결제 예정일, VIP 상태 기록.
-3. 정기 결제 배치 실행: Spring Boot의 스케줄러(Scheduler)가 매일 자정에 실행되어 당일 결제 대상 회원들의 빌링키를 이용해 결제사 비인증 결제 API 호출.
-4. 정기 결제 갱신 및 처리: 결제 성공 시 만료일을 1개월 연장하고, 결제 실패 시 재시도 큐에 등록하거나 구독을 일시 중지 상태로 변경.
 
 # [ADR-01] 프론트엔드 배포 환경 및 PG 결제 솔루션 선정
 
@@ -105,12 +100,12 @@ graph TD
 
 ## 3. 검토 대안 (Alternatives Considered)
 - 옵션 A: AWS S3 + CloudFront
-- 옵션 B: Vercel 플랫폼 연동
-- 옵션 C: 토스페이먼츠 직접 연동 vs 포트원 통합 결제
+- 옵션 B: Vercel, Netlify 플랫폼 연동
+- 옵션 C: 토스페이먼츠 직접 연동 vs 포트원 간편 결제
 
 ## 4. 최종 결정 사항 (Decision)
 - 프론트엔드 배포: Netlify 플랫폼 연동 채택
-- 결제 솔루션: 포트원 통합 결제 채택
+- 결제 솔루션: 포트원 간편 결제 채택
 
 ## 5. 선택 이유 (Rationale)
 - 기술적 적합성: 팀원들의 기술 이해도 및 프로젝트 아키텍처와의 부합성.
