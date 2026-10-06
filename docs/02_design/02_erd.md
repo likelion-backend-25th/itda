@@ -248,7 +248,7 @@ erDiagram
 | to_id | BIGINT | FK (`member.id`), NOT NULL | 팔로우 대상 회원 ID |
 | created_at | DATETIME | NOT NULL, DEFAULT CURRENT_TIMESTAMP | 팔로우한 일시 |
 
-### 1.2.4 reply (게시글 댓글)
+### 1.2.4 post (게시글)
 
 | 컬럼명 | 데이터 타입 | 제약 조건 | 설명 |
 | --- | --- | --- | --- |
@@ -264,7 +264,7 @@ erDiagram
 | created_at | DATETIME | NOT NULL, DEFAULT CURRENT_TIMESTAMP | 게시글 등록 일시 |
 | updated_at | DATETIME | NOT NULL, DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP | 게시글 수정 일시 |
 
-### 1.2.5 reply (게시글 댓글)
+### 1.2.5 reply (댓글)
 
 | 컬럼명 | 데이터 타입 | 제약 조건 | 설명 |
 | --- | --- | --- | --- |
@@ -316,7 +316,7 @@ erDiagram
 | updated_at | DATETIME | DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP | 테마 수정 일시 |
 | created_at | DATETIME | NOT NULL, DEFAULT CURRENT_TIMESTAMP | 테마 등록 일시 |                                                                                                                        |
 
-### 1.2.9 theme (결제)
+### 1.2.9 payment (결제)
 
 | 컬럼명 | 데이터 타입 | 제약 조건 | 설명 |
 | --- | --- | --- | --- |
@@ -333,7 +333,7 @@ erDiagram
 | created_at | DATETIME | NOT NULL, DEFAULT CURRENT_TIMESTAMP | 결제 데이터 생성 일시 |
 
 
-### 1.2.10 subscription (사용자 정기 구독)
+### 1.2.10 subscription (사용자 구독)
 
 | 컬럼명 | 데이터 타입 | 제약 조건 | 설명 |
 | --- | --- | --- | --- |
@@ -373,7 +373,7 @@ erDiagram
 | created_at | DATETIME | NOT NULL, DEFAULT CURRENT_TIMESTAMP | Refresh Token 생성 일시 |
 | revoked_at | DATETIME | NULL | Refresh Token 폐기 일시 |
 
-### 1.2.12 payment_refund (결제 환불)
+### 1.2.13 payment_refund (결제 환불)
 
 | 컬럼명 | 데이터 타입 | 제약 조건 | 설명 |
 | --- | --- | --- | --- |
